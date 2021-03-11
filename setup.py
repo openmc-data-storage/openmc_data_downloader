@@ -16,6 +16,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     zip_safe=True,
     package_dir={"openmc_data_downloader": "openmc_data_downloader"},
+    scripts=['openmc_data_downloader/openmc_data_downloader'],
     package_data={
         "openmc_data_downloader": [
             "requirements.txt",

@@ -1,0 +1,416 @@
+#!/usr/bin/python
+
+"""
+A nuclear data downloading package that facilitates the reproduction of cross
+section collections. Use the command line tool or Python API to download the h5
+cross sections for just the isotopes / elements that you want. Specify the
+prefered nuclear data libraries to use. Automaticallly avoid duplication and
+generation of custom cross_section.xml files
+"""
+
+import argparse
+import re
+from pathlib import Path
+from typing import Union
+from urllib.parse import urlparse
+from urllib.request import urlopen
+
+import openmc
+import pandas as pd
+
+_BLOCK_SIZE = 16384
+
+
+tendl_2019_isotopes = [
+    'Ac225', 'Ac226', 'Ac227', 'Ag106_m1', 'Ag107', 'Ag108',
+    'Ag109', 'Ag110', 'Ag110_m1', 'Ag111', 'Ag112', 'Ag113',
+    'Ag114', 'Ag115', 'Ag116', 'Ag117', 'Ag118_m1', 'Al26',
+    'Al26_m1', 'Al27', 'Am240', 'Am241', 'Am242', 'Am242_m1',
+    'Am243', 'Am244', 'Am244_m1', 'Ar36', 'Ar37', 'Ar38',
+    'Ar39', 'Ar40', 'Ar41', 'As71', 'As72', 'As73',
+    'As74', 'As75', 'As76', 'As77', 'Au197', 'B10',
+    'B11', 'Ba130', 'Ba131', 'Ba132', 'Ba133', 'Ba134',
+    'Ba135', 'Ba136', 'Ba137', 'Ba138', 'Ba139', 'Ba140',
+    'Be7', 'Be9', 'Bi208', 'Bi209', 'Bi210', 'Bi210_m1',
+    'Bk245', 'Bk246', 'Bk247', 'Bk248', 'Bk249', 'Bk250',
+    'Br77', 'Br79', 'Br80', 'Br81', 'Br82', 'C12', 'C13',
+    'Ca40', 'Ca41', 'Ca42', 'Ca43', 'Ca44', 'Ca45',
+    'Ca46', 'Ca47', 'Ca48', 'Cd106', 'Cd107', 'Cd108',
+    'Cd109', 'Cd110', 'Cd111', 'Cd112', 'Cd113', 'Cd114',
+    'Cd115_m1', 'Cd116', 'Ce136', 'Ce137', 'Ce137_m1',
+    'Ce138', 'Ce139', 'Ce140', 'Ce141', 'Ce142', 'Ce143',
+    'Ce144', 'Cf246', 'Cf247', 'Cf248', 'Cf249', 'Cf250',
+    'Cf251', 'Cf252', 'Cf253', 'Cf254', 'Cl35', 'Cl36',
+    'Cl37', 'Cm240', 'Cm241', 'Cm242', 'Cm243', 'Cm244',
+    'Cm245', 'Cm246', 'Cm247', 'Cm248', 'Cm249', 'Cm250',
+    'Co56', 'Co57', 'Co58', 'Co58_m1', 'Co59', 'Co60',
+    'Co62_m1', 'Cr50', 'Cr51', 'Cr52', 'Cr53', 'Cr54',
+    'Cs133', 'Cs134', 'Cs135', 'Cs136', 'Cs137', 'Cu63',
+    'Cu64', 'Cu65', 'Cu66', 'Cu67', 'Dy154', 'Dy155',
+    'Dy156', 'Dy157', 'Dy158', 'Dy159', 'Dy160', 'Dy161',
+    'Dy162', 'Dy163', 'Dy164', 'Dy165', 'Er162', 'Er163',
+    'Er164', 'Er165', 'Er166', 'Er167', 'Er168', 'Er169',
+    'Er170', 'Er171', 'Er172', 'Es251', 'Es252', 'Es253',
+    'Es254', 'Es254_m1', 'Es255', 'Eu151', 'Eu152',
+    'Eu152_m1', 'Eu153', 'Eu154', 'Eu155', 'Eu156', 'Eu157',
+    'F19', 'Fe54', 'Fe55', 'Fe56', 'Fe57', 'Fe58', 'Fe59',
+    'Fe60', 'Fm255', 'Ga67', 'Ga69', 'Ga70', 'Ga71',
+    'Gd148', 'Gd149', 'Gd150', 'Gd151', 'Gd152', 'Gd153',
+    'Gd154', 'Gd155', 'Gd156', 'Gd157', 'Gd158', 'Gd159',
+    'Gd160', 'Gd161', 'Ge70', 'Ge71', 'Ge72', 'Ge73',
+    'Ge74', 'Ge75', 'Ge76', 'H1', 'H2', 'H3', 'He3',
+    'He4', 'Hf174', 'Hf175', 'Hf176', 'Hf177', 'Hf178',
+    'Hf179', 'Hf180', 'Hf181', 'Hf182', 'Hg196', 'Hg197',
+    'Hg197_m1', 'Hg198', 'Hg199', 'Hg200', 'Hg201', 'Hg202',
+    'Hg203', 'Hg204', 'Ho163', 'Ho165', 'Ho166_m1', 'I126',
+    'I127', 'I128', 'I129', 'I130', 'I131', 'I132',
+    'I132_m1', 'I133', 'I134', 'I135', 'In113', 'In114',
+    'In115', 'Ir190', 'Ir191', 'Ir192', 'Ir193', 'Ir194_m1',
+    'K39', 'K40', 'K41', 'Kr78', 'Kr79', 'Kr80', 'Kr81',
+    'Kr82', 'Kr83', 'Kr84', 'Kr85', 'Kr86', 'La137',
+    'La138', 'La139', 'La140', 'Li6', 'Li7', 'Lu173',
+    'Lu174', 'Lu175', 'Lu176', 'Lu177', 'Mg24', 'Mg25',
+    'Mg26', 'Mg27', 'Mn52', 'Mn53', 'Mn54', 'Mn55',
+    'Mo100', 'Mo92', 'Mo93', 'Mo94', 'Mo95', 'Mo96',
+    'Mo97', 'Mo98', 'Mo99', 'N14', 'N15', 'Na22', 'Na23',
+    'Nb91', 'Nb92', 'Nb93', 'Nb94', 'Nb94_m1', 'Nb95',
+    'Nd142', 'Nd143', 'Nd144', 'Nd145', 'Nd146', 'Nd147',
+    'Nd148', 'Nd149', 'Nd150', 'Ne20', 'Ne21', 'Ne22',
+    'Ni56', 'Ni57', 'Ni58', 'Ni59', 'Ni60', 'Ni61',
+    'Ni62', 'Ni63', 'Ni64', 'Ni66', 'Np234', 'Np235',
+    'Np236', 'Np236_m1', 'Np237', 'Np238', 'Np239', 'O16',
+    'O17', 'O18', 'Os184', 'Os185', 'Os186', 'Os187',
+    'Os188', 'Os189', 'Os190', 'Os191', 'Os192', 'Os193',
+    'P31', 'P32', 'P33', 'Pa229', 'Pa230', 'Pa231',
+    'Pa232', 'Pa233', 'Pb204', 'Pb205', 'Pb206', 'Pb207',
+    'Pb208', 'Pd102', 'Pd103', 'Pd104', 'Pd105', 'Pd106',
+    'Pd107', 'Pd108', 'Pd109', 'Pd110', 'Pm143', 'Pm144',
+    'Pm145', 'Pm146', 'Pm147', 'Pm148', 'Pm148_m1', 'Pm149',
+    'Pm150', 'Pm151', 'Po208', 'Po209', 'Po210', 'Pr141',
+    'Pr142', 'Pr143', 'Pt190', 'Pt191', 'Pt192', 'Pt193',
+    'Pt194', 'Pt195', 'Pt196', 'Pt197', 'Pt198', 'Pu236',
+    'Pu237', 'Pu238', 'Pu239', 'Pu240', 'Pu241', 'Pu242',
+    'Pu243', 'Pu244', 'Pu245', 'Pu246', 'Ra223', 'Ra224',
+    'Ra225', 'Ra226', 'Rb85', 'Rb86', 'Rb87', 'Rb88',
+    'Re185', 'Re186', 'Re186_m1', 'Re187', 'Re188', 'Rh101',
+    'Rh102', 'Rh103', 'Rh104', 'Rh105', 'Rh99', 'Ru100',
+    'Ru101', 'Ru102', 'Ru103', 'Ru104', 'Ru105', 'Ru106',
+    'Ru96', 'Ru97', 'Ru98', 'Ru99', 'S32', 'S33', 'S34',
+    'S35', 'S36', 'Sb121', 'Sb122', 'Sb123', 'Sb124',
+    'Sb125', 'Sb126', 'Sb127', 'Sc44', 'Sc45', 'Sc46',
+    'Sc47', 'Sc48', 'Se74', 'Se75', 'Se76', 'Se77',
+    'Se78', 'Se79', 'Se80', 'Se81', 'Se82', 'Si28',
+    'Si29', 'Si30', 'Si31', 'Si32', 'Sm144', 'Sm145',
+    'Sm146', 'Sm147', 'Sm148', 'Sm149', 'Sm150', 'Sm151',
+    'Sm152', 'Sm153', 'Sm154', 'Sn112', 'Sn113', 'Sn114',
+    'Sn115', 'Sn116', 'Sn117', 'Sn118', 'Sn119', 'Sn120',
+    'Sn121', 'Sn121_m1', 'Sn122', 'Sn123', 'Sn124', 'Sn125',
+    'Sn126', 'Sr83', 'Sr84', 'Sr85', 'Sr86', 'Sr87',
+    'Sr88', 'Sr89', 'Sr90', 'Ta179', 'Ta180', 'Ta180_m1',
+    'Ta181', 'Ta182', 'Tb158', 'Tb159', 'Tb160', 'Tb161',
+    'Tc96', 'Tc97', 'Tc98', 'Tc99', 'Te120', 'Te121',
+    'Te121_m1', 'Te122', 'Te123', 'Te124', 'Te125', 'Te126',
+    'Te127_m1', 'Te128', 'Te129_m1', 'Te130', 'Te131',
+    'Te131_m1', 'Te132', 'Th227', 'Th228', 'Th229', 'Th230',
+    'Th231', 'Th232', 'Th233', 'Th234', 'Ti44', 'Ti46',
+    'Ti47', 'Ti48', 'Ti49', 'Ti50', 'Tl202', 'Tl203',
+    'Tl204', 'Tl205', 'Tm168', 'Tm169', 'Tm170', 'Tm171',
+    'U230', 'U231', 'U232', 'U233', 'U234', 'U235',
+    'U236', 'U237', 'U238', 'U239', 'U240', 'U241',
+    'V48', 'V49', 'V50', 'V51', 'W180', 'W181', 'W182',
+    'W183', 'W184', 'W185', 'W186', 'W188', 'Xe123',
+    'Xe124', 'Xe125', 'Xe126', 'Xe127', 'Xe128', 'Xe129',
+    'Xe130', 'Xe131', 'Xe132', 'Xe133', 'Xe134', 'Xe135',
+    'Xe135_m1', 'Xe136', 'Y87', 'Y88', 'Y89', 'Y90',
+    'Y91', 'Yb168', 'Yb169', 'Yb170', 'Yb171', 'Yb172',
+    'Yb173', 'Yb174', 'Yb175', 'Yb176', 'Zn64', 'Zn65',
+    'Zn66', 'Zn67', 'Zn68', 'Zn69', 'Zn70', 'Zr88',
+    'Zr89', 'Zr90', 'Zr91', 'Zr92', 'Zr93', 'Zr94',
+    'Zr95', 'Zr96'
+]
+
+tendl_2019_base_url = 'https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/'
+
+tendl_2019_xs_info = []
+for isotope in tendl_2019_isotopes:
+    entry = {}
+    entry['isotope'] = isotope
+    entry['library'] = 'TENDL_2019'
+    entry['remote_file'] = entry['isotope'] + '.h5'
+    entry['url'] = tendl_2019_base_url + entry['remote_file']
+    entry['element'] = re.split('(\d+)', entry['isotope'])[0]
+    entry['local_file'] = entry['library'] + '_' + entry['remote_file']
+    tendl_2019_xs_info.append(entry)
+    # could add size of file in mb as well
+
+
+endfb_71_nndc_isotopes = [
+    'Ac225', 'Ac226', 'Ac227', 'Ag107', 'Ag109', 'Ag110_m1', 'Ag111', 'Al27',
+    'Am240', 'Am241', 'Am242', 'Am242_m1', 'Am243', 'Am244', 'Am244_m1',
+    'Ar36', 'Ar38', 'Ar40', 'As74', 'As75', 'Au197', 'B10', 'B11', 'Ba130',
+    'Ba132', 'Ba133', 'Ba134', 'Ba135', 'Ba136', 'Ba137', 'Ba138', 'Ba140',
+    'Be7', 'Be9', 'Bi209', 'Bk245', 'Bk246', 'Bk247', 'Bk248', 'Bk249',
+    'Bk250', 'Br79', 'Br81', 'C0', 'Ca40', 'Ca42', 'Ca43', 'Ca44', 'Ca46',
+    'Ca48', 'Cd106', 'Cd108', 'Cd110', 'Cd111',
+    'Cd112', 'Cd113', 'Cd114', 'Cd115_m1', 'Cd116', 'Ce136', 'Ce138', 'Ce139',
+    'Ce140', 'Ce141', 'Ce142', 'Ce143', 'Ce144', 'Cf246', 'Cf248', 'Cf249',
+    'Cf250', 'Cf251', 'Cf252', 'Cf253', 'Cf254', 'Cl35', 'Cl37', 'Cm240',
+    'Cm241', 'Cm242', 'Cm243', 'Cm244', 'Cm245', 'Cm246', 'Cm247', 'Cm248',
+    'Cm249', 'Cm250', 'Co58', 'Co58_m1', 'Co59', 'Cr50', 'Cr52', 'Cr53',
+    'Cr54', 'Cs133', 'Cs134', 'Cs135', 'Cs136', 'Cs137', 'Cu63', 'Cu65',
+    'Dy156', 'Dy158', 'Dy160', 'Dy161', 'Dy162', 'Dy163', 'Dy164', 'Er162',
+    'Er164', 'Er166', 'Er167', 'Er168', 'Er170', 'Es251', 'Es252', 'Es253',
+    'Es254', 'Es254_m1', 'Es255', 'Eu151', 'Eu152', 'Eu153', 'Eu154', 'Eu155',
+    'Eu156', 'Eu157', 'F19', 'Fe54', 'Fe56', 'Fe57', 'Fe58', 'Fm255', 'Ga69',
+    'Ga71', 'Gd152', 'Gd153', 'Gd154', 'Gd155', 'Gd156', 'Gd157', 'Gd158',
+    'Gd160', 'Ge70', 'Ge72', 'Ge73', 'Ge74', 'Ge76', 'H1', 'H2', 'H3', 'He3',
+    'He4', 'Hf174', 'Hf176', 'Hf177', 'Hf178', 'Hf179', 'Hf180', 'Hg196',
+    'Hg198', 'Hg199', 'Hg200', 'Hg201', 'Hg202', 'Hg204', 'Ho165', 'Ho166_m1',
+    'I127', 'I129', 'I130', 'I131', 'I135', 'In113', 'In115', 'Ir191', 'Ir193',
+    'K39', 'K40', 'K41', 'Kr78', 'Kr80', 'Kr82', 'Kr83', 'Kr84', 'Kr85',
+    'Kr86', 'La138', 'La139', 'La140', 'Li6', 'Li7', 'Lu175', 'Lu176', 'Mg24',
+    'Mg25', 'Mg26', 'Mn55', 'Mo100', 'Mo92', 'Mo94', 'Mo95', 'Mo96', 'Mo97',
+    'Mo98', 'Mo99', 'N14', 'N15', 'Na22', 'Na23', 'Nb93', 'Nb94', 'Nb95',
+    'Nd142', 'Nd143', 'Nd144', 'Nd145', 'Nd146', 'Nd147', 'Nd148', 'Nd150',
+    'Ni58', 'Ni59', 'Ni60', 'Ni61', 'Ni62', 'Ni64', 'Np234', 'Np235', 'Np236',
+    'Np237', 'Np238', 'Np239', 'O16', 'O17', 'P31', 'Pa229', 'Pa230', 'Pa231',
+    'Pa232', 'Pa233', 'Pb204', 'Pb206', 'Pb207', 'Pb208', 'Pd102', 'Pd104',
+    'Pd105', 'Pd106', 'Pd107', 'Pd108', 'Pd110', 'Pm147', 'Pm148', 'Pm148_m1',
+    'Pm149', 'Pm151', 'Pr141', 'Pr142', 'Pr143', 'Pu236', 'Pu237', 'Pu238',
+    'Pu239', 'Pu240', 'Pu241', 'Pu242', 'Pu243', 'Pu244', 'Pu246', 'Ra223',
+    'Ra224', 'Ra225', 'Ra226', 'Rb85', 'Rb86', 'Rb87', 'Re185', 'Re187',
+    'Rh103', 'Rh105', 'Ru100', 'Ru101', 'Ru102', 'Ru103', 'Ru104', 'Ru105',
+    'Ru106', 'Ru96', 'Ru98', 'Ru99', 'S32', 'S33', 'S34', 'S36', 'Sb121',
+    'Sb123', 'Sb124', 'Sb125', 'Sb126', 'Sc45', 'Se74', 'Se76', 'Se77',
+    'Se78', 'Se79', 'Se80', 'Se82', 'Si28', 'Si29', 'Si30', 'Sm144', 'Sm147',
+    'Sm148', 'Sm149', 'Sm150', 'Sm151', 'Sm152', 'Sm153', 'Sm154', 'Sn112',
+    'Sn113', 'Sn114', 'Sn115', 'Sn116', 'Sn117', 'Sn118', 'Sn119', 'Sn120',
+    'Sn122', 'Sn123', 'Sn124', 'Sn125', 'Sn126', 'Sr84', 'Sr86', 'Sr87',
+    'Sr88', 'Sr89', 'Sr90', 'Ta180', 'Ta181', 'Ta182', 'Tb159', 'Tb160',
+    'Tc99', 'Te120', 'Te122', 'Te123', 'Te124', 'Te125', 'Te126', 'Te127_m1',
+    'Te128', 'Te129_m1', 'Te130', 'Te132', 'Th227', 'Th228', 'Th229', 'Th230',
+    'Th231', 'Th232', 'Th233', 'Th234', 'Ti46', 'Ti47', 'Ti48', 'Ti49', 'Ti50',
+    'Tl203', 'Tl205', 'Tm168', 'Tm169', 'Tm170', 'U230', 'U231', 'U232',
+    'U233', 'U234', 'U235', 'U236', 'U237', 'U238', 'U239', 'U240', 'U241',
+    'V50', 'V51', 'W180', 'W182', 'W183', 'W184', 'W186', 'Xe123', 'Xe124',
+    'Xe126', 'Xe128', 'Xe129', 'Xe130', 'Xe131', 'Xe132', 'Xe133', 'Xe134',
+    'Xe135', 'Xe136', 'Y89', 'Y90', 'Y91', 'Zn64', 'Zn65', 'Zn66', 'Zn67',
+    'Zn68', 'Zn70', 'Zr90', 'Zr91', 'Zr92', 'Zr93', 'Zr94', 'Zr95', 'Zr96'
+]
+
+endfb_71_nndc_base_url = 'https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/'
+
+endfb_71_nndc_xs_info = []
+for isotope in endfb_71_nndc_isotopes:
+    entry = {}
+    entry['isotope'] = isotope
+    entry['library'] = 'ENDFB_71_NNDC'
+    entry['remote_file'] = entry['isotope'] + '.h5'
+    entry['url'] = endfb_71_nndc_base_url + entry['remote_file']
+    entry['element'] = re.split('(\d+)', entry['isotope'])[0]
+    entry['local_file'] = entry['library'] + '_' + entry['remote_file']
+    endfb_71_nndc_xs_info.append(entry)
+    # could add size of file in mb as well
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def download_single_file(
+    url: str,
+    output_filename: Union[str, Path] = None,
+    destination: Union[str, Path] = None
+) -> Path:
+    """Download file from a URL
+
+    Arguments:
+        url: URL from which to download
+        destination: Specifies a folder location to save the downloaded file
+
+    Returns
+        Name of file written locally
+    """
+
+    if output_filename is not None:
+        if not isinstance(output_filename, Path):
+            output_filename = Path(output_filename)
+
+    if destination is not None:
+        if not isinstance(destination, Path):
+            destination = Path(destination)
+
+    with urlopen(url) as response:
+        # Get file size from header
+        file_size = response.length
+
+        if output_filename is None:
+            local_path = Path(Path(urlparse(url).path).name)
+        else:
+            local_path = output_filename
+
+        if destination is not None:
+            Path(destination).mkdir(parents=True, exist_ok=True)
+            local_path = destination / local_path
+
+        # Check if file already downloaded
+        if local_path.is_file():
+            if local_path.stat().st_size == file_size:
+                print('Skipping {}, already downloaded'.format(local_path))
+                return local_path
+
+        # Copy file to disk in chunks
+        print('Downloading {}... '.format(local_path), end='')
+        with open(local_path, 'wb') as fh:
+            while True:
+                chunk = response.read(_BLOCK_SIZE)
+                if not chunk:
+                    break
+                fh.write(chunk)
+            print('')
+
+    return local_path
+
+
+def download_data_frame_of_isotopes(dataframe, destination):
+
+    if len(dataframe) == 0:
+        print("""\nError. No isotopes matching the required inputs were found.
+                \nTry including more library options\n""")
+
+    local_files = []
+    for index, row in dataframe.iterrows():
+        local_file = download_single_file(
+            url=row['url'],
+            output_filename=row['local_file'],
+            destination=destination
+        )
+        local_files.append(local_file)
+
+    return local_files
+
+
+def create_cross_sections_xml(dataframe, destination):
+
+    library = openmc.data.DataLibrary()
+    for index, row in dataframe.iterrows():
+        if destination is None:
+            library.register_file(Path(row['local_file']))
+        else:
+            library.register_file(Path(destination) / Path(row['local_file']))
+    if destination is None:
+        library.export_to_xml('cross_sections.xml')
+    else:
+        if not isinstance(destination, Path):
+            destination = Path(destination)
+            destination.mkdir(parents=True, exist_ok=True)
+        library.export_to_xml(destination / 'cross_sections.xml')
+
+    return library
+
+
+def identify_isotopes_to_download(libraries, isotopes):
+
+    priority_dict = {}
+
+    for counter, entry in enumerate(libraries):
+        priority_dict[entry] = counter+1
+
+    print('Priority of Libraries', priority_dict)
+
+    xs_info = endfb_71_nndc_xs_info + tendl_2019_xs_info
+
+    xs_info_df = pd.DataFrame.from_dict(xs_info) 
+
+    is_library = xs_info_df['library'].isin(libraries)
+    print('isotopes found matching library requirments', is_library.values.sum())
+
+    if len(isotopes) > 0:
+        is_isotope = xs_info_df['isotope'].isin(isotopes)
+        print('isotopes found matching isotope requirments', is_isotope.values.sum())
+
+        xs_info_df = xs_info_df[(is_isotope) & (is_library)]
+    else:
+        xs_info_df = xs_info_df[is_library]
+
+    xs_info_df['priority'] = xs_info_df['library'].map(priority_dict)
+
+    xs_info_df = xs_info_df.sort_values(by=['priority'])
+
+    xs_info_df = xs_info_df.drop_duplicates(['isotope'], keep='first')
+    print(len(xs_info_df), 'isotopes found once duplicates have been removed')
+
+    return xs_info_df
+
+
+def expand_element_to_isotopes(elements):
+
+    isotopes = []
+    for element in elements:
+        my_mat = openmc.Element(element)
+        for nuclide in my_mat.expand(percent=1, percent_type='ao', cross_sections=None):
+            isotopes.append(nuclide[0])
+    print(isotopes)
+    return isotopes
+
+
+def download_custom_h5_collection(libraries, isotopes, elements, destination):
+
+    print(isotopes)
+    if len(elements) > 0:
+        isotopes_from_elements = expand_element_to_isotopes(elements)
+        isotopes = list(set(isotopes + isotopes_from_elements))
+
+    dataframe = identify_isotopes_to_download(libraries, isotopes)
+
+    download_data_frame_of_isotopes(dataframe, destination)
+
+    create_cross_sections_xml(dataframe, destination)
+
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-l', '--libraries', choices=['ENDFB_71_NNDC', 'TENDL_2019',
+                        'Jeff-3.3'], nargs='*', help="The nuclear data \
+                        libraries to search through when searching for cross \
+                        sections. Multiple libaries are acceptable and will \
+                        be preferentially utilisd in the order provided"
+                        "version.", default=[])   
+    parser.add_argument('-i', '--isotopes', nargs='*', default=[], help="The isotopes to \
+                        download")   
+    parser.add_argument('-e', '--elements', nargs='*', default=[], help="The elements to \
+                        download")
+    parser.add_argument('-m', '--material_xml', nargs='*', default=[], help="The \
+                        filename of the materials.xml file to provide cross \
+                        sections for")
+    parser.add_argument('-d', '--destination', type=Path, default=None,
+                        help='Directory to create new library in')
+
+    args = parser.parse_args()
+
+    download_custom_h5_collection(
+        libraries=args.libraries,
+        isotopes=args.isotopes,
+        elements=args.elements,
+        destination=args.destination,
+    )
