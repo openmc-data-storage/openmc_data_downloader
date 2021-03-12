@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<materials>
+  <material id="1" name="PbLi">
+    <density units="atom/b-cm" value="0.032720171" />
+    <nuclide ao="1.1788" name="Pb204" />
+    <nuclide ao="20.2922" name="Pb206" />
+    <nuclide ao="18.6082" name="Pb207" />
+    <nuclide ao="44.1208" name="Pb208" />
+    <nuclide ao="7.9" name="Li6" />
+    <nuclide ao="7.9" name="Li7" />
+  </material>
+  <material id="2" name="steel">
+    <density units="g/cm3" value="7.75" />
+    <nuclide name="Fe54" wo="0.05363280315080067" />
+    <nuclide name="Fe56" wo="0.8730645233319133" />
+    <nuclide name="Fe57" wo="0.020523501865144234" />
+    <nuclide name="Fe58" wo="0.002779171652141786" />
+    <nuclide name="C12" wo="0.04940034225429025" />
+    <nuclide name="C13" wo="0.0005996577457097504" />
+  </material>
+</materials>

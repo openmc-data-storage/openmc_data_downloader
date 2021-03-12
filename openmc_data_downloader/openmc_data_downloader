@@ -215,24 +215,86 @@ for isotope in endfb_71_nndc_isotopes:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+NATURAL_ABUNDANCE = {
+    'H': ['H1', 'H2'],
+    'He': ['He3', 'He4', 'Li6', 'Li7'],
+    'Be': ['Be9'],
+    'B': ['B10', 'B11'],
+    'C': ['C12', 'C13', 'C0'],  # C0 included for ENDF/B 7.1 NNDC
+    'N': ['N14', 'N15'],
+    'O': ['O16', 'O17', 'O18'],
+    'F': ['F19'],
+    'Ne': ['Ne20', 'Ne21', 'Ne22'],
+    'Na': ['Na23'],
+    'Mg': ['Mg24', 'Mg25', 'Mg26'],
+    'Al': ['Al27'],
+    'Si': ['Si28', 'Si29', 'Si30'],
+    'P': ['P31'],
+    'S': ['S32', 'S33', 'S34', 'S36'],
+    'Cl': ['Cl35', 'Cl37'],
+    'Ar': ['Ar36', 'Ar38', 'Ar40'],
+    'K': ['K39', 'K40', 'K41'],
+    'Ca': ['Ca40', 'Ca42', 'Ca43', 'Ca44', 'Ca46', 'Ca48'],
+    'Sc': ['Sc45'],
+    'Ti': ['Ti46', 'Ti47', 'Ti48', 'Ti49', 'Ti50'],
+    'V': ['V50', 'V51'],
+    'Cr': ['Cr50', 'Cr52', 'Cr53', 'Cr54'],
+    'Mn': ['Mn55'],
+    'Fe': ['Fe54', 'Fe56', 'Fe57', 'Fe58'],
+    'Co': ['Co59'],
+    'Ni': ['Ni58', 'Ni60', 'Ni61', 'Ni62', 'Ni64'],
+    'Cu': ['Cu63', 'Cu65'],
+    'Zn': ['Zn64', 'Zn66', 'Zn67', 'Zn68', 'Zn70'],
+    'Ga': ['Ga69', 'Ga71', 'Ge70', 'Ge72', 'Ge73', 'Ge74', 'Ge76'],
+    'As': ['As75'],
+    'Se': ['Se74', 'Se76', 'Se77', 'Se78', 'Se80', 'Se82'],
+    'Br': ['Br79', 'Br81'],
+    'Kr': ['Kr78', 'Kr80', 'Kr82', 'Kr83', 'Kr84', 'Kr86'],
+    'Rb': ['Rb85', 'Rb87'],
+    'Sr': ['Sr84', 'Sr86', 'Sr87', 'Sr88'],
+    'Y': ['Y89'],
+    'Zr': ['Zr90', 'Zr91', 'Zr92', 'Zr94', 'Zr96'],
+    'Nb': ['Nb93'],
+    'Mo': ['Mo92', 'Mo94', 'Mo95', 'Mo96', 'Mo97', 'Mo98', 'Mo100', 'Ru96'],
+    'Ru': ['Ru98', 'Ru99', 'Ru100', 'Ru101', 'Ru102', 'Ru104', 'Rh103'],
+    'Pd': ['Pd102', 'Pd104', 'Pd105', 'Pd106', 'Pd108', 'Pd110'],
+    'Ag': ['Ag107', 'Ag109'],
+    'Cd': ['Cd106', 'Cd108', 'Cd110', 'Cd111', 'Cd112', 'Cd113', 'Cd114', 'Cd116'],
+    'In': ['In113', 'In115'],
+    'Sn': ['Sn112', 'Sn114', 'Sn115', 'Sn116', 'Sn117', 'Sn118', 'Sn119', 'Sn120', 'Sn122', 'Sn124', 'Sb121', 'Sb123'],
+    'Te': ['Te120', 'Te122', 'Te123', 'Te124', 'Te125', 'Te126', 'Te128', 'Te130', 'I127'],
+    'Xe': ['Xe124', 'Xe126', 'Xe128', 'Xe129', 'Xe130', 'Xe131', 'Xe132', 'Xe134', 'Xe136'],
+    'Cs': ['Cs133'],
+    'Ba': ['Ba130', 'Ba132', 'Ba134', 'Ba135', 'Ba136', 'Ba137', 'Ba138'],
+    'La': ['La138', 'La139'],
+    'Ce': ['Ce136', 'Ce138', 'Ce140', 'Ce142'],
+    'Pr': ['Pr141'],
+    'Nd': ['Nd142', 'Nd143', 'Nd144', 'Nd145', 'Nd146', 'Nd148', 'Nd150'],
+    'Sm': ['Sm144', 'Sm147', 'Sm148', 'Sm149', 'Sm150', 'Sm152', 'Sm154'],
+    'Eu': ['Eu151', 'Eu153'],
+    'Gd': ['Gd152', 'Gd154', 'Gd155', 'Gd156', 'Gd157', 'Gd158', 'Gd160'],
+    'Tb': ['Tb159'],
+    'Dy': ['Dy156', 'Dy158', 'Dy160', 'Dy161', 'Dy162', 'Dy163', 'Dy164'],
+    'Ho': ['Ho165'],
+    'Er': ['Er162', 'Er164', 'Er166', 'Er167', 'Er168', 'Er170'],
+    'Tm': ['Tm169'],
+    'Yb': ['Yb168', 'Yb170', 'Yb171', 'Yb172', 'Yb173', 'Yb174', 'Yb176', 'Lu175', 'Lu176'],
+    'Hf': ['Hf174', 'Hf176', 'Hf177', 'Hf178', 'Hf179', 'Hf180'],
+    'Ta': ['Ta180', 'Ta181'],
+    'W': ['W180', 'W182', 'W183', 'W184', 'W186'],
+    'Re': ['Re185', 'Re187'],
+    'Os': ['Os184', 'Os186', 'Os187', 'Os188', 'Os189', 'Os190', 'Os192'],
+    'Ir': ['Ir191', 'Ir193'],
+    'Pt': ['Pt190', 'Pt192', 'Pt194', 'Pt195', 'Pt196', 'Pt198'],
+    'Au': ['Au197'],
+    'Hg': ['Hg196', 'Hg198', 'Hg199', 'Hg200', 'Hg201', 'Hg202', 'Hg204'],
+    'Tl': ['Tl203', 'Tl205'],
+    'Pb': ['Pb204', 'Pb206', 'Pb207', 'Pb208'],
+    'Bi': ['Bi209'],
+    'Th': ['Th230', 'Th232'],
+    'Pa': ['Pa231'],
+    'U': ['U234', 'U235', 'U238'],
+}
 
 
 def download_single_file(
@@ -373,22 +435,14 @@ def identify_isotopes_to_download(libraries, isotopes):
 
 def expand_element_to_isotopes(elements):
 
-    try:
-        import openmc
-    except ImportError:
-        print('openmc python package was was found, elements can not be expanded to isotopes.')
-        return None
-
     isotopes = []
     for element in elements:
-        my_mat = openmc.Element(element)
-        for nuclide in my_mat.expand(percent=1, percent_type='ao', cross_sections=None):
-            isotopes.append(nuclide[0])
+        isotopes = isotopes + NATURAL_ABUNDANCE[element]
     return isotopes
 
 
 def expand_material_xml_to_isotopes(materials_xml):
-    
+
     isotopes = []
     for material_xml in materials_xml:
         tree = ET.parse(material_xml)
