@@ -311,8 +311,7 @@ def create_cross_sections_xml(dataframe, destination):
 
     try:
         import openmc
-    except ImportError as error:
-        print(error.__class__.__name__ + ": " + error.message)
+    except ImportError:
         print('openmc python package was was found, cross_sections.xml can not be made.')
         return None
 
@@ -371,8 +370,7 @@ def expand_element_to_isotopes(elements):
 
     try:
         import openmc
-    except ImportError as error:
-        print(error.__class__.__name__ + ": " + error.message)
+    except ImportError:
         print('openmc python package was was found, elements can not be expanded to isotopes.')
         return None
 
