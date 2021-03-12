@@ -15,7 +15,6 @@ from typing import Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
-import openmc
 import pandas as pd
 
 _BLOCK_SIZE = 16384
@@ -310,6 +309,13 @@ def download_data_frame_of_isotopes(dataframe, destination):
 
 def create_cross_sections_xml(dataframe, destination):
 
+    try:
+        import openmc
+    except ImportError as error:
+        print(error.__class__.__name__ + ": " + error.message)
+        print('openmc python package was was found, cross_sections.xml can not be made.')
+        return None
+
     library = openmc.data.DataLibrary()
     for index, row in dataframe.iterrows():
         if destination is None:
@@ -362,6 +368,13 @@ def identify_isotopes_to_download(libraries, isotopes):
 
 
 def expand_element_to_isotopes(elements):
+
+    try:
+        import openmc
+    except ImportError as error:
+        print(error.__class__.__name__ + ": " + error.message)
+        print('openmc python package was was found, elements can not be expanded to isotopes.')
+        return None
 
     isotopes = []
     for element in elements:
