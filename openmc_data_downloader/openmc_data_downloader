@@ -405,8 +405,8 @@ if __name__ == '__main__':
                         'Jeff-3.3'], nargs='*', help="The nuclear data \
                         libraries to search through when searching for cross \
                         sections. Multiple libaries are acceptable and will \
-                        be preferentially utilisd in the order provided"
-                        "version.", default=[])   
+                        be preferentially utilised in the order provided"
+                        "version.", default=[], required=True)   
     parser.add_argument('-i', '--isotopes', nargs='*', default=[], help="The isotopes to \
                         download")   
     parser.add_argument('-e', '--elements', nargs='*', default=[], help="The elements to \
