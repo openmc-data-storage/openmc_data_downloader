@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
+import xml.etree.ElementTree as ET
 
 import pandas as pd
 
@@ -323,11 +324,15 @@ def create_cross_sections_xml(dataframe, destination):
             library.register_file(Path(destination) / Path(row['local_file']))
     if destination is None:
         library.export_to_xml('cross_sections.xml')
+        print('cross_sections.xml written')
     else:
         if not isinstance(destination, Path):
             destination = Path(destination)
             destination.mkdir(parents=True, exist_ok=True)
         library.export_to_xml(destination / 'cross_sections.xml')
+        print(str(destination / 'cross_sections.xml') + ' written')
+
+    print('Set your $OPENMC_CROSS_SECTIONS enviromental varible to use this custom library')
 
     return library
 
@@ -339,18 +344,18 @@ def identify_isotopes_to_download(libraries, isotopes):
     for counter, entry in enumerate(libraries):
         priority_dict[entry] = counter+1
 
-    print('Priority of Libraries', priority_dict)
+    print('Searching libraries with the following priority', priority_dict)
 
     xs_info = endfb_71_nndc_xs_info + tendl_2019_xs_info
 
     xs_info_df = pd.DataFrame.from_dict(xs_info) 
 
     is_library = xs_info_df['library'].isin(libraries)
-    print('isotopes found matching library requirments', is_library.values.sum())
+    print('Isotopes found matching library requirments', is_library.values.sum())
 
     if len(isotopes) > 0:
         is_isotope = xs_info_df['isotope'].isin(isotopes)
-        print('isotopes found matching isotope requirments', is_isotope.values.sum())
+        print('Isotopes found matching isotope requirments', is_isotope.values.sum())
 
         xs_info_df = xs_info_df[(is_isotope) & (is_library)]
     else:
@@ -361,7 +366,7 @@ def identify_isotopes_to_download(libraries, isotopes):
     xs_info_df = xs_info_df.sort_values(by=['priority'])
 
     xs_info_df = xs_info_df.drop_duplicates(['isotope'], keep='first')
-    print(len(xs_info_df), 'isotopes found once duplicates have been removed')
+    print('Isotopes found matching all requirments', len(xs_info_df))
 
     return xs_info_df
 
@@ -379,16 +384,34 @@ def expand_element_to_isotopes(elements):
         my_mat = openmc.Element(element)
         for nuclide in my_mat.expand(percent=1, percent_type='ao', cross_sections=None):
             isotopes.append(nuclide[0])
-    print(isotopes)
     return isotopes
 
 
-def download_custom_h5_collection(libraries, isotopes, elements, destination):
+def expand_material_xml_to_isotopes(materials_xml):
+    
+    isotopes = []
+    for material_xml in materials_xml:
+        tree = ET.parse(material_xml)
+        root = tree.getroot()   
 
-    print(isotopes)
+        for elem in root:
+            for subelem in elem:
+                if 'name' in subelem.attrib.keys():
+                    print(subelem.attrib)
+                    isotopes.append(subelem.attrib['name'])
+    return isotopes
+
+
+def download_custom_h5_collection(libraries, isotopes, elements, destination, materials_xml):
+
     if len(elements) > 0:
         isotopes_from_elements = expand_element_to_isotopes(elements)
         isotopes = list(set(isotopes + isotopes_from_elements))
+
+    if len(materials_xml) > 0:
+        isotopes_from_material_xml = expand_material_xml_to_isotopes(materials_xml)
+        isotopes = list(set(isotopes + isotopes_from_material_xml))
+    print(isotopes)
 
     dataframe = identify_isotopes_to_download(libraries, isotopes)
 
@@ -411,7 +434,7 @@ if __name__ == '__main__':
                         download")   
     parser.add_argument('-e', '--elements', nargs='*', default=[], help="The elements to \
                         download")
-    parser.add_argument('-m', '--material_xml', nargs='*', default=[], help="The \
+    parser.add_argument('-m', '--materials_xml', nargs='*', default=[], help="The \
                         filename of the materials.xml file to provide cross \
                         sections for")
     parser.add_argument('-d', '--destination', type=Path, default=None,
@@ -424,4 +447,5 @@ if __name__ == '__main__':
         isotopes=args.isotopes,
         elements=args.elements,
         destination=args.destination,
+        materials_xml=args.materials_xml,
     )
