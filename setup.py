@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="openmc_data_downloader",
-    version="0.0.3",
+    version="0.0.4",
     summary="Download cross section h5 files for use in OpenMC",
     author="Jonathan Shimwell",
     author_email="mail@jshimwell.com",
@@ -27,6 +27,6 @@ setuptools.setup(
     tests_require=["pytest-cov", "pytest-runner"],
     install_requires=[
         "pandas",
-        # 'openmc' when pip install is available
+        # 'openmc' is optional for this package but is not available via pip install at the moment
     ],
 )
