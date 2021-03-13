@@ -8,12 +8,13 @@ import unittest
 
 from openmc import Material, Materials
 from openmc_data_downloader import (expand_materials_to_isotopes,
-                                    expand_materials_xml_to_isotopes)
+                                    expand_materials_xml_to_isotopes,
+                                    identify_isotopes_to_download)
 
 
 class test_command_line_usage(unittest.TestCase):
 
-    def expand_materials_from_object_list_with_single_mat(self):
+    def test_expand_materials_from_object_list_with_single_mat(self):
 
         my_mat = Material()
         my_mat.add_nuclide('Pu239', 3.7047e-2)
@@ -22,7 +23,7 @@ class test_command_line_usage(unittest.TestCase):
 
         assert expand_materials_to_isotopes([my_mat]) == ['Pu239', 'Pu240', 'Pu241']
 
-    def expand_materials_from_object_list_with_multiple_mat(self):
+    def test_expand_materials_from_object_list_with_multiple_mat(self):
 
         my_mat1 = Material()
         my_mat1.add_nuclide('Li6', 0.5)
@@ -51,3 +52,22 @@ class test_command_line_usage(unittest.TestCase):
 
         assert expand_materials_xml_to_isotopes('materials.xml') == ['Al27']
 
+    def test_incorrect_library_values_empty(self):
+
+        def incorrect_libraries_string():
+            identify_isotopes_to_download(libraries=[], isotopes='Li6')
+
+        self.assertRaises(
+            ValueError,
+            incorrect_libraries_string
+        )
+
+    def test_incorrect_library_values_wrong(self):
+
+        def incorrect_libraries_string():
+            identify_isotopes_to_download(libraries=['coucou'], isotopes='Li6')
+
+        self.assertRaises(
+            ValueError,
+            incorrect_libraries_string
+        )
