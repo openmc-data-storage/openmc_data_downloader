@@ -1,4 +1,5 @@
 
+import math
 import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -29,12 +30,18 @@ def set_enviromental_varible(cross_section_xml_path):
 
 def expand_materials_to_isotopes(materials: list):
 
-    isotopes_from_materials = []
-    for material in materials:
-        for nuc in material.nuclides:
-            isotopes_from_materials.append(nuc.name)
+    if not isinstance(materials, list):
+        materials = [materials]
 
-    return isotopes_from_materials
+    if len(materials) > 0:
+        isotopes_from_materials = []
+        for material in materials:
+            for nuc in material.nuclides:
+                isotopes_from_materials.append(nuc.name)
+
+        return isotopes_from_materials
+
+    return []
 
 
 def just_in_time_library_generator(
@@ -51,13 +58,11 @@ def just_in_time_library_generator(
         isotopes_from_elements = expand_elements_to_isotopes(elements)
         isotopes = list(set(isotopes + isotopes_from_elements))
 
-    if len(materials_xml) > 0:
-        isotopes_from_material_xml = expand_materials_xml_to_isotopes(materials_xml)
-        isotopes = list(set(isotopes + isotopes_from_material_xml))
+    isotopes_from_material_xml = expand_materials_xml_to_isotopes(materials_xml)
+    isotopes = list(set(isotopes + isotopes_from_material_xml))
 
-    if len(materials) > 0:
-        isotopes_from_materials = expand_materials_to_isotopes(materials)
-        isotopes = list(set(isotopes + isotopes_from_materials))
+    isotopes_from_materials = expand_materials_to_isotopes(materials)
+    isotopes = list(set(isotopes + isotopes_from_materials))
 
     print(isotopes)
 
@@ -231,8 +236,12 @@ def expand_elements_to_isotopes(elements):
 def expand_materials_xml_to_isotopes(materials_xml: Union[List[str],str] = ['materials.xml']):
 
     isotopes = []
+
     if isinstance(materials_xml, str):
         materials_xml = [materials_xml]
+
+    if len(materials_xml) > 0:
+        return []
 
     for material_xml in materials_xml:
         tree = ET.parse(material_xml)
