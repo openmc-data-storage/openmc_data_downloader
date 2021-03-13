@@ -51,7 +51,7 @@ def just_in_time_library_generator(
     destination: Union[str, Path] = None,
     materials_xml: List[Union[str, Path]] = [],
     materials: list = [],
-    set_OPENMC_CROSS_SECTIONS: bool = False,
+    set_OPENMC_CROSS_SECTIONS: bool = True,
 ) -> str:
 
     if len(elements) > 0:

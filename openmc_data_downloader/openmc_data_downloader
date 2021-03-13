@@ -43,4 +43,5 @@ if __name__ == '__main__':
         elements=args.elements,
         destination=args.destination,
         materials_xml=args.materials_xml,
+        set_OPENMC_CROSS_SECTIONS=False
     )
