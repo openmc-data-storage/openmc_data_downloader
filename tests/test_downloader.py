@@ -153,7 +153,7 @@ class test_usage_withOpenmc_python_api(unittest.TestCase):
         my_mat = openmc.openmc.Material()
         my_mat.add_nuclide('Pu239', 3.7047e-2)
         my_mat.add_nuclide('Pu240', 1.7512e-3)
-        my_mat.add_element('As', 1.3752e-3)
+        my_mat.add_nuclide('As75', 1.3752e-3)
         openmc.openmc.Materials([my_mat]).export_to_xml()
 
         # Create a sphere of my_mat
@@ -182,16 +182,17 @@ class test_usage_withOpenmc_python_api(unittest.TestCase):
         assert Path('TENDL_2019_Pu240.h5').is_file()
         assert Path('TENDL_2019_As75.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 3
 
     def test_isotope_download_and_setting_openmc_cross_sections_for_simulation_with_single_mat_list(self):
 
-        # os .system('rm *.h5')
+        os .system('rm *.h5')
 
         # Define material
         my_mat = openmc.openmc.Material()
         my_mat.add_nuclide('Pu239', 3.7047e-2)
         my_mat.add_nuclide('Pu240', 1.7512e-3)
-        my_mat.add_element('As', 1.3752e-3)
+        my_mat.add_nuclide('As75', 1.3752e-3)
         openmc.openmc.Materials([my_mat]).export_to_xml()
 
         # Create a sphere of my_mat
@@ -220,29 +221,28 @@ class test_usage_withOpenmc_python_api(unittest.TestCase):
         assert Path('TENDL_2019_Pu240.h5').is_file()
         assert Path('TENDL_2019_As75.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 3
 
     def test_isotope_download_and_setting_openmc_cross_sections_for_simulation_with_multi_mat_list(self):
 
-        # os .system('rm *.h5')
+        os .system('rm *.h5')
 
         # Define material
         my_mat1 = openmc.openmc.Material()
         my_mat1.add_nuclide('Pu239', 3.7047e-2)
         my_mat1.add_nuclide('Pu240', 1.7512e-3)
-        my_mat1.add_element('As', 1.3752e-3)
     
         my_mat2 = openmc.openmc.Material()
-        my_mat2.add_nuclide('Pu239', 3.7047e-2)
-        my_mat2.add_nuclide('Pu240', 1.7512e-3)
         my_mat2.add_element('As', 1.3752e-3)
         openmc.openmc.Materials([my_mat1, my_mat2]).export_to_xml()
 
         # Create a sphere of my_mat
         surf1 = openmc.Sphere(r=1)
         surf2 = openmc.Sphere(r=6, boundary_type='vacuum')
-        main_cell = openmc.Cell(fill=my_mat, region=-surf1)
-        outer_cell = openmc.Cell(fill=my_mat, region=+surf1 & -surf2)
-        openmc.Geometry([main_cell]).export_to_xml()
+        main_cell = openmc.Cell(fill=my_mat1, region=-surf1)
+        outer_cell = openmc.Cell(fill=my_mat2, region=+surf1 & -surf2)
+        universe = openmc.Universe(cells=[main_cell, outer_cell])
+        openmc.Geometry(universe).export_to_xml()
 
         # Define settings for the simulation
         settings = openmc.Settings()
@@ -256,7 +256,7 @@ class test_usage_withOpenmc_python_api(unittest.TestCase):
         # this clears the enviromental varible just to be sure that current system settings are not being used
         os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
-        just_in_time_library_generator(libraries=['TENDL_2019'], materials=[my_mat], set_OPENMC_CROSS_SECTIONS=True)
+        just_in_time_library_generator(libraries=['TENDL_2019'], materials=[my_mat1, my_mat2], set_OPENMC_CROSS_SECTIONS=True)
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()
@@ -265,3 +265,4 @@ class test_usage_withOpenmc_python_api(unittest.TestCase):
         assert Path('TENDL_2019_Pu240.h5').is_file()
         assert Path('TENDL_2019_As75.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 3

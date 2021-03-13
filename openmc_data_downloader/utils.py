@@ -183,9 +183,12 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
     return absolute_path
    
 
-def identify_isotopes_to_download(libraries: List[str], isotopes: List[str]):
+def identify_isotopes_to_download(libraries: List[str], isotopes: List[str] = []):
 
     priority_dict = {}
+
+    if isinstance(libraries, str):
+        libraries = [libraries]
 
     if libraries == []:
         raise ValueError('At least one library must be selected, options are', LIB_OPTIONS)
@@ -207,13 +210,13 @@ def identify_isotopes_to_download(libraries: List[str], isotopes: List[str]):
     is_library = xs_info_df['library'].isin(libraries)
     print('Isotopes found matching library requirements', is_library.values.sum())
 
-    if len(isotopes) > 0:
+    if isotopes == []:
+        xs_info_df = xs_info_df[is_library]
+    else:
         is_isotope = xs_info_df['isotope'].isin(isotopes)
         print('Isotopes found matching isotope requirements', is_isotope.values.sum())
 
         xs_info_df = xs_info_df[(is_isotope) & (is_library)]
-    else:
-        xs_info_df = xs_info_df[is_library]
 
     xs_info_df['priority'] = xs_info_df['library'].map(priority_dict)
 
@@ -233,14 +236,14 @@ def expand_elements_to_isotopes(elements):
     return isotopes
 
 
-def expand_materials_xml_to_isotopes(materials_xml: Union[List[str],str] = ['materials.xml']):
+def expand_materials_xml_to_isotopes(materials_xml: Union[List[str],str] = 'materials.xml'):
 
     isotopes = []
 
     if isinstance(materials_xml, str):
         materials_xml = [materials_xml]
 
-    if len(materials_xml) > 0:
+    if materials_xml == []:
         return []
 
     for material_xml in materials_xml:
@@ -250,6 +253,5 @@ def expand_materials_xml_to_isotopes(materials_xml: Union[List[str],str] = ['mat
         for elem in root:
             for subelem in elem:
                 if 'name' in subelem.attrib.keys():
-                    print(subelem.attrib)
                     isotopes.append(subelem.attrib['name'])
     return isotopes
