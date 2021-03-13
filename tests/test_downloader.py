@@ -145,7 +145,7 @@ class test_command_line_usage(unittest.TestCase):
 
 class test_usage_withOpenmc_python_api(unittest.TestCase):
 
-    def test_isotope_download_and_setting_openmc_cross_sections_for_simulation_with_single_mat(self):
+    def test_simulation_with_single_mat(self):
 
         # os .system('rm *.h5')
 
@@ -182,9 +182,9 @@ class test_usage_withOpenmc_python_api(unittest.TestCase):
         assert Path('TENDL_2019_Pu240.h5').is_file()
         assert Path('TENDL_2019_As75.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
-        assert len(list(Path('.').glob('*.h5'))) == 3
+        assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
 
-    def test_isotope_download_and_setting_openmc_cross_sections_for_simulation_with_single_mat_list(self):
+    def test_simulation_with_single_mat_list(self):
 
         os .system('rm *.h5')
 
@@ -220,10 +220,10 @@ class test_usage_withOpenmc_python_api(unittest.TestCase):
         assert Path('TENDL_2019_Pu239.h5').is_file()
         assert Path('TENDL_2019_Pu240.h5').is_file()
         assert Path('TENDL_2019_As75.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
         assert Path('statepoint.2.h5').is_file()
-        assert len(list(Path('.').glob('*.h5'))) == 3
 
-    def test_isotope_download_and_setting_openmc_cross_sections_for_simulation_with_multi_mat_list(self):
+    def test_simulation_with_multi_mat_list(self):
 
         os .system('rm *.h5')
 
@@ -231,7 +231,7 @@ class test_usage_withOpenmc_python_api(unittest.TestCase):
         my_mat1 = openmc.openmc.Material()
         my_mat1.add_nuclide('Pu239', 3.7047e-2)
         my_mat1.add_nuclide('Pu240', 1.7512e-3)
-    
+
         my_mat2 = openmc.openmc.Material()
         my_mat2.add_element('As', 1.3752e-3)
         openmc.openmc.Materials([my_mat1, my_mat2]).export_to_xml()
@@ -265,4 +265,4 @@ class test_usage_withOpenmc_python_api(unittest.TestCase):
         assert Path('TENDL_2019_Pu240.h5').is_file()
         assert Path('TENDL_2019_As75.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
-        assert len(list(Path('.').glob('*.h5'))) == 3
+        assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
