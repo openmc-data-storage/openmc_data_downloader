@@ -114,3 +114,4 @@ class test_command_line_usage(unittest.TestCase):
         assert Path('TENDL_2019_Nb93.h5').is_file()
         assert Path('TENDL_2019_Cs133.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 2
+
