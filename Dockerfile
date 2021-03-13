@@ -7,4 +7,4 @@ COPY setup.py setup.py
 COPY tests tests/
 COPY README.md README.md
 
-RUN pip install .
+RUN python setup.py install
