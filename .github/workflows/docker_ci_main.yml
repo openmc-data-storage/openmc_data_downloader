@@ -10,11 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        cadquery-version: [2.1, master]
-        include-neutronics: [true]
     
     steps:
     - uses: actions/checkout@v1
