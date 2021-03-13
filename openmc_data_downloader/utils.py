@@ -23,6 +23,7 @@ def set_enviromental_varible(cross_section_xml_path):
     if cross_section_xml_path.is_file() is False:
         raise FileNotFoundError(cross_section_xml_path, " was not found, therefore not setting OPENMC_CROSS_SECTIONS enviromental varible")
 
+    print('setting OPENMC_CROSS_SECTIONS', str(cross_section_xml_path))
     os.environ["OPENMC_CROSS_SECTIONS"] = str(cross_section_xml_path)
 
 
@@ -68,6 +69,8 @@ def just_in_time_library_generator(
 
     if set_OPENMC_CROSS_SECTIONS is True:
         set_enviromental_varible(cross_section_xml_path)
+    else:
+        print('Set your $OPENMC_CROSS_SECTIONS enviromental varible to {} to use this custom library'.format(cross_sections_path))
 
     return cross_section_xml_path
 
@@ -169,11 +172,11 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
         library.export_to_xml(destination / 'cross_sections.xml')
         cross_sections_xml_path = str(destination / 'cross_sections.xml')
 
-    print(cross_sections_xml_path, 'written')
-    print('Set your $OPENMC_CROSS_SECTIONS enviromental varible to {} to use this custom library'.format(cross_sections_path))
+    absolute_path = str(Path(cross_sections_xml_path).absolute())
+    print(absolute_path, 'written')
 
-    return cross_sections_xml_path
-
+    return absolute_path
+   
 
 def identify_isotopes_to_download(libraries: List[str], isotopes: List[str]):
 
