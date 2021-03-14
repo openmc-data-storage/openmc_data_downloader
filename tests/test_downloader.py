@@ -170,7 +170,7 @@ class test_command_line_usage(unittest.TestCase):
         assert expand_elements_to_isotopes(['Pr']) == ['Pr141']
 
         assert Path('TENDL_2019_Pr141.h5').is_file()
-        assert len(list(Path('.').glob('*.h5'))) == 2
+        assert len(list(Path('.').glob('*.h5'))) == 1
 
 
 class test_usage_with_openmc_python_api(unittest.TestCase):

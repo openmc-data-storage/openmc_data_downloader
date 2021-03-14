@@ -22,7 +22,9 @@ def set_enviromental_varible(cross_section_xml_path):
         cross_section_xml_path = Path(cross_section_xml_path)
 
     if cross_section_xml_path.is_file() is False:
-        raise FileNotFoundError(cross_section_xml_path, " was not found, therefore not setting OPENMC_CROSS_SECTIONS enviromental varible")
+        raise FileNotFoundError(
+            '{} was not found, therefore not setting OPENMC_CROSS_SECTIONS '
+            'enviromental varible'.format(cross_section_xml_path))
 
     print('setting OPENMC_CROSS_SECTIONS', str(cross_section_xml_path))
     os.environ["OPENMC_CROSS_SECTIONS"] = str(cross_section_xml_path)
@@ -64,8 +66,6 @@ def just_in_time_library_generator(
     isotopes_from_materials = expand_materials_to_isotopes(materials)
     isotopes = list(set(isotopes + isotopes_from_materials))
 
-    print(isotopes)
-
     dataframe = identify_isotopes_to_download(libraries, isotopes)
 
     download_data_frame_of_isotopes(dataframe, destination)
@@ -75,7 +75,8 @@ def just_in_time_library_generator(
     if set_OPENMC_CROSS_SECTIONS is True:
         set_enviromental_varible(cross_section_xml_path)
     else:
-        print('Set your $OPENMC_CROSS_SECTIONS enviromental varible to {} to use this custom library'.format(cross_sections_path))
+        print('Set your $OPENMC_CROSS_SECTIONS enviromental varible to {} to '
+              'use this custom library'.format(cross_section_xml_path))
 
     return cross_section_xml_path
 
@@ -138,8 +139,8 @@ def download_single_file(
 def download_data_frame_of_isotopes(dataframe, destination):
 
     if len(dataframe) == 0:
-        print("""\nError. No isotopes matching the required inputs were found.
-                \nTry including more library options\n""")
+        print('Error. No isotopes matching the required inputs were found. '
+              'Try including more library options')
 
     local_files = []
     for index, row in dataframe.iterrows():
@@ -158,7 +159,8 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
     try:
         import openmc
     except ImportError:
-        print('openmc python package was was found, cross_sections.xml can not be made.')
+        print('openmc python package was was found, cross_sections.xml can '
+              'not be made.')
         return None
 
     library = openmc.data.DataLibrary()
@@ -181,7 +183,7 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
     print(absolute_path, 'written')
 
     return absolute_path
-   
+
 
 def identify_isotopes_to_download(libraries: List[str], isotopes: List[str] = []):
 

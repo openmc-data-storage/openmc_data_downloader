@@ -12,19 +12,18 @@ import argparse
 from pathlib import Path
 from typing import List
 
-from openmc_data_downloader import just_in_time_library_generator
+from openmc_data_downloader import just_in_time_library_generator, LIB_OPTIONS
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-l', '--libraries', choices=['ENDFB_71_NNDC', 'TENDL_2019',
-                        'Jeff-3.3'], nargs='*', help="The nuclear data \
-                        libraries to search through when searching for cross \
-                        sections. Multiple libaries are acceptable and will \
-                        be preferentially utilised in the order provided"
-                        "version.", default=[], required=True)   
+    parser.add_argument('-l', '--libraries', choices=LIB_OPTIONS, nargs='*', 
+                        help="The nuclear data libraries to search through \
+                        when searching for cross sections. Multiple libaries \
+                        are acceptable and will be preferentially utilised in \
+                        the order provided", default=[], required=True)   
     parser.add_argument('-i', '--isotopes', nargs='*', default=[], help="The \
                         isotopes to download")   
     parser.add_argument('-e', '--elements', nargs='*', default=[], help="The \

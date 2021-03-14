@@ -322,7 +322,7 @@ for isotope in fendl_31d_isotopes:
     fendl_31d_xs_info.append(entry)
     # could add size of file in mb as well
 
-xs_info = endfb_71_nndc_xs_info + tendl_2019_xs_info
+xs_info = endfb_71_nndc_xs_info + tendl_2019_xs_info + fendl_31d_xs_info
 
 all_libs = []
 for entry in xs_info:
