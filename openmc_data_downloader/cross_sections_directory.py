@@ -85,35 +85,28 @@ NATURAL_ABUNDANCE = {
 
 
 tendl_2019_isotopes = [
-    'Ac225', 'Ac226', 'Ac227', 'Ag106_m1', 'Ag107', 'Ag108',
-    'Ag109', 'Ag110', 'Ag110_m1', 'Ag111', 'Ag112', 'Ag113',
-    'Ag114', 'Ag115', 'Ag116', 'Ag117', 'Ag118_m1', 'Al26',
-    'Al26_m1', 'Al27', 'Am240', 'Am241', 'Am242', 'Am242_m1',
-    'Am243', 'Am244', 'Am244_m1', 'Ar36', 'Ar37', 'Ar38',
-    'Ar39', 'Ar40', 'Ar41', 'As71', 'As72', 'As73',
-    'As74', 'As75', 'As76', 'As77', 'Au197', 'B10',
-    'B11', 'Ba130', 'Ba131', 'Ba132', 'Ba133', 'Ba134',
-    'Ba135', 'Ba136', 'Ba137', 'Ba138', 'Ba139', 'Ba140',
-    'Be7', 'Be9', 'Bi208', 'Bi209', 'Bi210', 'Bi210_m1',
-    'Bk245', 'Bk246', 'Bk247', 'Bk248', 'Bk249', 'Bk250',
-    'Br77', 'Br79', 'Br80', 'Br81', 'Br82', 'C12', 'C13',
-    'Ca40', 'Ca41', 'Ca42', 'Ca43', 'Ca44', 'Ca45',
-    'Ca46', 'Ca47', 'Ca48', 'Cd106', 'Cd107', 'Cd108',
-    'Cd109', 'Cd110', 'Cd111', 'Cd112', 'Cd113', 'Cd114',
-    'Cd115_m1', 'Cd116', 'Ce136', 'Ce137', 'Ce137_m1',
-    'Ce138', 'Ce139', 'Ce140', 'Ce141', 'Ce142', 'Ce143',
-    'Ce144', 'Cf246', 'Cf247', 'Cf248', 'Cf249', 'Cf250',
-    'Cf251', 'Cf252', 'Cf253', 'Cf254', 'Cl35', 'Cl36',
-    'Cl37', 'Cm240', 'Cm241', 'Cm242', 'Cm243', 'Cm244',
-    'Cm245', 'Cm246', 'Cm247', 'Cm248', 'Cm249', 'Cm250',
-    'Co56', 'Co57', 'Co58', 'Co58_m1', 'Co59', 'Co60',
-    'Co62_m1', 'Cr50', 'Cr51', 'Cr52', 'Cr53', 'Cr54',
-    'Cs133', 'Cs134', 'Cs135', 'Cs136', 'Cs137', 'Cu63',
-    'Cu64', 'Cu65', 'Cu66', 'Cu67', 'Dy154', 'Dy155',
-    'Dy156', 'Dy157', 'Dy158', 'Dy159', 'Dy160', 'Dy161',
-    'Dy162', 'Dy163', 'Dy164', 'Dy165', 'Er162', 'Er163',
-    'Er164', 'Er165', 'Er166', 'Er167', 'Er168', 'Er169',
-    'Er170', 'Er171', 'Er172', 'Es251', 'Es252', 'Es253',
+    'Ac225', 'Ac226', 'Ac227', 'Ag106_m1', 'Ag107', 'Ag108', 'Ag109', 'Ag110',
+    'Ag110_m1', 'Ag111', 'Ag112', 'Ag113', 'Ag114', 'Ag115', 'Ag116', 'Ag117',
+    'Ag118_m1', 'Al26', 'Al26_m1', 'Al27', 'Am240', 'Am241', 'Am242',
+    'Am242_m1', 'Am243', 'Am244', 'Am244_m1', 'Ar36', 'Ar37', 'Ar38', 'Ar39',
+    'Ar40', 'Ar41', 'As71', 'As72', 'As73', 'As74', 'As75', 'As76', 'As77',
+    'Au197', 'B10', 'B11', 'Ba130', 'Ba131', 'Ba132', 'Ba133', 'Ba134',
+    'Ba135', 'Ba136', 'Ba137', 'Ba138', 'Ba139', 'Ba140', 'Be7', 'Be9',
+    'Bi208', 'Bi209', 'Bi210', 'Bi210_m1', 'Bk245', 'Bk246', 'Bk247', 'Bk248',
+    'Bk249', 'Bk250', 'Br77', 'Br79', 'Br80', 'Br81', 'Br82', 'C12', 'C13',
+    'Ca40', 'Ca41', 'Ca42', 'Ca43', 'Ca44', 'Ca45', 'Ca46', 'Ca47', 'Ca48',
+    'Cd106', 'Cd107', 'Cd108', 'Cd109', 'Cd110', 'Cd111', 'Cd112', 'Cd113',
+    'Cd114', 'Cd115_m1', 'Cd116', 'Ce136', 'Ce137', 'Ce137_m1', 'Ce138',
+    'Ce139', 'Ce140', 'Ce141', 'Ce142', 'Ce143', 'Ce144', 'Cf246', 'Cf247',
+    'Cf248', 'Cf249', 'Cf250', 'Cf251', 'Cf252', 'Cf253', 'Cf254', 'Cl35',
+    'Cl36', 'Cl37', 'Cm240', 'Cm241', 'Cm242', 'Cm243', 'Cm244', 'Cm245',
+    'Cm246', 'Cm247', 'Cm248', 'Cm249', 'Cm250', 'Co56', 'Co57', 'Co58',
+    'Co58_m1', 'Co59', 'Co60', 'Co62_m1', 'Cr50', 'Cr51', 'Cr52', 'Cr53',
+    'Cr54', 'Cs133', 'Cs134', 'Cs135', 'Cs136', 'Cs137', 'Cu63', 'Cu64',
+    'Cu65', 'Cu66', 'Cu67', 'Dy154', 'Dy155', 'Dy156', 'Dy157', 'Dy158',
+    'Dy159', 'Dy160', 'Dy161', 'Dy162', 'Dy163', 'Dy164', 'Dy165', 'Er162',
+    'Er163', 'Er164', 'Er165', 'Er166', 'Er167', 'Er168', 'Er169', 'Er170',
+    'Er171', 'Er172', 'Es251', 'Es252', 'Es253',
     'Es254', 'Es254_m1', 'Es255', 'Eu151', 'Eu152',
     'Eu152_m1', 'Eu153', 'Eu154', 'Eu155', 'Eu156', 'Eu157',
     'F19', 'Fe54', 'Fe55', 'Fe56', 'Fe57', 'Fe58', 'Fe59',
@@ -198,7 +191,7 @@ tendl_2019_xs_info = []
 for isotope in tendl_2019_isotopes:
     entry = {}
     entry['isotope'] = isotope
-    entry['library'] = 'TENDL_2019'
+    entry['library'] = 'TENDL-2019'
     entry['remote_file'] = entry['isotope'] + '.h5'
     entry['url'] = tendl_2019_base_url + entry['remote_file']
     entry['element'] = re.split('(\d+)', entry['isotope'])[0]
@@ -267,7 +260,7 @@ endfb_71_nndc_xs_info = []
 for isotope in endfb_71_nndc_isotopes:
     entry = {}
     entry['isotope'] = isotope
-    entry['library'] = 'ENDFB_71_NNDC'
+    entry['library'] = 'ENDFB-7.1-NNDC'
     entry['remote_file'] = entry['isotope'] + '.h5'
     entry['url'] = endfb_71_nndc_base_url + entry['remote_file']
     entry['element'] = re.split('(\d+)', entry['isotope'])[0]
@@ -277,14 +270,12 @@ for isotope in endfb_71_nndc_isotopes:
 
 
 fendl_31d_isotopes = [
-    'Ag107', 'Ag109', 'Al27', 'Ar36', 'Ar38', 'Ar40',
-    'Au197', 'B10', 'B11', 'Ba130', 'Ba132', 'Ba134',
-    'Ba135', 'Ba136', 'Ba137', 'Ba138', 'Be9', 'Bi209',
-    'Br79', 'Br81', 'C12', 'C13', 'Ca40', 'Ca42', 'Ca43',
-    'Ca44', 'Ca46', 'Ca48', 'Cd106', 'Cd108', 'Cd110',
-    'Cd111', 'Cd112', 'Cd113', 'Cd114', 'Cd116', 'Ce136',
-    'Ce138', 'Ce140', 'Ce142', 'Cl35', 'Cl37', 'Co59',
-    'Cr50', 'Cr52', 'Cr53', 'Cr54', 'Cs133', 'Cu63',
+    'Ag107', 'Ag109', 'Al27', 'Ar36', 'Ar38', 'Ar40', 'Au197', 'B10', 'B11',
+    'Ba130', 'Ba132', 'Ba134', 'Ba135', 'Ba136', 'Ba137', 'Ba138', 'Be9',
+    'Bi209', 'Br79', 'Br81', 'C12', 'C13', 'Ca40', 'Ca42', 'Ca43', 'Ca44',
+    'Ca46', 'Ca48', 'Cd106', 'Cd108', 'Cd110', 'Cd111', 'Cd112', 'Cd113',
+    'Cd114', 'Cd116', 'Ce136', 'Ce138', 'Ce140', 'Ce142', 'Cl35', 'Cl37',
+    'Co59', 'Cr50', 'Cr52', 'Cr53', 'Cr54', 'Cs133', 'Cu63',
     'Cu65', 'Er162', 'Er164', 'Er166', 'Er167', 'Er168',
     'Er170', 'F19', 'Fe54', 'Fe56', 'Fe57', 'Fe58',
     'Ga69', 'Ga71', 'Gd152', 'Gd154', 'Gd155', 'Gd156',
@@ -314,7 +305,7 @@ fendl_31d_xs_info = []
 for isotope in fendl_31d_isotopes:
     entry = {}
     entry['isotope'] = isotope
-    entry['library'] = 'FENDL_31d'
+    entry['library'] = 'FENDL-3.1d'
     entry['remote_file'] = entry['isotope'] + '.h5'
     entry['url'] = fendl_31d_base_url + entry['remote_file']
     entry['element'] = re.split('(\d+)', entry['isotope'])[0]

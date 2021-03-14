@@ -66,7 +66,7 @@ class test_isotope_finding(unittest.TestCase):
 
     def test_library_values_single_entry_list(self):
 
-        isotopes_df = identify_isotopes_to_download(libraries='TENDL_2019', isotopes=['Li6', 'Al27'])
+        isotopes_df = identify_isotopes_to_download(libraries='TENDL-2019', isotopes=['Li6', 'Al27'])
 
         assert len(isotopes_df) == 2
 
@@ -95,34 +95,34 @@ class test_command_line_usage(unittest.TestCase):
 
     def test_single_isotope_download(self):
         os.system('rm *.h5')
-        os.system('openmc_data_downloader -l TENDL_2019 -i H1')
+        os.system('openmc_data_downloader -l TENDL-2019 -i H1')
 
-        assert Path('TENDL_2019_H1.h5').is_file()
+        assert Path('TENDL-2019_H1.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 1
 
     def test_multiple_isotope_download(self):
         os.system('rm *.h5')
-        os.system('openmc_data_downloader -l TENDL_2019 -i H1 He4')
+        os.system('openmc_data_downloader -l TENDL-2019 -i H1 He4')
 
-        assert Path('TENDL_2019_H1.h5').is_file()
-        assert Path('TENDL_2019_He4.h5').is_file()
+        assert Path('TENDL-2019_H1.h5').is_file()
+        assert Path('TENDL-2019_He4.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 2
 
     def test_correct_files_from_command_line_usage_2(self):
         os.system('rm *.h5')
-        os.system('openmc_data_downloader -l TENDL_2019 -e F')
+        os.system('openmc_data_downloader -l TENDL-2019 -e F')
 
-        assert Path('TENDL_2019_F19.h5').is_file()
+        assert Path('TENDL-2019_F19.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 1
 
     def test_correct_files_from_command_line_usage_3(self):
 
         os.system('rm *.h5')
 
-        os.system('openmc_data_downloader -l ENDFB_71_NNDC -e Co Y')
+        os.system('openmc_data_downloader -l ENDFB-7.1-NNDC -e Co Y')
 
-        assert Path('ENDFB_71_NNDC_Co59.h5').is_file()
-        assert Path('ENDFB_71_NNDC_Y89.h5').is_file()
+        assert Path('ENDFB-7.1-NNDC_Co59.h5').is_file()
+        assert Path('ENDFB-7.1-NNDC_Y89.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 2
 
     def test_correct_files_from_command_line_usage_4(self):
@@ -135,12 +135,12 @@ class test_command_line_usage(unittest.TestCase):
         os.system('rm materials.xml')
         openmc.Materials([my_mat]).export_to_xml()
 
-        os.system('openmc_data_downloader -l TENDL_2019 -m materials.xml')
+        os.system('openmc_data_downloader -l TENDL-2019 -m materials.xml')
 
         assert expand_materials_xml_to_isotopes(['materials.xml']) == ['Nb93', 'Cs133']
 
-        assert Path('TENDL_2019_Nb93.h5').is_file()
-        assert Path('TENDL_2019_Cs133.h5').is_file()
+        assert Path('TENDL-2019_Nb93.h5').is_file()
+        assert Path('TENDL-2019_Cs133.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 2
 
     def test_correct_files_from_command_line_usage_5(self):
@@ -152,11 +152,11 @@ class test_command_line_usage(unittest.TestCase):
         os.system('rm materials.xml')
         openmc.Materials([my_mat]).export_to_xml()
 
-        os.system('openmc_data_downloader -l FENDL_31d -m materials.xml')
+        os.system('openmc_data_downloader -l FENDL-3.1d -m materials.xml')
 
         assert expand_materials_xml_to_isotopes(['materials.xml']) == ['Nb93']
 
-        assert Path('FENDL_31d_Nb93.h5').is_file()
+        assert Path('FENDL-3.1d_Nb93.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 1
 
     def test_correct_files_from_command_line_usage_6(self):
@@ -165,11 +165,11 @@ class test_command_line_usage(unittest.TestCase):
 
         os.system('rm *.h5')
 
-        os.system('openmc_data_downloader -l FENDL_31d TENDL_2019 -e Pr')
+        os.system('openmc_data_downloader -l FENDL-3.1d TENDL-2019 -e Pr')
 
         assert expand_elements_to_isotopes(['Pr']) == ['Pr141']
 
-        assert Path('TENDL_2019_Pr141.h5').is_file()
+        assert Path('TENDL-2019_Pr141.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 1
 
 
@@ -206,7 +206,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         just_in_time_library_generator(
             destination='my_custom_nuclear_data_dir',
-            libraries=['TENDL_2019'],
+            libraries=['TENDL-2019'],
             materials=my_mat,
             set_OPENMC_CROSS_SECTIONS=True
         )
@@ -214,9 +214,9 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()
 
-        assert Path('my_custom_nuclear_data_dir/TENDL_2019_Pu239.h5').is_file()
-        assert Path('my_custom_nuclear_data_dir/TENDL_2019_Pu240.h5').is_file()
-        assert Path('my_custom_nuclear_data_dir/TENDL_2019_As75.h5').is_file()
+        assert Path('my_custom_nuclear_data_dir/TENDL-2019_Pu239.h5').is_file()
+        assert Path('my_custom_nuclear_data_dir/TENDL-2019_Pu240.h5').is_file()
+        assert Path('my_custom_nuclear_data_dir/TENDL-2019_As75.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
         assert len(list(Path('my_custom_nuclear_data_dir').glob('*.h5'))) == 3
 
@@ -248,14 +248,14 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         # this clears the enviromental varible just to be sure that current system settings are not being used
         os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
-        just_in_time_library_generator(libraries=['TENDL_2019'], materials=my_mat, set_OPENMC_CROSS_SECTIONS=True)
+        just_in_time_library_generator(libraries=['TENDL-2019'], materials=my_mat, set_OPENMC_CROSS_SECTIONS=True)
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()
 
-        assert Path('TENDL_2019_Pu239.h5').is_file()
-        assert Path('TENDL_2019_Pu240.h5').is_file()
-        assert Path('TENDL_2019_As75.h5').is_file()
+        assert Path('TENDL-2019_Pu239.h5').is_file()
+        assert Path('TENDL-2019_Pu240.h5').is_file()
+        assert Path('TENDL-2019_As75.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
 
@@ -287,14 +287,14 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         # this clears the enviromental varible just to be sure that current system settings are not being used
         os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
-        just_in_time_library_generator(libraries=['TENDL_2019'], materials=[my_mat], set_OPENMC_CROSS_SECTIONS=True)
+        just_in_time_library_generator(libraries=['TENDL-2019'], materials=[my_mat], set_OPENMC_CROSS_SECTIONS=True)
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()
 
-        assert Path('TENDL_2019_Pu239.h5').is_file()
-        assert Path('TENDL_2019_Pu240.h5').is_file()
-        assert Path('TENDL_2019_As75.h5').is_file()
+        assert Path('TENDL-2019_Pu239.h5').is_file()
+        assert Path('TENDL-2019_Pu240.h5').is_file()
+        assert Path('TENDL-2019_As75.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
         assert Path('statepoint.2.h5').is_file()
 
@@ -331,13 +331,13 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         # this clears the enviromental varible just to be sure that current system settings are not being used
         os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
-        just_in_time_library_generator(libraries=['TENDL_2019'], materials=[my_mat1, my_mat2], set_OPENMC_CROSS_SECTIONS=True)
+        just_in_time_library_generator(libraries=['TENDL-2019'], materials=[my_mat1, my_mat2], set_OPENMC_CROSS_SECTIONS=True)
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()
 
-        assert Path('TENDL_2019_Pu239.h5').is_file()
-        assert Path('TENDL_2019_Pu240.h5').is_file()
-        assert Path('TENDL_2019_As75.h5').is_file()
+        assert Path('TENDL-2019_Pu239.h5').is_file()
+        assert Path('TENDL-2019_Pu240.h5').is_file()
+        assert Path('TENDL-2019_As75.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint

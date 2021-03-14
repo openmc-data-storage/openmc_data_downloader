@@ -65,48 +65,48 @@ redownloading files that already exist locally.
 openmc_data_downloader --help
 ```
 
-### Downloading a single isotope from the TENDL 2019 nuclear library
+### Downloading a single isotope from the FENDL 3.1d nuclear library
 ```bash
-openmc_data_downloader -l TENDL_2019 -i Li6
+openmc_data_downloader -l FENDL-3.1d -i Li6
 ```
 
 ### Downloading a multiple isotopes from the TENDL 2019 nuclear library
 ```bash
-openmc_data_downloader -l TENDL_2019 -i Li6 Li7
+openmc_data_downloader -l TENDL-2019 -i Li6 Li7
 ```
 
 ### Downloading a single element from the TENDL 2019 nuclear library
 ```bash
-openmc_data_downloader -l TENDL_2019 -e Li
+openmc_data_downloader -l TENDL-2019 -e Li
 ```
 
 ### Downloading a multiple element from the TENDL 2019 nuclear library
 ```bash
-openmc_data_downloader -l TENDL_2019 -e Li Si Na
+openmc_data_downloader -l TENDL-2019 -e Li Si Na
 ```
 ### Downloading h5 files from the ENDF/B 7.1 NNDC library to a specific folder (destination)
 ```bash
-openmc_data_downloader -l ENDFB_71_NNDC -i Be9 -d my_h5_files
+openmc_data_downloader -l ENDFB-7.1-NNDC -i Be9 -d my_h5_files
 ```
 
 ### Downloading a combination of isotopes and element from the TENDL 2019 nuclear library
 ```bash
-openmc_data_downloader -l TENDL_2019 -e Li Si Na -i Fe56 U235
+openmc_data_downloader -l TENDL-2019 -e Li Si Na -i Fe56 U235
 ```
 
 ### Downloading all the isotopes in a materials.xml file from the TENDL 2019 nuclear library
 ```bash
-openmc_data_downloader -l TENDL_2019 -m materials.xml
+openmc_data_downloader -l TENDL-2019 -m materials.xml
 ```
 
 ### Downloading 3 isotopes from ENDF/B 7.1 NNDC (first choice) and TENDL 2019 (second choice) nuclear library
 ```bash
-openmc_data_downloader -l TENDL_2019 ENDFB_71_NNDC -i Li6 Li7 Be9
+openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -i Li6 Li7 Be9
 ```
 
 ### Downloading an isotopes from ENDF/B 7.1 NNDC and setting the OPENMC_CROSS_SECTION enviromental varible to 
 ```bash
-openmc_data_downloader -l TENDL_2019 ENDFB_71_NNDC -i Li6 Li7 Be9
+openmc_data_downloader -l TENDL-2019 ENDFB-7.1-NNDC -i Li6 Li7 Be9
 ```
 
 ## Usage - within a Python enviroment
@@ -127,7 +127,7 @@ mat1.add_element('Fe', 0.95)
 mat1.add_element('C', 0.05)
 
 odd.just_in_time_library_generator(
-    libraries='TENDL_2019',
+    libraries='FENDL-3.1d',
     materials=mat1
 )
 ```
@@ -142,7 +142,7 @@ mat1.add_element('Fe', 0.95)
 mat1.add_element('C', 0.05)
 
 odd.just_in_time_library_generator(
-    libraries=['ENDFB_71_NNDC', 'TENDL_2019'],
+    libraries=['ENDFB-7.1-NNDC', 'TENDL-2019'],
     materials=mat1
 )
 ```
@@ -161,7 +161,7 @@ mat2.add_element('H', 0.66)
 mat2.add_element('0', 0.33)
 
 odd.just_in_time_library_generator(
-    libraries='ENDFB_71_NNDC',
+    libraries='ENDFB-7.1-NNDC',
     materials=[mat1, mat2]
 )
 ```
@@ -172,7 +172,7 @@ import openmc
 import openmc_data_downloader as odd
 
 odd.just_in_time_library_generator(
-    libraries='TENDL_2019',
+    libraries='TENDL-2019',
     elements=['Li', 'Be'],
     isotopes=['Fe56', 'U235'],
 )
