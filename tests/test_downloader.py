@@ -12,6 +12,7 @@ from openmc_data_downloader import (expand_materials_to_isotopes,
                                     expand_materials_xml_to_isotopes,
                                     identify_isotopes_to_download,
                                     just_in_time_library_generator)
+from openmc_data_downloader.utils import expand_elements_to_isotopes
 
 
 class test_isotope_finding(unittest.TestCase):
@@ -142,12 +143,86 @@ class test_command_line_usage(unittest.TestCase):
         assert Path('TENDL_2019_Cs133.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 2
 
+    def test_correct_files_from_command_line_usage_5(self):
+        """Tests downloading with FENDL"""
+        os.system('rm *.h5 materials.xml')
 
-class test_usage_withOpenmc_python_api(unittest.TestCase):
+        my_mat = openmc.Material()
+        my_mat.add_element('Nb', 0.5)
+        os.system('rm materials.xml')
+        openmc.Materials([my_mat]).export_to_xml()
+
+        os.system('openmc_data_downloader -l FENDL_31d -m materials.xml')
+
+        assert expand_materials_xml_to_isotopes(['materials.xml']) == ['Nb93']
+
+        assert Path('FENDL_31d_Nb93.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 1
+
+    def test_correct_files_from_command_line_usage_6(self):
+        """Tests downloading with FENDL as prioity but without the element in
+        FENDL"""
+
+        os.system('rm *.h5')
+
+        os.system('openmc_data_downloader -l FENDL_31d TENDL_2019 -e Pr')
+
+        assert expand_elements_to_isotopes(['Pr']) == ['Pr141']
+
+        assert Path('TENDL_2019_Pr141.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 2
+
+
+class test_usage_with_openmc_python_api(unittest.TestCase):
+
+    def test_simulation_with_destination(self):
+
+        os .system('rm *.h5')
+        os .system('rm my_custom_nuclear_data_dir/*.h5')
+
+        # Define material
+        my_mat = openmc.openmc.Material()
+        my_mat.add_nuclide('Pu239', 3.7047e-2)
+        my_mat.add_nuclide('Pu240', 1.7512e-3)
+        my_mat.add_nuclide('As75', 1.3752e-3)
+        openmc.openmc.Materials([my_mat]).export_to_xml()
+
+        # Create a sphere of my_mat
+        surf = openmc.Sphere(r=6.3849, boundary_type='vacuum')
+        main_cell = openmc.Cell(fill=my_mat, region=-surf)
+        openmc.Geometry([main_cell]).export_to_xml()
+
+        # Define settings for the simulation
+        settings = openmc.Settings()
+        settings.particles = 10
+        settings.batches = 2
+        settings.inactive = 0
+        center = (0., 0., 0.)
+        settings.source = openmc.Source(space=openmc.stats.Point(center))
+        settings.export_to_xml()
+
+        # this clears the enviromental varible just to be sure that current system settings are not being used
+        os.environ["OPENMC_CROSS_SECTIONS"] = ''
+
+        just_in_time_library_generator(
+            destination='my_custom_nuclear_data_dir',
+            libraries=['TENDL_2019'],
+            materials=my_mat,
+            set_OPENMC_CROSS_SECTIONS=True
+        )
+
+        os.system('echo $OPENMC_CROSS_SECTIONS')
+        openmc.run()
+
+        assert Path('my_custom_nuclear_data_dir/TENDL_2019_Pu239.h5').is_file()
+        assert Path('my_custom_nuclear_data_dir/TENDL_2019_Pu240.h5').is_file()
+        assert Path('my_custom_nuclear_data_dir/TENDL_2019_As75.h5').is_file()
+        assert Path('statepoint.2.h5').is_file()
+        assert len(list(Path('my_custom_nuclear_data_dir').glob('*.h5'))) == 3
 
     def test_simulation_with_single_mat(self):
 
-        # os .system('rm *.h5')
+        os .system('rm *.h5')
 
         # Define material
         my_mat = openmc.openmc.Material()
