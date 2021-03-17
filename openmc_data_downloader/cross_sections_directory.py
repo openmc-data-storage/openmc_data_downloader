@@ -4,7 +4,8 @@ import re
 
 NATURAL_ABUNDANCE = {
     'H': ['H1', 'H2'],
-    'He': ['He3', 'He4', 'Li6', 'Li7'],
+    'He': ['He3', 'He4'],
+    'Li': ['Li6', 'Li7'],
     'Be': ['Be9'],
     'B': ['B10', 'B11'],
     'C': ['C12', 'C13', 'C0'],  # C0 included for ENDF/B 7.1 NNDC

@@ -6,17 +6,17 @@ from pathlib import Path
 from typing import List, Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
-from numpy.lib.function_base import iterable
-# from openmc.data.data import isotopes
 
 import pandas as pd
+from numpy.lib.function_base import iterable
 
-from openmc_data_downloader import NATURAL_ABUNDANCE, LIB_OPTIONS, xs_info
+from openmc_data_downloader import LIB_OPTIONS, NATURAL_ABUNDANCE, xs_info
+
 
 _BLOCK_SIZE = 16384
 
 
-def set_enviromental_varible(cross_section_xml_path):
+def set_enviromental_varible(cross_section_xml_path: Union[Path, str]) -> None:
 
     if not isinstance(cross_section_xml_path, Path):
         cross_section_xml_path = Path(cross_section_xml_path)
@@ -136,7 +136,7 @@ def download_single_file(
     return local_path
 
 
-def download_data_frame_of_isotopes(dataframe, destination):
+def download_data_frame_of_isotopes(dataframe, destination: Union[str, Path]):
 
     if len(dataframe) == 0:
         print('Error. No isotopes matching the required inputs were found. '
@@ -230,7 +230,10 @@ def identify_isotopes_to_download(libraries: List[str], isotopes: List[str] = []
     return xs_info_df
 
 
-def expand_elements_to_isotopes(elements):
+def expand_elements_to_isotopes(elements: Union[str, List[str]]):
+
+    if isinstance(elements, str):
+        return NATURAL_ABUNDANCE[elements]
 
     isotopes = []
     for element in elements:
@@ -238,7 +241,7 @@ def expand_elements_to_isotopes(elements):
     return isotopes
 
 
-def expand_materials_xml_to_isotopes(materials_xml: Union[List[str],str] = 'materials.xml'):
+def expand_materials_xml_to_isotopes(materials_xml: Union[List[str], str] = 'materials.xml'):
 
     isotopes = []
 
