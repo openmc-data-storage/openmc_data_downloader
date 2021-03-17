@@ -195,7 +195,7 @@ for isotope in tendl_2019_isotopes:
     entry['library'] = 'TENDL-2019'
     entry['remote_file'] = entry['isotope'] + '.h5'
     entry['url'] = tendl_2019_base_url + entry['remote_file']
-    entry['element'] = re.split('(\d+)', entry['isotope'])[0]
+    entry['element'] = re.split(r'(\d+)', entry['isotope'])[0]
     entry['local_file'] = entry['library'] + '_' + entry['remote_file']
     tendl_2019_xs_info.append(entry)
     # could add size of file in mb as well
@@ -264,7 +264,7 @@ for isotope in endfb_71_nndc_isotopes:
     entry['library'] = 'ENDFB-7.1-NNDC'
     entry['remote_file'] = entry['isotope'] + '.h5'
     entry['url'] = endfb_71_nndc_base_url + entry['remote_file']
-    entry['element'] = re.split('(\d+)', entry['isotope'])[0]
+    entry['element'] = re.split(r'(\d+)', entry['isotope'])[0]
     entry['local_file'] = entry['library'] + '_' + entry['remote_file']
     endfb_71_nndc_xs_info.append(entry)
     # could add size of file in mb as well
@@ -309,7 +309,7 @@ for isotope in fendl_31d_isotopes:
     entry['library'] = 'FENDL-3.1d'
     entry['remote_file'] = entry['isotope'] + '.h5'
     entry['url'] = fendl_31d_base_url + entry['remote_file']
-    entry['element'] = re.split('(\d+)', entry['isotope'])[0]
+    entry['element'] = re.split(r'(\d+)', entry['isotope'])[0]
     entry['local_file'] = entry['library'] + '_' + entry['remote_file']
     fendl_31d_xs_info.append(entry)
     # could add size of file in mb as well
