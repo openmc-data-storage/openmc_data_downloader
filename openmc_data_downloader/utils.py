@@ -60,7 +60,8 @@ def just_in_time_library_generator(
         isotopes_from_elements = expand_elements_to_isotopes(elements)
         isotopes = list(set(isotopes + isotopes_from_elements))
 
-    isotopes_from_material_xml = expand_materials_xml_to_isotopes(materials_xml)
+    isotopes_from_material_xml = expand_materials_xml_to_isotopes(
+        materials_xml)
     isotopes = list(set(isotopes + isotopes_from_material_xml))
 
     isotopes_from_materials = expand_materials_to_isotopes(materials)
@@ -185,7 +186,9 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
     return absolute_path
 
 
-def identify_isotopes_to_download(libraries: List[str], isotopes: List[str] = []):
+def identify_isotopes_to_download(
+        libraries: List[str],
+        isotopes: List[str] = []):
 
     priority_dict = {}
 
@@ -193,13 +196,17 @@ def identify_isotopes_to_download(libraries: List[str], isotopes: List[str] = []
         libraries = [libraries]
 
     if libraries == []:
-        raise ValueError('At least one library must be selected, options are', LIB_OPTIONS)
+        raise ValueError(
+            'At least one library must be selected, options are',
+            LIB_OPTIONS)
 
     for counter, entry in enumerate(libraries):
         if entry not in LIB_OPTIONS:
-            raise ValueError('The library must be one of the following', LIB_OPTIONS)
+            raise ValueError(
+                'The library must be one of the following',
+                LIB_OPTIONS)
 
-        priority_dict[entry] = counter+1
+        priority_dict[entry] = counter + 1
 
     print('Searching libraries with the following priority', priority_dict)
 
@@ -210,13 +217,17 @@ def identify_isotopes_to_download(libraries: List[str], isotopes: List[str] = []
     xs_info_df = pd.DataFrame.from_dict(xs_info)
 
     is_library = xs_info_df['library'].isin(libraries)
-    print('Isotopes found matching library requirements', is_library.values.sum())
+    print(
+        'Isotopes found matching library requirements',
+        is_library.values.sum())
 
     if isotopes == []:
         xs_info_df = xs_info_df[is_library]
     else:
         is_isotope = xs_info_df['isotope'].isin(isotopes)
-        print('Isotopes found matching isotope requirements', is_isotope.values.sum())
+        print(
+            'Isotopes found matching isotope requirements',
+            is_isotope.values.sum())
 
         xs_info_df = xs_info_df[(is_isotope) & (is_library)]
 
@@ -241,7 +252,8 @@ def expand_elements_to_isotopes(elements: Union[str, List[str]]):
     return isotopes
 
 
-def expand_materials_xml_to_isotopes(materials_xml: Union[List[str], str] = 'materials.xml'):
+def expand_materials_xml_to_isotopes(
+        materials_xml: Union[List[str], str] = 'materials.xml'):
 
     isotopes = []
 
@@ -253,7 +265,7 @@ def expand_materials_xml_to_isotopes(materials_xml: Union[List[str], str] = 'mat
 
     for material_xml in materials_xml:
         tree = ET.parse(material_xml)
-        root = tree.getroot()   
+        root = tree.getroot()
 
         for elem in root:
             for subelem in elem:
