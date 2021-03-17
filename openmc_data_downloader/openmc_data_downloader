@@ -19,16 +19,17 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-l', '--libraries', choices=LIB_OPTIONS, nargs='*', 
+    parser.add_argument('-l', '--libraries', choices=LIB_OPTIONS, nargs='*',
                         help="The nuclear data libraries to search through \
                         when searching for cross sections. Multiple libaries \
                         are acceptable and will be preferentially utilised in \
-                        the order provided", default=[], required=True)   
+                        the order provided", default=[], required=True)
     parser.add_argument('-i', '--isotopes', nargs='*', default=[], help="The \
-                        isotopes to download")   
+                        isotopes to download")
     parser.add_argument('-e', '--elements', nargs='*', default=[], help="The \
                         elements to download")
-    parser.add_argument('-m', '--materials_xml', nargs='*', default=[], help="The \
+    parser.add_argument(
+        '-m', '--materials_xml', nargs='*', default=[], help="The \
                         filename of the materials.xml file to provide cross \
                         sections for")
     parser.add_argument('-d', '--destination', type=Path, default=None,

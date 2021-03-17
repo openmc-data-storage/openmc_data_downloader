@@ -24,7 +24,8 @@ class test_isotope_finding(unittest.TestCase):
         my_mat.add_nuclide('Pu240', 1.7512e-3)
         my_mat.add_nuclide('Pu241', 1.1674e-4)
 
-        assert expand_materials_to_isotopes([my_mat]) == ['Pu239', 'Pu240', 'Pu241']
+        assert expand_materials_to_isotopes(
+            [my_mat]) == ['Pu239', 'Pu240', 'Pu241']
 
     def test_expand_materials_from_object_with_single_mat(self):
 
@@ -33,7 +34,8 @@ class test_isotope_finding(unittest.TestCase):
         my_mat.add_nuclide('Pu240', 1.7512e-3)
         my_mat.add_nuclide('Pu241', 1.1674e-4)
 
-        assert expand_materials_to_isotopes(my_mat) == ['Pu239', 'Pu240', 'Pu241']
+        assert expand_materials_to_isotopes(
+            my_mat) == ['Pu239', 'Pu240', 'Pu241']
 
     def test_expand_materials_from_object_list_with_multiple_mat(self):
 
@@ -44,7 +46,8 @@ class test_isotope_finding(unittest.TestCase):
         my_mat2 = openmc.Material()
         my_mat2.add_nuclide('Al27', 0.25)
 
-        assert expand_materials_to_isotopes([my_mat1, my_mat2]) == ['Li6', 'Li7', 'Al27']
+        assert expand_materials_to_isotopes([my_mat1, my_mat2]) == [
+            'Li6', 'Li7', 'Al27']
 
     def test_expand_material_xmls_with_list_input(self):
 
@@ -66,7 +69,8 @@ class test_isotope_finding(unittest.TestCase):
 
     def test_library_values_single_entry_list(self):
 
-        isotopes_df = identify_isotopes_to_download(libraries='TENDL-2019', isotopes=['Li6', 'Al27'])
+        isotopes_df = identify_isotopes_to_download(
+            libraries='TENDL-2019', isotopes=['Li6', 'Al27'])
 
         assert len(isotopes_df) == 2
 
@@ -137,7 +141,8 @@ class test_command_line_usage(unittest.TestCase):
 
         os.system('openmc_data_downloader -l TENDL-2019 -m materials.xml')
 
-        assert expand_materials_xml_to_isotopes(['materials.xml']) == ['Nb93', 'Cs133']
+        assert expand_materials_xml_to_isotopes(
+            ['materials.xml']) == ['Nb93', 'Cs133']
 
         assert Path('TENDL-2019_Nb93.h5').is_file()
         assert Path('TENDL-2019_Cs133.h5').is_file()
@@ -201,7 +206,8 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.source = openmc.Source(space=openmc.stats.Point(center))
         settings.export_to_xml()
 
-        # this clears the enviromental varible just to be sure that current system settings are not being used
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
         os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
         just_in_time_library_generator(
@@ -245,10 +251,14 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.source = openmc.Source(space=openmc.stats.Point(center))
         settings.export_to_xml()
 
-        # this clears the enviromental varible just to be sure that current system settings are not being used
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
         os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
-        just_in_time_library_generator(libraries=['TENDL-2019'], materials=my_mat, set_OPENMC_CROSS_SECTIONS=True)
+        just_in_time_library_generator(
+            libraries=['TENDL-2019'],
+            materials=my_mat,
+            set_OPENMC_CROSS_SECTIONS=True)
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()
@@ -284,10 +294,14 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.source = openmc.Source(space=openmc.stats.Point(center))
         settings.export_to_xml()
 
-        # this clears the enviromental varible just to be sure that current system settings are not being used
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
         os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
-        just_in_time_library_generator(libraries=['TENDL-2019'], materials=[my_mat], set_OPENMC_CROSS_SECTIONS=True)
+        just_in_time_library_generator(
+            libraries=['TENDL-2019'],
+            materials=[my_mat],
+            set_OPENMC_CROSS_SECTIONS=True)
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()
@@ -328,10 +342,16 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.source = openmc.Source(space=openmc.stats.Point(center))
         settings.export_to_xml()
 
-        # this clears the enviromental varible just to be sure that current system settings are not being used
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
         os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
-        just_in_time_library_generator(libraries=['TENDL-2019'], materials=[my_mat1, my_mat2], set_OPENMC_CROSS_SECTIONS=True)
+        just_in_time_library_generator(
+            libraries=['TENDL-2019'],
+            materials=[
+                my_mat1,
+                my_mat2],
+            set_OPENMC_CROSS_SECTIONS=True)
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()

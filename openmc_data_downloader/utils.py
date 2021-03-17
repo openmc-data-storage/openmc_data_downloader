@@ -6,17 +6,17 @@ from pathlib import Path
 from typing import List, Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
-from numpy.lib.function_base import iterable
-# from openmc.data.data import isotopes
 
 import pandas as pd
+from numpy.lib.function_base import iterable
 
-from openmc_data_downloader import NATURAL_ABUNDANCE, LIB_OPTIONS, xs_info
+from openmc_data_downloader import LIB_OPTIONS, NATURAL_ABUNDANCE, xs_info
+
 
 _BLOCK_SIZE = 16384
 
 
-def set_enviromental_varible(cross_section_xml_path):
+def set_enviromental_varible(cross_section_xml_path: Union[Path, str]) -> None:
 
     if not isinstance(cross_section_xml_path, Path):
         cross_section_xml_path = Path(cross_section_xml_path)
@@ -60,7 +60,8 @@ def just_in_time_library_generator(
         isotopes_from_elements = expand_elements_to_isotopes(elements)
         isotopes = list(set(isotopes + isotopes_from_elements))
 
-    isotopes_from_material_xml = expand_materials_xml_to_isotopes(materials_xml)
+    isotopes_from_material_xml = expand_materials_xml_to_isotopes(
+        materials_xml)
     isotopes = list(set(isotopes + isotopes_from_material_xml))
 
     isotopes_from_materials = expand_materials_to_isotopes(materials)
@@ -136,7 +137,7 @@ def download_single_file(
     return local_path
 
 
-def download_data_frame_of_isotopes(dataframe, destination):
+def download_data_frame_of_isotopes(dataframe, destination: Union[str, Path]):
 
     if len(dataframe) == 0:
         print('Error. No isotopes matching the required inputs were found. '
@@ -185,7 +186,9 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
     return absolute_path
 
 
-def identify_isotopes_to_download(libraries: List[str], isotopes: List[str] = []):
+def identify_isotopes_to_download(
+        libraries: List[str],
+        isotopes: List[str] = []):
 
     priority_dict = {}
 
@@ -193,13 +196,17 @@ def identify_isotopes_to_download(libraries: List[str], isotopes: List[str] = []
         libraries = [libraries]
 
     if libraries == []:
-        raise ValueError('At least one library must be selected, options are', LIB_OPTIONS)
+        raise ValueError(
+            'At least one library must be selected, options are',
+            LIB_OPTIONS)
 
     for counter, entry in enumerate(libraries):
         if entry not in LIB_OPTIONS:
-            raise ValueError('The library must be one of the following', LIB_OPTIONS)
+            raise ValueError(
+                'The library must be one of the following',
+                LIB_OPTIONS)
 
-        priority_dict[entry] = counter+1
+        priority_dict[entry] = counter + 1
 
     print('Searching libraries with the following priority', priority_dict)
 
@@ -210,13 +217,17 @@ def identify_isotopes_to_download(libraries: List[str], isotopes: List[str] = []
     xs_info_df = pd.DataFrame.from_dict(xs_info)
 
     is_library = xs_info_df['library'].isin(libraries)
-    print('Isotopes found matching library requirements', is_library.values.sum())
+    print(
+        'Isotopes found matching library requirements',
+        is_library.values.sum())
 
     if isotopes == []:
         xs_info_df = xs_info_df[is_library]
     else:
         is_isotope = xs_info_df['isotope'].isin(isotopes)
-        print('Isotopes found matching isotope requirements', is_isotope.values.sum())
+        print(
+            'Isotopes found matching isotope requirements',
+            is_isotope.values.sum())
 
         xs_info_df = xs_info_df[(is_isotope) & (is_library)]
 
@@ -230,7 +241,10 @@ def identify_isotopes_to_download(libraries: List[str], isotopes: List[str] = []
     return xs_info_df
 
 
-def expand_elements_to_isotopes(elements):
+def expand_elements_to_isotopes(elements: Union[str, List[str]]):
+
+    if isinstance(elements, str):
+        return NATURAL_ABUNDANCE[elements]
 
     isotopes = []
     for element in elements:
@@ -238,7 +252,8 @@ def expand_elements_to_isotopes(elements):
     return isotopes
 
 
-def expand_materials_xml_to_isotopes(materials_xml: Union[List[str],str] = 'materials.xml'):
+def expand_materials_xml_to_isotopes(
+        materials_xml: Union[List[str], str] = 'materials.xml'):
 
     isotopes = []
 
@@ -250,7 +265,7 @@ def expand_materials_xml_to_isotopes(materials_xml: Union[List[str],str] = 'mate
 
     for material_xml in materials_xml:
         tree = ET.parse(material_xml)
-        root = tree.getroot()   
+        root = tree.getroot()
 
         for elem in root:
             for subelem in elem:
