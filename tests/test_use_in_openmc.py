@@ -56,7 +56,10 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert Path('my_custom_nuclear_data_dir/TENDL-2019_Pu239.h5').is_file()
         assert Path('my_custom_nuclear_data_dir/TENDL-2019_Pu240.h5').is_file()
         assert Path('my_custom_nuclear_data_dir/TENDL-2019_As75.h5').is_file()
+
+        assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
+
         assert len(list(Path('my_custom_nuclear_data_dir').glob('*.h5'))) == 3
 
     def test_photon_simulation_with_single_mat(self):
@@ -98,7 +101,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         just_in_time_library_generator(
             libraries=['FENDL-3.1d'],
             materials=my_mat,
-            particles='photon',
+            particles=['photon', 'neutron'],  # TODO find out why neutrons are needed here
             set_OPENMC_CROSS_SECTIONS=True
         )
 
@@ -106,7 +109,10 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         openmc.run()
 
         assert Path('FENDL-3.1d_Fe.h5').is_file()
+        
+        assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
+
         assert len(list(Path('.').glob('*.h5'))) == 3  # summary and statepoint
 
     def test_photon_neutron_simulation_with_single_mat(self):
@@ -154,8 +160,9 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert Path('FENDL-3.1d_Fe58.h5').is_file()
         assert Path('FENDL-3.1d_Fe.h5').is_file()
 
+        assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
-        assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
+        assert len(list(Path('.').glob('*.h5'))) == 7  # summary and statepoint
 
     def test_simulation_with_single_mat(self):
 
@@ -198,6 +205,8 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert Path('TENDL-2019_Pu239.h5').is_file()
         assert Path('TENDL-2019_Pu240.h5').is_file()
         assert Path('TENDL-2019_As75.h5').is_file()
+
+        assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
 
@@ -242,8 +251,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert Path('TENDL-2019_Pu239.h5').is_file()
         assert Path('TENDL-2019_Pu240.h5').is_file()
         assert Path('TENDL-2019_As75.h5').is_file()
-        assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
+        
+        assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
+        
+        assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
 
     def test_simulation_with_multi_mat_list(self):
 
@@ -292,5 +304,8 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert Path('TENDL-2019_Pu239.h5').is_file()
         assert Path('TENDL-2019_Pu240.h5').is_file()
         assert Path('TENDL-2019_As75.h5').is_file()
+
+        assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
+
         assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
