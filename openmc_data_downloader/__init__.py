@@ -1,6 +1,7 @@
 
 from .cross_sections_directory import (NATURAL_ABUNDANCE,
                                        LIB_OPTIONS,
+                                       PARTICLE_OPTIONS,
                                        xs_info)
 
 from .utils import (create_cross_sections_xml, just_in_time_library_generator,
