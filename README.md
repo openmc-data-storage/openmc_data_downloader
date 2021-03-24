@@ -104,10 +104,16 @@ openmc_data_downloader -l TENDL-2019 -m materials.xml
 openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -i Li6 Li7 Be9
 ```
 
-### Downloading an isotopes from ENDF/B 7.1 NNDC and setting the OPENMC_CROSS_SECTION enviromental varible to 
+### Downloading the photon only cross section for an element ENDF/B 7.1 NNDC
 ```bash
-openmc_data_downloader -l TENDL-2019 ENDFB-7.1-NNDC -i Li6 Li7 Be9
+openmc_data_downloader -l ENDFB-7.1-NNDC -e Li -p photon 
 ```
+
+### Downloading the neutron and photon cross section for an element ENDF/B 7.1 NNDC
+```bash
+openmc_data_downloader -l ENDFB-7.1-NNDC -e Li -p neutron photon
+```
+
 
 ## Usage - within a Python enviroment
 
@@ -166,7 +172,7 @@ odd.just_in_time_library_generator(
 )
 ```
 
-### Downloading some isotopes and elements from the TENDL 2019 library
+### Downloading photon and neutron cross sections for isotopes and elements from the TENDL 2019 library
 ```python
 import openmc
 import openmc_data_downloader as odd
@@ -174,6 +180,7 @@ import openmc_data_downloader as odd
 odd.just_in_time_library_generator(
     libraries='TENDL-2019',
     elements=['Li', 'Be'],
+    particles = ['photon', 'neutrons'],
     isotopes=['Fe56', 'U235'],
 )
 ```

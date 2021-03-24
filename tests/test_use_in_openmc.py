@@ -15,8 +15,8 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
     def test_simulation_with_destination(self):
 
-        os .system('rm *.h5')
-        os .system('rm my_custom_nuclear_data_dir/*.h5')
+        os.system('rm *.h5')
+        os.system('rm my_custom_nuclear_data_dir/*.h5')
 
         # Define material
         my_mat = openmc.openmc.Material()
@@ -64,7 +64,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
     def test_photon_simulation_with_single_mat(self):
 
-        os .system('rm *.h5')
+        os.system('rm *.h5')
 
         # Define material
         my_mat = openmc.openmc.Material()
@@ -166,7 +166,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
     def test_simulation_with_single_mat(self):
 
-        os .system('rm *.h5')
+        os.system('rm *.h5')
 
         # Define material
         my_mat = openmc.openmc.Material()
@@ -212,7 +212,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
     def test_simulation_with_single_mat_list(self):
 
-        os .system('rm *.h5')
+        os.system('rm *.h5')
 
         # Define material
         my_mat = openmc.openmc.Material()
@@ -259,7 +259,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
     def test_simulation_with_multi_mat_list(self):
 
-        os .system('rm *.h5')
+        os.system('rm *.h5')
 
         # Define material
         my_mat1 = openmc.openmc.Material()
