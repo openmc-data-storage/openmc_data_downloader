@@ -304,15 +304,16 @@ endfb_71_nndc_photon_isotopes = [
 for element in endfb_71_nndc_photon_isotopes:
     for isotope in NATURAL_ABUNDANCE[element]:
         entry = {}
-        entry['isotope'] = isotope  # perhaps there is a better way of doing this
+        # perhaps there is a better way of doing this
+        entry['isotope'] = isotope
         entry['particle'] = 'photon'
         entry['library'] = 'ENDFB-7.1-NNDC'
         entry['remote_file'] = element + '.h5'
-        entry['url'] = endfb_71_nndc_base_url + 'photon/' + entry['remote_file']
+        entry['url'] = endfb_71_nndc_base_url + \
+            'photon/' + entry['remote_file']
         entry['element'] = element
         entry['local_file'] = entry['library'] + '_' + entry['remote_file']
         endfb_71_nndc_xs_info.append(entry)
-
 
 
 fendl_31d_neutron_isotopes = [
@@ -371,7 +372,8 @@ fendl_31d_photon_isotopes = [
 for element in fendl_31d_photon_isotopes:
     for isotope in NATURAL_ABUNDANCE[element]:
         entry = {}
-        entry['isotope'] = isotope  # perhaps there is a better way of doing this
+        # perhaps there is a better way of doing this
+        entry['isotope'] = isotope
         entry['particle'] = 'photon'
         entry['library'] = 'FENDL-3.1d'
         entry['remote_file'] = element + '.h5'

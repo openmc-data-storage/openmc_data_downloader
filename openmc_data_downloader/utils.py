@@ -231,7 +231,6 @@ def identify_isotopes_to_download(
                 'The library must be one of the following',
                 PARTICLE_OPTIONS)
 
-
     print('Searching libraries with the following priority', priority_dict)
 
     # Tried to removed this dict to dataframe conversion out of the function
@@ -242,11 +241,11 @@ def identify_isotopes_to_download(
 
     is_library = xs_info_df['library'].isin(libraries)
     print('Isotopes found matching library requirements',
-        is_library.values.sum())
+          is_library.values.sum())
 
     is_particle = xs_info_df['particle'].isin(particles)
     print('Isotopes found matching particle requirements',
-        is_particle.values.sum())
+          is_particle.values.sum())
 
     if isotopes == []:
         xs_info_df = xs_info_df[(is_library) & (is_particle)]
@@ -262,7 +261,8 @@ def identify_isotopes_to_download(
 
     xs_info_df = xs_info_df.sort_values(by=['priority'])
 
-    xs_info_df = xs_info_df.drop_duplicates(subset=['isotope', 'particle'], keep='first')
+    xs_info_df = xs_info_df.drop_duplicates(
+        subset=['isotope', 'particle'], keep='first')
 
     # end url is unique so this avoids downloading duplicates of the same file
     xs_info_df = xs_info_df.drop_duplicates(subset=['url'], keep='first')
