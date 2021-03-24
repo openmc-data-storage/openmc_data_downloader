@@ -1,5 +1,5 @@
 
-name: CI - Main
+name: CI tests
 on:
   pull_request:
     branches:
