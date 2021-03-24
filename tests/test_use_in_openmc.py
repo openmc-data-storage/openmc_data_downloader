@@ -114,7 +114,8 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
 
-        assert len(list(Path('.').glob('*.h5'))) == 7  # normally 3 if just photons used
+        # normally 3 if just photons used
+        assert len(list(Path('.').glob('*.h5'))) == 7
 
     def test_photon_neutron_simulation_with_single_mat(self):
 
