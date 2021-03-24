@@ -33,7 +33,8 @@ NATURAL_ABUNDANCE = {
     'Ni': ['Ni58', 'Ni60', 'Ni61', 'Ni62', 'Ni64'],
     'Cu': ['Cu63', 'Cu65'],
     'Zn': ['Zn64', 'Zn66', 'Zn67', 'Zn68', 'Zn70'],
-    'Ga': ['Ga69', 'Ga71', 'Ge70', 'Ge72', 'Ge73', 'Ge74', 'Ge76'],
+    'Ga': ['Ga69', 'Ga71'],
+    'Ge': ['Ge70', 'Ge72', 'Ge73', 'Ge74', 'Ge76'],
     'As': ['As75'],
     'Se': ['Se74', 'Se76', 'Se77', 'Se78', 'Se80', 'Se82'],
     'Br': ['Br79', 'Br81'],
@@ -43,14 +44,17 @@ NATURAL_ABUNDANCE = {
     'Y': ['Y89'],
     'Zr': ['Zr90', 'Zr91', 'Zr92', 'Zr94', 'Zr96'],
     'Nb': ['Nb93'],
-    'Mo': ['Mo92', 'Mo94', 'Mo95', 'Mo96', 'Mo97', 'Mo98', 'Mo100', 'Ru96'],
-    'Ru': ['Ru98', 'Ru99', 'Ru100', 'Ru101', 'Ru102', 'Ru104', 'Rh103'],
+    'Mo': ['Mo92', 'Mo94', 'Mo95', 'Mo96', 'Mo97', 'Mo98', 'Mo100'],
+    'Ru': ['Ru96', 'Ru98', 'Ru99', 'Ru100', 'Ru101', 'Ru102', 'Ru104'],
+    'Rh': ['Rh103'],
     'Pd': ['Pd102', 'Pd104', 'Pd105', 'Pd106', 'Pd108', 'Pd110'],
     'Ag': ['Ag107', 'Ag109'],
     'Cd': ['Cd106', 'Cd108', 'Cd110', 'Cd111', 'Cd112', 'Cd113', 'Cd114', 'Cd116'],
     'In': ['In113', 'In115'],
-    'Sn': ['Sn112', 'Sn114', 'Sn115', 'Sn116', 'Sn117', 'Sn118', 'Sn119', 'Sn120', 'Sn122', 'Sn124', 'Sb121', 'Sb123'],
-    'Te': ['Te120', 'Te122', 'Te123', 'Te124', 'Te125', 'Te126', 'Te128', 'Te130', 'I127'],
+    'Sn': ['Sn112', 'Sn114', 'Sn115', 'Sn116', 'Sn117', 'Sn118', 'Sn119', 'Sn120', 'Sn122', 'Sn124'],
+    'Sb': ['Sb121', 'Sb123'],
+    'Te': ['Te120', 'Te122', 'Te123', 'Te124', 'Te125', 'Te126', 'Te128', 'Te130'],
+    'I': ['I127'],
     'Xe': ['Xe124', 'Xe126', 'Xe128', 'Xe129', 'Xe130', 'Xe131', 'Xe132', 'Xe134', 'Xe136'],
     'Cs': ['Cs133'],
     'Ba': ['Ba130', 'Ba132', 'Ba134', 'Ba135', 'Ba136', 'Ba137', 'Ba138'],
@@ -66,7 +70,8 @@ NATURAL_ABUNDANCE = {
     'Ho': ['Ho165'],
     'Er': ['Er162', 'Er164', 'Er166', 'Er167', 'Er168', 'Er170'],
     'Tm': ['Tm169'],
-    'Yb': ['Yb168', 'Yb170', 'Yb171', 'Yb172', 'Yb173', 'Yb174', 'Yb176', 'Lu175', 'Lu176'],
+    'Yb': ['Yb168', 'Yb170', 'Yb171', 'Yb172', 'Yb173', 'Yb174', 'Yb176'],
+    'Lu': ['Lu175', 'Lu176'],
     'Hf': ['Hf174', 'Hf176', 'Hf177', 'Hf178', 'Hf179', 'Hf180'],
     'Ta': ['Ta180', 'Ta181'],
     'W': ['W180', 'W182', 'W183', 'W184', 'W186'],
@@ -82,10 +87,26 @@ NATURAL_ABUNDANCE = {
     'Th': ['Th230', 'Th232'],
     'Pa': ['Pa231'],
     'U': ['U234', 'U235', 'U238'],
+    'Ac': [],  # no stable isotopes
+    'Am': [],  # no stable isotopes
+    'At': [],  # no stable isotopes
+    'Bk': [],  # no stable isotopes
+    'Cf': [],  # no stable isotopes
+    'Cm': [],  # no stable isotopes
+    'Es': [],  # no stable isotopes
+    'Fm': [],  # no stable isotopes
+    'Fr': [],  # no stable isotopes
+    'Np': [],  # no stable isotopes
+    'Pm': [],  # no stable isotopes
+    'Po': [],  # no stable isotopes
+    'Pu': [],  # no stable isotopes
+    'Ra': [],  # no stable isotopes
+    'Rn': [],  # no stable isotopes
+    'Tc': [],  # no stable isotopes
 }
 
 
-tendl_2019_isotopes = [
+tendl_2019_neutron_isotopes = [
     'Ac225', 'Ac226', 'Ac227', 'Ag106_m1', 'Ag107', 'Ag108', 'Ag109', 'Ag110',
     'Ag110_m1', 'Ag111', 'Ag112', 'Ag113', 'Ag114', 'Ag115', 'Ag116', 'Ag117',
     'Ag118_m1', 'Al26', 'Al26_m1', 'Al27', 'Am240', 'Am241', 'Am242',
@@ -107,17 +128,14 @@ tendl_2019_isotopes = [
     'Cu65', 'Cu66', 'Cu67', 'Dy154', 'Dy155', 'Dy156', 'Dy157', 'Dy158',
     'Dy159', 'Dy160', 'Dy161', 'Dy162', 'Dy163', 'Dy164', 'Dy165', 'Er162',
     'Er163', 'Er164', 'Er165', 'Er166', 'Er167', 'Er168', 'Er169', 'Er170',
-    'Er171', 'Er172', 'Es251', 'Es252', 'Es253',
-    'Es254', 'Es254_m1', 'Es255', 'Eu151', 'Eu152',
-    'Eu152_m1', 'Eu153', 'Eu154', 'Eu155', 'Eu156', 'Eu157',
-    'F19', 'Fe54', 'Fe55', 'Fe56', 'Fe57', 'Fe58', 'Fe59',
-    'Fe60', 'Fm255', 'Ga67', 'Ga69', 'Ga70', 'Ga71',
-    'Gd148', 'Gd149', 'Gd150', 'Gd151', 'Gd152', 'Gd153',
-    'Gd154', 'Gd155', 'Gd156', 'Gd157', 'Gd158', 'Gd159',
-    'Gd160', 'Gd161', 'Ge70', 'Ge71', 'Ge72', 'Ge73',
-    'Ge74', 'Ge75', 'Ge76', 'H1', 'H2', 'H3', 'He3',
-    'He4', 'Hf174', 'Hf175', 'Hf176', 'Hf177', 'Hf178',
-    'Hf179', 'Hf180', 'Hf181', 'Hf182', 'Hg196', 'Hg197',
+    'Er171', 'Er172', 'Es251', 'Es252', 'Es253', 'Es254', 'Es254_m1', 'Es255',
+    'Eu151', 'Eu152', 'Eu152_m1', 'Eu153', 'Eu154', 'Eu155', 'Eu156', 'Eu157',
+    'F19', 'Fe54', 'Fe55', 'Fe56', 'Fe57', 'Fe58', 'Fe59', 'Fe60', 'Fm255',
+    'Ga67', 'Ga69', 'Ga70', 'Ga71', 'Gd148', 'Gd149', 'Gd150', 'Gd151',
+    'Gd152', 'Gd153', 'Gd154', 'Gd155', 'Gd156', 'Gd157', 'Gd158', 'Gd159',
+    'Gd160', 'Gd161', 'Ge70', 'Ge71', 'Ge72', 'Ge73', 'Ge74', 'Ge75', 'Ge76',
+    'H1', 'H2', 'H3', 'He3', 'He4', 'Hf174', 'Hf175', 'Hf176', 'Hf177',
+    'Hf178', 'Hf179', 'Hf180', 'Hf181', 'Hf182', 'Hg196', 'Hg197',
     'Hg197_m1', 'Hg198', 'Hg199', 'Hg200', 'Hg201', 'Hg202',
     'Hg203', 'Hg204', 'Ho163', 'Ho165', 'Ho166_m1', 'I126',
     'I127', 'I128', 'I129', 'I130', 'I131', 'I132',
@@ -189,9 +207,10 @@ tendl_2019_isotopes = [
 tendl_2019_base_url = 'https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/'
 
 tendl_2019_xs_info = []
-for isotope in tendl_2019_isotopes:
+for isotope in tendl_2019_neutron_isotopes:
     entry = {}
     entry['isotope'] = isotope
+    entry['particle'] = 'neutron'
     entry['library'] = 'TENDL-2019'
     entry['remote_file'] = entry['isotope'] + '.h5'
     entry['url'] = tendl_2019_base_url + entry['remote_file']
@@ -201,7 +220,7 @@ for isotope in tendl_2019_isotopes:
     # could add size of file in mb as well
 
 
-endfb_71_nndc_isotopes = [
+endfb_71_nndc_neutron_isotopes = [
     'Ac225', 'Ac226', 'Ac227', 'Ag107', 'Ag109', 'Ag110_m1', 'Ag111', 'Al27',
     'Am240', 'Am241', 'Am242', 'Am242_m1', 'Am243', 'Am244', 'Am244_m1',
     'Ar36', 'Ar38', 'Ar40', 'As74', 'As75', 'Au197', 'B10', 'B11', 'Ba130',
@@ -255,22 +274,49 @@ endfb_71_nndc_isotopes = [
     'Zn68', 'Zn70', 'Zr90', 'Zr91', 'Zr92', 'Zr93', 'Zr94', 'Zr95', 'Zr96'
 ]
 
-endfb_71_nndc_base_url = 'https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/'
+endfb_71_nndc_base_url = 'https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/'
 
 endfb_71_nndc_xs_info = []
-for isotope in endfb_71_nndc_isotopes:
+for isotope in endfb_71_nndc_neutron_isotopes:
     entry = {}
     entry['isotope'] = isotope
+    entry['particle'] = 'neutron'
     entry['library'] = 'ENDFB-7.1-NNDC'
     entry['remote_file'] = entry['isotope'] + '.h5'
-    entry['url'] = endfb_71_nndc_base_url + entry['remote_file']
+    entry['url'] = endfb_71_nndc_base_url + 'neutron/' + entry['remote_file']
     entry['element'] = re.split(r'(\d+)', entry['isotope'])[0]
     entry['local_file'] = entry['library'] + '_' + entry['remote_file']
     endfb_71_nndc_xs_info.append(entry)
     # could add size of file in mb as well
 
+endfb_71_nndc_photon_isotopes = [
+    'Ac', 'Ag', 'Al', 'Am', 'Ar', 'As', 'At', 'Au', 'B', 'Ba', 'Be', 'Bi',
+    'Bk', 'Br', 'C', 'Ca', 'Cd', 'Ce', 'Cf', 'Cl', 'Cm', 'Co', 'Cr', 'Cs',
+    'Cu', 'Dy', 'Er', 'Es', 'Eu', 'F', 'Fe', 'Fm', 'Fr', 'Ga', 'Gd', 'Ge',
+    'H', 'He', 'Hf', 'Hg', 'Ho', 'I', 'In', 'Ir', 'K', 'Kr', 'La', 'Li', 'Lu',
+    'Mg', 'Mn', 'Mo', 'N', 'Na', 'Nb', 'Nd', 'Ne', 'Ni', 'Np', 'O', 'Os', 'P',
+    'Pa', 'Pb', 'Pd', 'Pm', 'Po', 'Pr', 'Pt', 'Pu', 'Ra', 'Rb', 'Re', 'Rh',
+    'Rn', 'Ru', 'S', 'Sb', 'Sc', 'Se', 'Si', 'Sm', 'Sn', 'Sr', 'Ta', 'Tb',
+    'Tc', 'Te', 'Th', 'Ti', 'Tl', 'Tm', 'U', 'V', 'W', 'Xe', 'Y', 'Yb', 'Zn',
+    'Zr'
+]
 
-fendl_31d_isotopes = [
+for element in endfb_71_nndc_photon_isotopes:
+    for isotope in NATURAL_ABUNDANCE[element]:
+        entry = {}
+        # perhaps there is a better way of doing this
+        entry['isotope'] = isotope
+        entry['particle'] = 'photon'
+        entry['library'] = 'ENDFB-7.1-NNDC'
+        entry['remote_file'] = element + '.h5'
+        entry['url'] = endfb_71_nndc_base_url + \
+            'photon/' + entry['remote_file']
+        entry['element'] = element
+        entry['local_file'] = entry['library'] + '_' + entry['remote_file']
+        endfb_71_nndc_xs_info.append(entry)
+
+
+fendl_31d_neutron_isotopes = [
     'Ag107', 'Ag109', 'Al27', 'Ar36', 'Ar38', 'Ar40', 'Au197', 'B10', 'B11',
     'Ba130', 'Ba132', 'Ba134', 'Ba135', 'Ba136', 'Ba137', 'Ba138', 'Be9',
     'Bi209', 'Br79', 'Br81', 'C12', 'C13', 'Ca40', 'Ca42', 'Ca43', 'Ca44',
@@ -300,19 +346,42 @@ fendl_31d_isotopes = [
     'Zr91', 'Zr92', 'Zr94', 'Zr96',
 ]
 
-fendl_31d_base_url = 'https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/'
+fendl_31d_base_url = 'https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/'
 
 fendl_31d_xs_info = []
-for isotope in fendl_31d_isotopes:
+for isotope in fendl_31d_neutron_isotopes:
     entry = {}
     entry['isotope'] = isotope
+    entry['particle'] = 'neutron'
     entry['library'] = 'FENDL-3.1d'
     entry['remote_file'] = entry['isotope'] + '.h5'
-    entry['url'] = fendl_31d_base_url + entry['remote_file']
+    entry['url'] = fendl_31d_base_url + 'neutron/' + entry['remote_file']
     entry['element'] = re.split(r'(\d+)', entry['isotope'])[0]
     entry['local_file'] = entry['library'] + '_' + entry['remote_file']
     fendl_31d_xs_info.append(entry)
     # could add size of file in mb as well
+
+fendl_31d_photon_isotopes = [
+    'Ag', 'Al', 'Ar', 'Au', 'B', 'Ba', 'Be', 'Bi', 'Br', 'C', 'Ca', 'Cd', 'Ce',
+    'Cl', 'Co', 'Cr', 'Cs', 'Cu', 'Er', 'F', 'Fe', 'Ga', 'Gd', 'Ge', 'H', 'He',
+    'Hf', 'I', 'K', 'La', 'Li', 'Lu', 'Mg', 'Mn', 'Mo', 'N', 'Na', 'Nb', 'Ni',
+    'O', 'P', 'Pb', 'Pt', 'Re', 'Rh', 'S', 'Sb', 'Sc', 'Si', 'Sn', 'Ta', 'Th',
+    'Ti', 'U', 'V', 'W', 'Y', 'Zn', 'Zr'
+]
+
+for element in fendl_31d_photon_isotopes:
+    for isotope in NATURAL_ABUNDANCE[element]:
+        entry = {}
+        # perhaps there is a better way of doing this
+        entry['isotope'] = isotope
+        entry['particle'] = 'photon'
+        entry['library'] = 'FENDL-3.1d'
+        entry['remote_file'] = element + '.h5'
+        entry['url'] = fendl_31d_base_url + 'photon/' + entry['remote_file']
+        entry['element'] = element
+        entry['local_file'] = entry['library'] + '_' + entry['remote_file']
+        fendl_31d_xs_info.append(entry)
+
 
 xs_info = endfb_71_nndc_xs_info + tendl_2019_xs_info + fendl_31d_xs_info
 
@@ -321,3 +390,4 @@ for entry in xs_info:
     all_libs.append(entry['library'])
 
 LIB_OPTIONS = list(set(all_libs))
+PARTICLE_OPTIONS = ['neutron', 'photon']
