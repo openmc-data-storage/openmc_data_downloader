@@ -74,7 +74,8 @@ class test_command_line_usage(unittest.TestCase):
         os.system('rm materials.xml')
         openmc.Materials([my_mat]).export_to_xml()
 
-        os.system('openmc_data_downloader -l FENDL-3.1d -m materials.xml -p neutron')
+        os.system(
+            'openmc_data_downloader -l FENDL-3.1d -m materials.xml -p neutron')
 
         assert expand_materials_xml_to_isotopes(['materials.xml']) == ['Nb93']
 

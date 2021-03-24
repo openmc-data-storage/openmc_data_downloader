@@ -100,7 +100,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
             materials=my_mat,
             particles='photon',
             set_OPENMC_CROSS_SECTIONS=True
-            )
+        )
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()
@@ -143,7 +143,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
             materials=my_mat,
             particles=['neutron', 'photon'],
             set_OPENMC_CROSS_SECTIONS=True
-            )
+        )
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()

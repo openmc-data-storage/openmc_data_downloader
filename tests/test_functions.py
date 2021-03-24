@@ -77,7 +77,7 @@ class test_isotope_finding(unittest.TestCase):
             'url': [
                 'https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Be9.h5',
                 'https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/Be.h5',
-                ],
+            ],
             'element': ['Be', 'Be'],
             'local_file': ['FENDL-3.1d_Be9.h5', 'FENDL-3.1d_Be.h5'],
             'priority': [1, 1]
@@ -88,7 +88,8 @@ class test_isotope_finding(unittest.TestCase):
         assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
         assert filtered_df.values[1].tolist() == answer_df.values[1].tolist()
 
-    def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes(self):
+    def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes(
+            self):
 
         filtered_df = identify_isotopes_to_download(
             libraries=['FENDL-3.1d'],
@@ -104,7 +105,7 @@ class test_isotope_finding(unittest.TestCase):
                 'https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Fe56.h5',
                 'https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Fe57.h5',
                 'https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/Fe.h5',
-                ],
+            ],
             'element': ['Fe', 'Fe', 'Fe'],
             'local_file': ['FENDL-3.1d_Fe56.h5', 'FENDL-3.1d_Fe57.h5', 'FENDL-3.1d_Fe.h5'],
             'priority': [1, 1, 1]
