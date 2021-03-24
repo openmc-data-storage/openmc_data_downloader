@@ -78,6 +78,8 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.particles = 10
         settings.batches = 2
         settings.inactive = 0
+        settings.run_mode = 'fixed source'
+        settings.photon_transport = True
 
         source = openmc.Source()
         source.space = openmc.stats.Point((0, 0, 0))
@@ -129,6 +131,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.photon_transport = True
         center = (0., 0., 0.)
         settings.source = openmc.Source(space=openmc.stats.Point(center))
+        settings.run_mode = 'fixed source'
         settings.export_to_xml()
 
         # this clears the enviromental varible just to be sure that current
@@ -230,6 +233,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         just_in_time_library_generator(
             libraries=['TENDL-2019'],
             materials=[my_mat],
+            particles='neutron',
             set_OPENMC_CROSS_SECTIONS=True)
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
