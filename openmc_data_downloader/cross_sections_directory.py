@@ -107,11 +107,10 @@ tendl_2019_isotopes = [
     'Cu65', 'Cu66', 'Cu67', 'Dy154', 'Dy155', 'Dy156', 'Dy157', 'Dy158',
     'Dy159', 'Dy160', 'Dy161', 'Dy162', 'Dy163', 'Dy164', 'Dy165', 'Er162',
     'Er163', 'Er164', 'Er165', 'Er166', 'Er167', 'Er168', 'Er169', 'Er170',
-    'Er171', 'Er172', 'Es251', 'Es252', 'Es253',
-    'Es254', 'Es254_m1', 'Es255', 'Eu151', 'Eu152',
-    'Eu152_m1', 'Eu153', 'Eu154', 'Eu155', 'Eu156', 'Eu157',
-    'F19', 'Fe54', 'Fe55', 'Fe56', 'Fe57', 'Fe58', 'Fe59',
-    'Fe60', 'Fm255', 'Ga67', 'Ga69', 'Ga70', 'Ga71',
+    'Er171', 'Er172', 'Es251', 'Es252', 'Es253', 'Es254', 'Es254_m1', 'Es255',
+    'Eu151', 'Eu152', 'Eu152_m1', 'Eu153', 'Eu154', 'Eu155', 'Eu156', 'Eu157',
+    'F19', 'Fe54', 'Fe55', 'Fe56', 'Fe57', 'Fe58', 'Fe59', 'Fe60', 'Fm255',
+    'Ga67', 'Ga69', 'Ga70', 'Ga71',
     'Gd148', 'Gd149', 'Gd150', 'Gd151', 'Gd152', 'Gd153',
     'Gd154', 'Gd155', 'Gd156', 'Gd157', 'Gd158', 'Gd159',
     'Gd160', 'Gd161', 'Ge70', 'Ge71', 'Ge72', 'Ge73',
@@ -191,6 +190,7 @@ tendl_2019_base_url = 'https://github.com/openmc-data-storage/TENDL-2019/raw/mai
 tendl_2019_xs_info = []
 for isotope in tendl_2019_isotopes:
     entry = {}
+    entry['particle'] = 'neutron'
     entry['isotope'] = isotope
     entry['library'] = 'TENDL-2019'
     entry['remote_file'] = entry['isotope'] + '.h5'

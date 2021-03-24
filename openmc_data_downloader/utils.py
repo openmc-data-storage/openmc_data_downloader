@@ -56,6 +56,7 @@ def just_in_time_library_generator(
     set_OPENMC_CROSS_SECTIONS: bool = True,
 ) -> str:
 
+    # expands elements, materials xml into list of isotopes
     if len(elements) > 0:
         isotopes_from_elements = expand_elements_to_isotopes(elements)
         isotopes = list(set(isotopes + isotopes_from_elements))
@@ -67,6 +68,7 @@ def just_in_time_library_generator(
     isotopes_from_materials = expand_materials_to_isotopes(materials)
     isotopes = list(set(isotopes + isotopes_from_materials))
 
+    # filters the large dataframe of all isotopes into just the ones you want
     dataframe = identify_isotopes_to_download(libraries, isotopes)
 
     download_data_frame_of_isotopes(dataframe, destination)
