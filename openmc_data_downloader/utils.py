@@ -3,14 +3,14 @@ import math
 import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import List, Union
+from typing import List, Union, Optional
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
 import pandas as pd
 from numpy.lib.function_base import iterable
 
-from openmc_data_downloader import LIB_OPTIONS, NATURAL_ABUNDANCE, xs_info
+from openmc_data_downloader import LIB_OPTIONS, PARTICLE_OPTIONS, NATURAL_ABUNDANCE, xs_info
 
 
 _BLOCK_SIZE = 16384
@@ -53,6 +53,7 @@ def just_in_time_library_generator(
     destination: Union[str, Path] = None,
     materials_xml: List[Union[str, Path]] = [],
     materials: list = [],
+    particles: Optional[List[str]] = ['neutron', 'photon'],
     set_OPENMC_CROSS_SECTIONS: bool = True,
 ) -> str:
 
@@ -69,7 +70,11 @@ def just_in_time_library_generator(
     isotopes = list(set(isotopes + isotopes_from_materials))
 
     # filters the large dataframe of all isotopes into just the ones you want
-    dataframe = identify_isotopes_to_download(libraries, isotopes)
+    dataframe = identify_isotopes_to_download(
+        libraries=libraries,
+        particles=particles,
+        isotopes=isotopes,
+    )
 
     download_data_frame_of_isotopes(dataframe, destination)
 
@@ -190,17 +195,27 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
 
 def identify_isotopes_to_download(
         libraries: List[str],
-        isotopes: List[str] = []):
+        particles: List[str] = [],
+        isotopes: Optional[List[str]] = [],
+):
 
     priority_dict = {}
 
     if isinstance(libraries, str):
         libraries = [libraries]
 
+    if isinstance(particles, str):
+        particles = [particles]
+
     if libraries == []:
         raise ValueError(
             'At least one library must be selected, options are',
             LIB_OPTIONS)
+
+    if particles == []:
+        raise ValueError(
+            'At least one particle type must be selected, options are',
+            PARTICLE_OPTIONS)
 
     for counter, entry in enumerate(libraries):
         if entry not in LIB_OPTIONS:
@@ -209,6 +224,13 @@ def identify_isotopes_to_download(
                 LIB_OPTIONS)
 
         priority_dict[entry] = counter + 1
+
+    for counter, entry in enumerate(particles):
+        if entry not in PARTICLE_OPTIONS:
+            raise ValueError(
+                'The library must be one of the following',
+                PARTICLE_OPTIONS)
+
 
     print('Searching libraries with the following priority', priority_dict)
 
@@ -219,25 +241,32 @@ def identify_isotopes_to_download(
     xs_info_df = pd.DataFrame.from_dict(xs_info)
 
     is_library = xs_info_df['library'].isin(libraries)
-    print(
-        'Isotopes found matching library requirements',
+    print('Isotopes found matching library requirements',
         is_library.values.sum())
 
+    is_particle = xs_info_df['particle'].isin(particles)
+    print('Isotopes found matching particle requirements',
+        is_particle.values.sum())
+
     if isotopes == []:
-        xs_info_df = xs_info_df[is_library]
+        xs_info_df = xs_info_df[(is_library) & (is_particle)]
     else:
         is_isotope = xs_info_df['isotope'].isin(isotopes)
         print(
             'Isotopes found matching isotope requirements',
             is_isotope.values.sum())
 
-        xs_info_df = xs_info_df[(is_isotope) & (is_library)]
+        xs_info_df = xs_info_df[(is_isotope) & (is_library) & (is_particle)]
 
     xs_info_df['priority'] = xs_info_df['library'].map(priority_dict)
 
     xs_info_df = xs_info_df.sort_values(by=['priority'])
 
-    xs_info_df = xs_info_df.drop_duplicates(['isotope'], keep='first')
+    xs_info_df = xs_info_df.drop_duplicates(subset=['isotope', 'particle'], keep='first')
+
+    # end url is unique so this avoids downloading duplicates of the same file
+    xs_info_df = xs_info_df.drop_duplicates(subset=['url'], keep='first')
+
     print('Isotopes found matching all requirements', len(xs_info_df))
 
     return xs_info_df
