@@ -85,7 +85,7 @@ NATURAL_ABUNDANCE = {
 }
 
 
-tendl_2019_isotopes = [
+tendl_2019_neutron_isotopes = [
     'Ac225', 'Ac226', 'Ac227', 'Ag106_m1', 'Ag107', 'Ag108', 'Ag109', 'Ag110',
     'Ag110_m1', 'Ag111', 'Ag112', 'Ag113', 'Ag114', 'Ag115', 'Ag116', 'Ag117',
     'Ag118_m1', 'Al26', 'Al26_m1', 'Al27', 'Am240', 'Am241', 'Am242',
@@ -110,13 +110,11 @@ tendl_2019_isotopes = [
     'Er171', 'Er172', 'Es251', 'Es252', 'Es253', 'Es254', 'Es254_m1', 'Es255',
     'Eu151', 'Eu152', 'Eu152_m1', 'Eu153', 'Eu154', 'Eu155', 'Eu156', 'Eu157',
     'F19', 'Fe54', 'Fe55', 'Fe56', 'Fe57', 'Fe58', 'Fe59', 'Fe60', 'Fm255',
-    'Ga67', 'Ga69', 'Ga70', 'Ga71',
-    'Gd148', 'Gd149', 'Gd150', 'Gd151', 'Gd152', 'Gd153',
-    'Gd154', 'Gd155', 'Gd156', 'Gd157', 'Gd158', 'Gd159',
-    'Gd160', 'Gd161', 'Ge70', 'Ge71', 'Ge72', 'Ge73',
-    'Ge74', 'Ge75', 'Ge76', 'H1', 'H2', 'H3', 'He3',
-    'He4', 'Hf174', 'Hf175', 'Hf176', 'Hf177', 'Hf178',
-    'Hf179', 'Hf180', 'Hf181', 'Hf182', 'Hg196', 'Hg197',
+    'Ga67', 'Ga69', 'Ga70', 'Ga71', 'Gd148', 'Gd149', 'Gd150', 'Gd151',
+    'Gd152', 'Gd153', 'Gd154', 'Gd155', 'Gd156', 'Gd157', 'Gd158', 'Gd159',
+    'Gd160', 'Gd161', 'Ge70', 'Ge71', 'Ge72', 'Ge73', 'Ge74', 'Ge75', 'Ge76',
+    'H1', 'H2', 'H3', 'He3', 'He4', 'Hf174', 'Hf175', 'Hf176', 'Hf177',
+    'Hf178', 'Hf179', 'Hf180', 'Hf181', 'Hf182', 'Hg196', 'Hg197',
     'Hg197_m1', 'Hg198', 'Hg199', 'Hg200', 'Hg201', 'Hg202',
     'Hg203', 'Hg204', 'Ho163', 'Ho165', 'Ho166_m1', 'I126',
     'I127', 'I128', 'I129', 'I130', 'I131', 'I132',
@@ -188,10 +186,10 @@ tendl_2019_isotopes = [
 tendl_2019_base_url = 'https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/'
 
 tendl_2019_xs_info = []
-for isotope in tendl_2019_isotopes:
+for isotope in tendl_2019_neutron_isotopes:
     entry = {}
-    entry['particle'] = 'neutron'
     entry['isotope'] = isotope
+    entry['particle'] = 'neutron'
     entry['library'] = 'TENDL-2019'
     entry['remote_file'] = entry['isotope'] + '.h5'
     entry['url'] = tendl_2019_base_url + entry['remote_file']
@@ -201,7 +199,7 @@ for isotope in tendl_2019_isotopes:
     # could add size of file in mb as well
 
 
-endfb_71_nndc_isotopes = [
+endfb_71_nndc_neutron_isotopes = [
     'Ac225', 'Ac226', 'Ac227', 'Ag107', 'Ag109', 'Ag110_m1', 'Ag111', 'Al27',
     'Am240', 'Am241', 'Am242', 'Am242_m1', 'Am243', 'Am244', 'Am244_m1',
     'Ar36', 'Ar38', 'Ar40', 'As74', 'As75', 'Au197', 'B10', 'B11', 'Ba130',
@@ -258,9 +256,10 @@ endfb_71_nndc_isotopes = [
 endfb_71_nndc_base_url = 'https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/'
 
 endfb_71_nndc_xs_info = []
-for isotope in endfb_71_nndc_isotopes:
+for isotope in endfb_71_nndc_neutron_isotopes:
     entry = {}
     entry['isotope'] = isotope
+    entry['particle'] = 'neutron'
     entry['library'] = 'ENDFB-7.1-NNDC'
     entry['remote_file'] = entry['isotope'] + '.h5'
     entry['url'] = endfb_71_nndc_base_url + entry['remote_file']
@@ -270,7 +269,7 @@ for isotope in endfb_71_nndc_isotopes:
     # could add size of file in mb as well
 
 
-fendl_31d_isotopes = [
+fendl_31d_neutron_isotopes = [
     'Ag107', 'Ag109', 'Al27', 'Ar36', 'Ar38', 'Ar40', 'Au197', 'B10', 'B11',
     'Ba130', 'Ba132', 'Ba134', 'Ba135', 'Ba136', 'Ba137', 'Ba138', 'Be9',
     'Bi209', 'Br79', 'Br81', 'C12', 'C13', 'Ca40', 'Ca42', 'Ca43', 'Ca44',
@@ -303,9 +302,10 @@ fendl_31d_isotopes = [
 fendl_31d_base_url = 'https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/'
 
 fendl_31d_xs_info = []
-for isotope in fendl_31d_isotopes:
+for isotope in fendl_31d_neutron_isotopes:
     entry = {}
     entry['isotope'] = isotope
+    entry['particle'] = 'neutron'
     entry['library'] = 'FENDL-3.1d'
     entry['remote_file'] = entry['isotope'] + '.h5'
     entry['url'] = fendl_31d_base_url + entry['remote_file']
