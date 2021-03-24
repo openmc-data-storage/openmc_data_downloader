@@ -177,6 +177,38 @@ class test_command_line_usage(unittest.TestCase):
         assert Path('TENDL-2019_Pr141.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 1
 
+    def test_photon_download_of_isotope_nndc(self):
+        """Tests downloading with NNDC photon data and checks it exists"""
+
+        os.system('rm *.h5')
+
+        os.system('openmc_data_downloader -l ENDFB-7.1-NNDC -i He4 -p photon')
+
+        assert Path('ENDFB-7.1-NNDC_He.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 1
+
+    def test_photon_download_of_isotope_fendl(self):
+        """Tests downloading with FENDL photon data and checks it exists"""
+
+        os.system('rm *.h5')
+
+        os.system('openmc_data_downloader -l FENDL-3.1d -i He4 -p photon')
+
+        assert Path('FENDL-3.1d_He.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 1
+
+    def test_neutron_and_photon_download_of_isotope_fendl(self):
+        """Tests downloading with FENDL photon data and checks it exists"""
+
+        os.system('rm *.h5')
+
+        os.system('openmc_data_downloader -l FENDL-3.1d -i He4 -p photon neutron')
+
+        assert Path('FENDL-3.1d_He.h5').is_file()
+        assert Path('FENDL-3.1d_He3.h5').is_file()
+        assert Path('FENDL-3.1d_He4.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 3
+
 
 class test_usage_with_openmc_python_api(unittest.TestCase):
 
