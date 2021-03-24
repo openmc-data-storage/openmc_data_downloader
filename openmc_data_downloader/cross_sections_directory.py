@@ -87,6 +87,22 @@ NATURAL_ABUNDANCE = {
     'Th': ['Th230', 'Th232'],
     'Pa': ['Pa231'],
     'U': ['U234', 'U235', 'U238'],
+    'Ac': [],  # no stable isotopes
+    'Am': [],  # no stable isotopes
+    'At': [],  # no stable isotopes
+    'Bk': [],  # no stable isotopes
+    'Cf': [],  # no stable isotopes
+    'Cm': [],  # no stable isotopes
+    'Es': [],  # no stable isotopes
+    'Fm': [],  # no stable isotopes
+    'Fr': [],  # no stable isotopes
+    'Np': [],  # no stable isotopes
+    'Pm': [],  # no stable isotopes
+    'Po': [],  # no stable isotopes
+    'Pu': [],  # no stable isotopes
+    'Ra': [],  # no stable isotopes
+    'Rn': [],  # no stable isotopes
+    'Tc': [],  # no stable isotopes
 }
 
 
@@ -258,7 +274,7 @@ endfb_71_nndc_neutron_isotopes = [
     'Zn68', 'Zn70', 'Zr90', 'Zr91', 'Zr92', 'Zr93', 'Zr94', 'Zr95', 'Zr96'
 ]
 
-endfb_71_nndc_base_url = 'https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/'
+endfb_71_nndc_base_url = 'https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/'
 
 endfb_71_nndc_xs_info = []
 for isotope in endfb_71_nndc_neutron_isotopes:
@@ -267,11 +283,36 @@ for isotope in endfb_71_nndc_neutron_isotopes:
     entry['particle'] = 'neutron'
     entry['library'] = 'ENDFB-7.1-NNDC'
     entry['remote_file'] = entry['isotope'] + '.h5'
-    entry['url'] = endfb_71_nndc_base_url + entry['remote_file']
+    entry['url'] = endfb_71_nndc_base_url + 'neutron/' + entry['remote_file']
     entry['element'] = re.split(r'(\d+)', entry['isotope'])[0]
     entry['local_file'] = entry['library'] + '_' + entry['remote_file']
     endfb_71_nndc_xs_info.append(entry)
     # could add size of file in mb as well
+
+endfb_71_nndc_photon_isotopes = [
+    'Ac', 'Ag', 'Al', 'Am', 'Ar', 'As', 'At', 'Au', 'B', 'Ba', 'Be', 'Bi',
+    'Bk', 'Br', 'C', 'Ca', 'Cd', 'Ce', 'Cf', 'Cl', 'Cm', 'Co', 'Cr', 'Cs',
+    'Cu', 'Dy', 'Er', 'Es', 'Eu', 'F', 'Fe', 'Fm', 'Fr', 'Ga', 'Gd', 'Ge',
+    'H', 'He', 'Hf', 'Hg', 'Ho', 'I', 'In', 'Ir', 'K', 'Kr', 'La', 'Li', 'Lu',
+    'Mg', 'Mn', 'Mo', 'N', 'Na', 'Nb', 'Nd', 'Ne', 'Ni', 'Np', 'O', 'Os', 'P',
+    'Pa', 'Pb', 'Pd', 'Pm', 'Po', 'Pr', 'Pt', 'Pu', 'Ra', 'Rb', 'Re', 'Rh',
+    'Rn', 'Ru', 'S', 'Sb', 'Sc', 'Se', 'Si', 'Sm', 'Sn', 'Sr', 'Ta', 'Tb',
+    'Tc', 'Te', 'Th', 'Ti', 'Tl', 'Tm', 'U', 'V', 'W', 'Xe', 'Y', 'Yb', 'Zn',
+    'Zr'
+]
+
+for element in endfb_71_nndc_photon_isotopes:
+    for isotope in NATURAL_ABUNDANCE[element]:
+        entry = {}
+        entry['isotope'] = isotope  # perhaps there is a better way of doing this
+        entry['particle'] = 'photon'
+        entry['library'] = 'ENDFB-7.1-NNDC'
+        entry['remote_file'] = element + '.h5'
+        entry['url'] = endfb_71_nndc_base_url + 'photon/' + entry['remote_file']
+        entry['element'] = element
+        entry['local_file'] = entry['library'] + '_' + entry['remote_file']
+        endfb_71_nndc_xs_info.append(entry)
+
 
 
 fendl_31d_neutron_isotopes = [
