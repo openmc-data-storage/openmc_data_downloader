@@ -101,7 +101,8 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         just_in_time_library_generator(
             libraries=['FENDL-3.1d'],
             materials=my_mat,
-            particles=['photon', 'neutron'],  # TODO find out why neutrons are needed here
+            # TODO find out why neutrons are needed here
+            particles=['photon', 'neutron'],
             set_OPENMC_CROSS_SECTIONS=True
         )
 
@@ -109,7 +110,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         openmc.run()
 
         assert Path('FENDL-3.1d_Fe.h5').is_file()
-        
+
         assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
 
@@ -251,10 +252,10 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert Path('TENDL-2019_Pu239.h5').is_file()
         assert Path('TENDL-2019_Pu240.h5').is_file()
         assert Path('TENDL-2019_As75.h5').is_file()
-        
+
         assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
-        
+
         assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
 
     def test_simulation_with_multi_mat_list(self):
