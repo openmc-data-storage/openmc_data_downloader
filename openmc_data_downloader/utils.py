@@ -10,11 +10,14 @@ from urllib.request import urlopen
 import pandas as pd
 from numpy.lib.function_base import iterable
 
-from openmc_data_downloader import LIB_OPTIONS, PARTICLE_OPTIONS, NATURAL_ABUNDANCE, xs_info
-
+from openmc_data_downloader import (
+    LIB_OPTIONS,
+    PARTICLE_OPTIONS,
+    NATURAL_ABUNDANCE,
+    xs_info
+)
 
 _BLOCK_SIZE = 16384
-
 
 def set_enviromental_varible(cross_section_xml_path: Union[Path, str]) -> None:
 
