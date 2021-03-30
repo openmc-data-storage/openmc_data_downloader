@@ -19,3 +19,7 @@ jobs:
       run: |
         docker build -t openmc_data_downloader .
         docker run --rm openmc_data_downloader  /bin/bash -c "bash run_tests.sh && curl -s https://codecov.io/bash | bash"
+    - name: Upload code coverage
+      run: |
+        apt-get install curl
+        bash <(curl -s https://codecov.io/bash)
