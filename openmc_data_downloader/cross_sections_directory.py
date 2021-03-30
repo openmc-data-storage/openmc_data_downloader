@@ -383,8 +383,7 @@ for element in fendl_31d_photon_isotopes:
         fendl_31d_xs_info.append(entry)
 
 
-
-endfb_71_wmp_neutron_isotopes=[
+endfb_71_wmp_neutron_isotopes = [
     '001001', '001002', '001003', '002003', '002004', '003006', '003007',
     '004007', '004009', '005010', '005011', '006000', '007014', '007015',
     '008016', '008017', '009019', '011022', '011023', '012024', '012025',
@@ -407,7 +406,7 @@ endfb_71_wmp_neutron_isotopes=[
     '042100', '043099', '044096', '044098', '044099', '044100', '044101',
     '044102', '044103', '044104', '044105', '044106', '045103', '045105',
     '046102', '046104', '046105', '046106', '046107', '046108', '046110',
-    '047107', '047109','047110m1', '047111', '048106', '048108', '048110',
+    '047107', '047109', '047110m1', '047111', '048106', '048108', '048110',
     '048111', '048112', '048113', '048114', '048115m1', '048116', '049113',
     '049115', '050112', '050113', '050114', '050115', '050116', '050117',
     '050118', '050119', '050120', '050122', '050123', '050124', '050125',
@@ -480,6 +479,7 @@ def zaid_to_isotope(zaid: str) -> str:
     symbol = ATOMIC_SYMBOL[int(z)]
     return symbol + str(int(a))
 
+
 endf_71_wmp_base_url = 'https://github.com/openmc-data-storage/ENDF-B-VII.1-WMP/raw/main/WMP_Library/'
 
 endfb_71_wmp_xs_info = []
@@ -492,11 +492,13 @@ for zaid in endfb_71_wmp_neutron_isotopes:
         entry['remote_file'] = zaid + '.h5'
         entry['url'] = endf_71_wmp_base_url + entry['remote_file']
         entry['element'] = re.split(r'(\d+)', entry['isotope'])[0]
-        entry['local_file'] = entry['library'] + '_' + zaid_to_isotope(zaid) + '.h5'
+        entry['local_file'] = entry['library'] + \
+            '_' + zaid_to_isotope(zaid) + '.h5'
         endfb_71_wmp_xs_info.append(entry)
         # could add size of file in mb as well
 
-xs_info = endfb_71_nndc_xs_info + tendl_2019_xs_info + fendl_31d_xs_info + endfb_71_wmp_xs_info
+xs_info = endfb_71_nndc_xs_info + tendl_2019_xs_info + \
+    fendl_31d_xs_info + endfb_71_wmp_xs_info
 
 all_libs = []
 for entry in xs_info:

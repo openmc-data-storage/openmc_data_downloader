@@ -19,6 +19,7 @@ from openmc_data_downloader import (
 
 _BLOCK_SIZE = 16384
 
+
 def set_enviromental_varible(cross_section_xml_path: Union[Path, str]) -> None:
 
     if not isinstance(cross_section_xml_path, Path):
