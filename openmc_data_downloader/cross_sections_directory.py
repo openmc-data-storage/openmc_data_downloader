@@ -480,7 +480,7 @@ def zaid_to_isotope(zaid: str) -> str:
     symbol = ATOMIC_SYMBOL[int(z)]
     return symbol + str(int(a))
 
-endf_71_wmp_base_url = 'https://github.com/openmc-data-storage/ENDF-B-VII.1-WMP/raw/main/WMP_Library/'
+endf_71_wmp_base_url = 'https://github.com/openmc-data-storage/ENDF-B-VII.1-WMP/raw/master/WMP_Library/'
 
 endfb_71_wmp_xs_info = []
 for zaid in endfb_71_wmp_neutron_isotopes:
@@ -496,6 +496,7 @@ for zaid in endfb_71_wmp_neutron_isotopes:
         endfb_71_wmp_xs_info.append(entry)
         # could add size of file in mb as well
 
+print(endfb_71_wmp_xs_info)
 xs_info = endfb_71_nndc_xs_info + tendl_2019_xs_info + fendl_31d_xs_info + endfb_71_wmp_xs_info
 
 all_libs = []
