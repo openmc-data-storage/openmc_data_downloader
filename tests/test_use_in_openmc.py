@@ -218,7 +218,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # Define material
         my_mat = openmc.openmc.Material()
-        my_mat.add_element('P', 1)
+        my_mat.add_nuclide('P31', 1)
         openmc.openmc.Materials([my_mat]).export_to_xml()
 
         # Create a sphere of my_mat
