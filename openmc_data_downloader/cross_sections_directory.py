@@ -479,6 +479,7 @@ def zaid_to_isotope(zaid: str) -> str:
     symbol = ATOMIC_SYMBOL[int(z)]
     return symbol + str(int(a))
 
+
 endf_71_wmp_base_url = 'https://github.com/openmc-data-storage/ENDF-B-VII.1-WMP/raw/master/WMP_Library/'
 
 endfb_71_wmp_xs_info = []
