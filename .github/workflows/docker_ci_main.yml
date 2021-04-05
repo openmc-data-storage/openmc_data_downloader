@@ -18,7 +18,7 @@ jobs:
     - name: Build and test with Docker
       run: |
         mkdir share
-        apt-get install -y curl
+        sudo apt-get install -y curl
         docker build -t openmc_data_downloader .
         docker run --rm -v "$PWD/share:/share" openmc_data_downloader 
         bash <(curl -s https://codecov.io/env) -f share/coverage.xml
