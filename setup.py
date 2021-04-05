@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="openmc_data_downloader",
-    version="0.2.0",
+    version="0.2.1",
     summary="Download cross section h5 files for use in OpenMC",
     author="Jonathan Shimwell",
     author_email="mail@jshimwell.com",
