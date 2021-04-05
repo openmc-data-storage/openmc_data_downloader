@@ -17,5 +17,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build and test with Docker
       run: |
+        mkdir share
+        sudo apt-get install -y curl
         docker build -t openmc_data_downloader .
-        docker run --rm openmc_data_downloader  /bin/bash -c "bash run_tests.sh && curl -s https://codecov.io/bash | bash"
+        docker run -v "$PWD/share:/share" openmc_data_downloader
+        curl -s https://codecov.io/bash | bash
