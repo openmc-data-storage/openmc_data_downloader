@@ -11,7 +11,7 @@ COPY README.md README.md
 
 RUN python setup.py develop
 
-CMD pytest tests -v --cov=openmc_data_downloader --cov-report term --cov-report xml ; curl -s https://codecov.io/bash | bash
+CMD pytest tests -v --cov=openmc_data_downloader --cov-report term --cov-report xml ; curl -s https://codecov.io/bash | bash -f ./coverage.xml 
 
 # bash <(curl -s https://codecov.io/env)
 
