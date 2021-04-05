@@ -2,6 +2,9 @@
 [![CI - Main](https://github.com/openmc-data-storage/openmc_data_downloader/actions/workflows/docker_ci_main.yml/badge.svg)](https://github.com/openmc-data-storage/openmc_data_downloader/actions/workflows/docker_ci_main.yml)
 [![Upload Python Package](https://github.com/openmc-data-storage/openmc_data_downloader/actions/workflows/python-publish.yml/badge.svg)](https://github.com/openmc-data-storage/openmc_data_downloader/actions/workflows/python-publish.yml)
 [![PyPI](https://img.shields.io/pypi/v/openmc_data_downloader?color=brightgreen&label=pypi&logo=grebrightgreenen&logoColor=green)](https://pypi.org/project/openmc_data_downloader/)
+[![codecov](https://codecov.io/gh/openmc-data-storage/openmc_data_downloader/branch/main/graph/badge.svg)](https://codecov.io/gh/openmc-data-storage/openmc_data_downloader)
+
+
 
 # OpenMC data downloader
 
