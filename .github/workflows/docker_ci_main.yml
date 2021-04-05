@@ -18,4 +18,4 @@ jobs:
     - name: Build and test with Docker
       run: |
         docker build -t openmc_data_downloader .
-        docker run --rm -e CI=true -e CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} openmc_data_downloader  /bin/bash -c "bash run_tests.sh && apt-get install curl && curl -s https://codecov.io/bash | bash"
+        docker run --rm -e CI=true -e CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} openmc_data_downloader  /bin/bash -c "bash run_tests.sh && apt-get install curl && bash <(curl -s https://codecov.io/env)"
