@@ -20,9 +20,11 @@ jobs:
         mkdir share
         sudo apt-get install -y curl
         docker build -t openmc_data_downloader .
-        docker run --rm -v "$PWD/share:/share" openmc_data_downloader 
+        docker run -v "$PWD/share:/share" openmc_data_downloader
+        ll share
         bash <(curl -s https://codecov.io/env) -f share/coverage.xml
-        
+        echo trying old curl method
+        curl -s https://codecov.io/bash | bash
 # -e CI=true
 # /bin/bash -c "bash run_tests.sh"
 
