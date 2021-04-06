@@ -219,11 +219,13 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         # Define material
         my_mat = openmc.openmc.Material()
         my_mat.add_nuclide('P31', 1)
+        my_mat.temperature = 400 # main_cell used instead
         openmc.openmc.Materials([my_mat]).export_to_xml()
 
         # Create a sphere of my_mat
         surf = openmc.Sphere(r=6.3849, boundary_type='vacuum')
         main_cell = openmc.Cell(fill=my_mat, region=-surf)
+        main_cell.temperature = 400
         openmc.Geometry([main_cell]).export_to_xml()
 
         # Define settings for the simulation
@@ -231,8 +233,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.particles = 10
         settings.batches = 2
         settings.inactive = 0
+        settings.photon_transport = False
         center = (0., 0., 0.)
         settings.source = openmc.Source(space=openmc.stats.Point(center))
+        settings.run_mode = 'fixed source'
+        settings.temperature = {'multipole': True}
         settings.export_to_xml()
 
         # this clears the enviromental varible just to be sure that current
@@ -240,7 +245,10 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
         just_in_time_library_generator(
-            libraries=['ENDFB-7.1-WMP'],
+            # 'ENDFB-7.1-NNDC' is needed as WMP simulations appear to require
+            # non WMP cross sections as well when simulating
+            # https://openmc.discourse.group/t/minimal-wmp-simulation-with-minimal-cross-section-xml/1100/7
+            libraries=['ENDFB-7.1-NNDC', 'ENDFB-7.1-WMP'],
             materials=my_mat,
             particles='neutron',
             set_OPENMC_CROSS_SECTIONS=True)
