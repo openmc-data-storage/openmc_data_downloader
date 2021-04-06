@@ -219,7 +219,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         # Define material
         my_mat = openmc.openmc.Material()
         my_mat.add_nuclide('P31', 1)
-        my_mat.temperature = 400 # main_cell used instead
+        my_mat.temperature = 400  # main_cell used instead
         openmc.openmc.Materials([my_mat]).export_to_xml()
 
         # Create a sphere of my_mat
