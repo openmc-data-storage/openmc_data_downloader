@@ -212,6 +212,56 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert Path('statepoint.2.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
 
+    def test_wmp_simulation_with_single_mat(self):
+
+        os.system('rm *.h5')
+
+        # Define material
+        my_mat = openmc.openmc.Material()
+        my_mat.add_nuclide('P31', 1)
+        my_mat.temperature = 400  # main_cell used instead
+        openmc.openmc.Materials([my_mat]).export_to_xml()
+
+        # Create a sphere of my_mat
+        surf = openmc.Sphere(r=6.3849, boundary_type='vacuum')
+        main_cell = openmc.Cell(fill=my_mat, region=-surf)
+        main_cell.temperature = 400
+        openmc.Geometry([main_cell]).export_to_xml()
+
+        # Define settings for the simulation
+        settings = openmc.Settings()
+        settings.particles = 10
+        settings.batches = 2
+        settings.inactive = 0
+        settings.photon_transport = False
+        center = (0., 0., 0.)
+        settings.source = openmc.Source(space=openmc.stats.Point(center))
+        settings.run_mode = 'fixed source'
+        settings.temperature = {'multipole': True}
+        settings.export_to_xml()
+
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
+        os.environ["OPENMC_CROSS_SECTIONS"] = ''
+
+        just_in_time_library_generator(
+            # 'ENDFB-7.1-NNDC' is needed as WMP simulations appear to require
+            # non WMP cross sections as well when simulating
+            # https://openmc.discourse.group/t/minimal-wmp-simulation-with-minimal-cross-section-xml/1100/7
+            libraries=['ENDFB-7.1-NNDC', 'ENDFB-7.1-WMP'],
+            materials=my_mat,
+            particles='neutron',
+            set_OPENMC_CROSS_SECTIONS=True)
+
+        os.system('echo $OPENMC_CROSS_SECTIONS')
+        openmc.run()
+
+        assert Path('ENDFB-7.1-WMP_P31.h5').is_file()
+
+        assert Path('summary.h5').is_file()
+        assert Path('statepoint.2.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 3
+
     def test_simulation_with_single_mat_list(self):
 
         os.system('rm *.h5')

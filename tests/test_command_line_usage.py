@@ -14,7 +14,14 @@ from openmc_data_downloader.utils import expand_elements_to_isotopes
 
 class test_command_line_usage(unittest.TestCase):
 
-    def test_single_isotope_download(self):
+    def test_single_isotope_download_endf_71_wmp(self):
+        os.system('rm *.h5')
+        os.system('openmc_data_downloader -l ENDFB-7.1-WMP -i H1')
+
+        assert Path('ENDFB-7.1-WMP_H1.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 1
+
+    def test_single_isotope_download_tendl_2019(self):
         os.system('rm *.h5')
         os.system('openmc_data_downloader -l TENDL-2019 -i H1')
 
