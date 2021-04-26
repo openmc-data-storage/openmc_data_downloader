@@ -204,3 +204,16 @@ class test_isotope_finding(unittest.TestCase):
             ValueError,
             incorrect_libraries_string
         )
+
+    def test_incorrect_expand_materials_to_isotopes_with_incorrect_args(self):
+        """Checks than an error is raised when incorrect values of materials
+        are passed"""
+
+        def incorrect_material_type():
+            expand_materials_to_isotopes(1)
+
+        def incorrect_materials_list_type():
+            expand_materials_to_isotopes([1, 2, 3])
+
+        self.assertRaises(ValueError, incorrect_material_type)
+        self.assertRaises(ValueError, incorrect_materials_list_type)
