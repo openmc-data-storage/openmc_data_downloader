@@ -42,13 +42,17 @@ def expand_materials_to_isotopes(materials: list):
               'expand_materials_to_isotopes can not be performed.')
         return None
 
-    if isinstance(materials, list):
-        # check each entry is a openmc.Material
+    if isinstance(materials, openmc.Materials):
+        iterable_of_materials = materials 
+    elif isinstance(materials, list):
+        for material in materials:
+            if not isinstance(material, openmc.Material):
+                raise ValueError(
+                    'When passing a list then each entry in the list must be '
+                    'an openmc.Material. Not a', type(material))
         iterable_of_materials = materials
     elif isinstance(materials, openmc.Material):
         iterable_of_materials = [materials]
-    elif isinstance(materials, openmc.Materials):
-        iterable_of_materials = materials 
     else:
         raise ValueError(
             'materials must be of type openmc.Materials, openmc,Material or a '
