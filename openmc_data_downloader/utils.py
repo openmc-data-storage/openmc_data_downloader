@@ -43,7 +43,7 @@ def expand_materials_to_isotopes(materials: list):
         return None
 
     if isinstance(materials, openmc.Materials):
-        iterable_of_materials = materials 
+        iterable_of_materials = materials
     elif isinstance(materials, list):
         for material in materials:
             if not isinstance(material, openmc.Material):
