@@ -9,9 +9,71 @@ from pathlib import Path
 
 import openmc
 from openmc_data_downloader import just_in_time_library_generator
+import openmc_data_downloader
 
 
 class test_usage_with_openmc_python_api(unittest.TestCase):
+
+    def test_materials_download(self):
+        """openmc.Materials are a container for openmc.Material objects. This
+        test checks that they are handeled correctly"""
+
+        os.system('rm *.h5')
+        os.system('rm my_custom_nuclear_data_with_materials/*.h5')
+
+        # Define material
+        my_mat_1 = openmc.Material()
+        my_mat_1.add_nuclide('Pu239', 3.7047e-2)
+
+        my_mat_2 = openmc.Material()
+        my_mat_2.add_nuclide('Pu240', 1.7512e-3)
+        my_mat_2.add_nuclide('As75', 1.3752e-3)
+        mats = openmc.Materials([my_mat_1, my_mat_2])
+        mats.export_to_xml()
+
+        # Create a sphere of my_mat
+        surf_1 = openmc.Sphere(r=1)
+        surf_2 = openmc.Sphere(r=2, boundary_type='vacuum')
+        cell_1 = openmc.Cell(fill=my_mat_1, region=-surf_1)
+        cell_2 = openmc.Cell(fill=my_mat_1, region=surf_1 and -surf_2)
+        openmc.Geometry([cell_1, cell_2]).export_to_xml()
+
+        # Define settings for the simulation
+        settings = openmc.Settings()
+        settings.particles = 5
+        settings.batches = 3
+        settings.inactive = 0
+        center = (0., 0., 0.)
+        settings.source = openmc.Source(space=openmc.stats.Point(center))
+        settings.export_to_xml()
+
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
+        del os.environ["OPENMC_CROSS_SECTIONS"]
+
+        just_in_time_library_generator(
+            destination='my_custom_nuclear_data_with_materials',
+            libraries=['TENDL-2019'],
+            materials=mats,
+            set_OPENMC_CROSS_SECTIONS=True
+        )
+
+        os.system('echo $OPENMC_CROSS_SECTIONS')
+        openmc.run()
+
+        assert Path(
+            'my_custom_nuclear_data_with_materials/TENDL-2019_Pu239.h5').is_file()
+        assert Path(
+            'my_custom_nuclear_data_with_materials/TENDL-2019_Pu240.h5').is_file()
+        assert Path(
+            'my_custom_nuclear_data_with_materials/TENDL-2019_As75.h5').is_file()
+
+        assert Path('summary.h5').is_file()
+        assert Path('statepoint.3.h5').is_file()
+
+        assert len(
+            list(
+                Path('my_custom_nuclear_data_with_materials').glob('*.h5'))) == 3
 
     def test_simulation_with_destination(self):
 
@@ -41,7 +103,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # this clears the enviromental varible just to be sure that current
         # system settings are not being used
-        os.environ["OPENMC_CROSS_SECTIONS"] = ''
+        del os.environ["OPENMC_CROSS_SECTIONS"]
 
         just_in_time_library_generator(
             destination='my_custom_nuclear_data_dir',
@@ -66,10 +128,14 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         os.system('rm *.h5')
 
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
+        del os.environ["OPENMC_CROSS_SECTIONS"]
+
         # Define material
-        my_mat = openmc.openmc.Material()
+        my_mat = openmc.Material()
         my_mat.add_element('Fe', 1)
-        openmc.openmc.Materials([my_mat]).export_to_xml()
+        openmc.Materials([my_mat]).export_to_xml()
 
         # Create a sphere of my_mat
         surf = openmc.Sphere(r=6.3849, boundary_type='vacuum')
@@ -94,10 +160,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.source = source
         settings.export_to_xml()
 
-        # this clears the enviromental varible just to be sure that current
-        # system settings are not being used
-        os.environ["OPENMC_CROSS_SECTIONS"] = ''
-
         just_in_time_library_generator(
             libraries=['FENDL-3.1d'],
             materials=my_mat,
@@ -121,6 +183,10 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         os.system('rm *.h5')
 
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
+        del os.environ["OPENMC_CROSS_SECTIONS"]
+
         # Define material
         my_mat = openmc.openmc.Material()
         my_mat.add_element('Fe', 1)
@@ -141,10 +207,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.source = openmc.Source(space=openmc.stats.Point(center))
         settings.run_mode = 'fixed source'
         settings.export_to_xml()
-
-        # this clears the enviromental varible just to be sure that current
-        # system settings are not being used
-        os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
         just_in_time_library_generator(
             libraries=['FENDL-3.1d'],
@@ -170,6 +232,10 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         os.system('rm *.h5')
 
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
+        del os.environ["OPENMC_CROSS_SECTIONS"]
+
         # Define material
         my_mat = openmc.openmc.Material()
         my_mat.add_nuclide('Pu239', 3.7047e-2)
@@ -191,10 +257,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.source = openmc.Source(space=openmc.stats.Point(center))
         settings.export_to_xml()
 
-        # this clears the enviromental varible just to be sure that current
-        # system settings are not being used
-        os.environ["OPENMC_CROSS_SECTIONS"] = ''
-
         just_in_time_library_generator(
             libraries=['TENDL-2019'],
             materials=my_mat,
@@ -215,6 +277,10 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
     def test_wmp_simulation_with_single_mat(self):
 
         os.system('rm *.h5')
+
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
+        del os.environ["OPENMC_CROSS_SECTIONS"]
 
         # Define material
         my_mat = openmc.openmc.Material()
@@ -240,10 +306,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         settings.temperature = {'multipole': True}
         settings.export_to_xml()
 
-        # this clears the enviromental varible just to be sure that current
-        # system settings are not being used
-        os.environ["OPENMC_CROSS_SECTIONS"] = ''
-
         just_in_time_library_generator(
             # 'ENDFB-7.1-NNDC' is needed as WMP simulations appear to require
             # non WMP cross sections as well when simulating
@@ -266,6 +328,10 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         os.system('rm *.h5')
 
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
+        del os.environ["OPENMC_CROSS_SECTIONS"]
+
         # Define material
         my_mat = openmc.openmc.Material()
         my_mat.add_nuclide('Pu239', 3.7047e-2)
@@ -286,10 +352,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         center = (0., 0., 0.)
         settings.source = openmc.Source(space=openmc.stats.Point(center))
         settings.export_to_xml()
-
-        # this clears the enviromental varible just to be sure that current
-        # system settings are not being used
-        os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
         just_in_time_library_generator(
             libraries=['TENDL-2019'],
@@ -312,6 +374,10 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
     def test_simulation_with_multi_mat_list(self):
 
         os.system('rm *.h5')
+
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
+        del os.environ["OPENMC_CROSS_SECTIONS"]
 
         # Define material
         my_mat1 = openmc.openmc.Material()
@@ -338,10 +404,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         center = (0., 0., 0.)
         settings.source = openmc.Source(space=openmc.stats.Point(center))
         settings.export_to_xml()
-
-        # this clears the enviromental varible just to be sure that current
-        # system settings are not being used
-        os.environ["OPENMC_CROSS_SECTIONS"] = ''
 
         just_in_time_library_generator(
             libraries=['TENDL-2019'],

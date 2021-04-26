@@ -1,5 +1,5 @@
 
-import math
+
 import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -35,13 +35,32 @@ def set_enviromental_varible(cross_section_xml_path: Union[Path, str]) -> None:
 
 
 def expand_materials_to_isotopes(materials: list):
+    try:
+        import openmc
+    except ImportError:
+        print('openmc python package was not imported, '
+              'expand_materials_to_isotopes can not be performed.')
+        return None
 
-    if not isinstance(materials, list):
-        materials = [materials]
-
-    if len(materials) > 0:
-        isotopes_from_materials = []
+    if isinstance(materials, openmc.Materials):
+        iterable_of_materials = materials
+    elif isinstance(materials, list):
         for material in materials:
+            if not isinstance(material, openmc.Material):
+                raise ValueError(
+                    'When passing a list then each entry in the list must be '
+                    'an openmc.Material. Not a', type(material))
+        iterable_of_materials = materials
+    elif isinstance(materials, openmc.Material):
+        iterable_of_materials = [materials]
+    else:
+        raise ValueError(
+            'materials must be of type openmc.Materials, openmc,Material or a '
+            'list or openmc.Material. Not ', type(materials))
+
+    if len(iterable_of_materials) > 0:
+        isotopes_from_materials = []
+        for material in iterable_of_materials:
             for nuc in material.nuclides:
                 isotopes_from_materials.append(nuc.name)
 
