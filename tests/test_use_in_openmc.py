@@ -9,6 +9,7 @@ from pathlib import Path
 
 import openmc
 from openmc_data_downloader import just_in_time_library_generator
+import openmc_data_downloader
 
 
 class test_usage_with_openmc_python_api(unittest.TestCase):
@@ -422,3 +423,18 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert Path('statepoint.2.h5').is_file()
 
         assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
+
+    def test_incorrect_expand_materials_to_isotopes_with_inccorect_args(self):
+        """Checks than an error is raised when incorrect values of materials
+        are passed"""
+
+        def incorrect_material_type():
+            openmc_data_downloader.expand_materials_to_isotopes(1)
+
+        self.assertRaises(incorrect_material_type)
+
+        def incorrect_materials_list_type():
+            openmc_data_downloader.expand_materials_to_isotopes([1, 2, 3])
+
+        self.assertRaises(incorrect_material_type, ValueError)
+        self.assertRaises(incorrect_materials_list_type, ValueError)
