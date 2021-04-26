@@ -169,9 +169,17 @@ mat2 = openmc.Material()
 mat2.add_element('H', 0.66)
 mat2.add_element('0', 0.33)
 
+# a list of openmc.Material objects can be used
 odd.just_in_time_library_generator(
     libraries='ENDFB-7.1-NNDC',
     materials=[mat1, mat2]
+)
+
+# alternatively an openmc.Materials() object can be used
+mats = openmc.Materials([mat1, mat2]) 
+odd.just_in_time_library_generator(
+    libraries='ENDFB-7.1-NNDC',
+    materials=mats
 )
 ```
 
