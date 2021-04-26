@@ -34,11 +34,12 @@ if __name__ == '__main__':
         help="The isotopes to download"
     )
     parser.add_argument(
-        '-s', '--sab',
+        '-s',
+        '--sab',
         nargs='*',
         default=[],
-        help="The SaB cross sections to download. Options include " + " ".join(SAB_OPTIONS)
-    )
+        help="The SaB cross sections to download. Options include " +
+        " ".join(SAB_OPTIONS))
     parser.add_argument(
         '-e', '--elements', nargs='*',
         default=[],

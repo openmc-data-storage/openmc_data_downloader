@@ -36,7 +36,6 @@ class test_isotope_finding(unittest.TestCase):
         assert list(filtered_df.keys()) == list(answer_df.keys())
         assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
 
-
     def test_identify_isotopes_to_download_finds_tendl_neutron(self):
 
         filtered_df = identify_isotopes_to_download(
