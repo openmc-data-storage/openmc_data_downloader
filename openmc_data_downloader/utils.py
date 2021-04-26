@@ -85,7 +85,8 @@ def just_in_time_library_generator(
         isotopes_from_elements = expand_elements_to_isotopes(elements)
         isotopes = list(set(isotopes + isotopes_from_elements))
 
-    isotopes_from_material_xml = expand_materials_xml_to_isotopes(materials_xml)
+    isotopes_from_material_xml = expand_materials_xml_to_isotopes(
+        materials_xml)
     isotopes = list(set(isotopes + isotopes_from_material_xml))
 
     isotopes_from_materials = expand_materials_to_isotopes(materials)

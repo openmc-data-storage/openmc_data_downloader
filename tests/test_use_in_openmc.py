@@ -60,15 +60,19 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         os.system('echo $OPENMC_CROSS_SECTIONS')
         openmc.run()
 
-        assert Path('my_custom_nuclear_data_with_materials/TENDL-2019_Pu239.h5').is_file()
-        assert Path('my_custom_nuclear_data_with_materials/TENDL-2019_Pu240.h5').is_file()
-        assert Path('my_custom_nuclear_data_with_materials/TENDL-2019_As75.h5').is_file()
+        assert Path(
+            'my_custom_nuclear_data_with_materials/TENDL-2019_Pu239.h5').is_file()
+        assert Path(
+            'my_custom_nuclear_data_with_materials/TENDL-2019_Pu240.h5').is_file()
+        assert Path(
+            'my_custom_nuclear_data_with_materials/TENDL-2019_As75.h5').is_file()
 
         assert Path('summary.h5').is_file()
         assert Path('statepoint.3.h5').is_file()
 
-        assert len(list(Path('my_custom_nuclear_data_with_materials').glob('*.h5'))) == 3
-     
+        assert len(
+            list(
+                Path('my_custom_nuclear_data_with_materials').glob('*.h5'))) == 3
 
     def test_simulation_with_destination(self):
 
