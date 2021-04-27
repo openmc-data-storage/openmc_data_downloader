@@ -134,7 +134,6 @@ class test_isotope_finding(unittest.TestCase):
         assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
         assert filtered_df.values[1].tolist() == answer_df.values[1].tolist()
 
-
     def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes(
             self):
 
