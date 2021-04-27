@@ -370,6 +370,10 @@ def identify_isotopes_to_download(
 
 def expand_elements_to_isotopes(elements: Union[str, List[str]]):
 
+    if elements == 'all' or elements == ['all']:
+        nested_list = list(NATURAL_ABUNDANCE.values())
+        return [item for sublist in nested_list for item in sublist]
+
     if isinstance(elements, str):
         return NATURAL_ABUNDANCE[elements]
 
