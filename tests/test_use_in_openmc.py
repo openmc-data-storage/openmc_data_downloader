@@ -9,7 +9,6 @@ from pathlib import Path
 
 import openmc
 from openmc_data_downloader import just_in_time_library_generator
-import openmc_data_downloader
 
 
 class test_usage_with_openmc_python_api(unittest.TestCase):
@@ -273,6 +272,50 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 5  # summary and statepoint
+
+    def test_simulation_with_sab(self):
+
+        os.system('rm *.h5')
+
+        # this clears the enviromental varible just to be sure that current
+        # system settings are not being used
+        del os.environ["OPENMC_CROSS_SECTIONS"]
+
+        # Define material
+        my_mat = openmc.Material()
+        my_mat.add_element('Be', 0.5)
+        my_mat.add_s_alpha_beta('Be_in_BeO')
+        openmc.openmc.Materials([my_mat]).export_to_xml()
+
+        # Create a sphere of my_mat
+        surf = openmc.Sphere(r=6.3849, boundary_type='vacuum')
+        main_cell = openmc.Cell(fill=my_mat, region=-surf)
+        openmc.Geometry([main_cell]).export_to_xml()
+
+        # Define settings for the simulation
+        settings = openmc.Settings()
+        settings.particles = 10
+        settings.batches = 2
+        settings.inactive = 0
+        center = (0., 0., 0.)
+        settings.source = openmc.Source(space=openmc.stats.Point(center))
+        settings.export_to_xml()
+
+        just_in_time_library_generator(
+            libraries=['ENDFB-7.1-NNDC'],
+            materials=my_mat,
+            particles='neutron',
+            set_OPENMC_CROSS_SECTIONS=True)
+
+        os.system('echo $OPENMC_CROSS_SECTIONS')
+        openmc.run()
+
+        assert Path('ENDFB-7.1-NNDC_Be9.h5').is_file()
+        assert Path('ENDFB-7.1-NNDC_Be_in_BeO.h5').is_file()
+
+        assert Path('summary.h5').is_file()
+        assert Path('statepoint.2.h5').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 4  # summary and statepoint
 
     def test_wmp_simulation_with_single_mat(self):
 

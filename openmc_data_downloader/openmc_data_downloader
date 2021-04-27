@@ -40,6 +40,7 @@ if __name__ == '__main__':
         default=[],
         help="The SaB cross sections to download. Options include " +
         " ".join(SAB_OPTIONS))
+
     parser.add_argument(
         '-e', '--elements', nargs='*',
         default=[],

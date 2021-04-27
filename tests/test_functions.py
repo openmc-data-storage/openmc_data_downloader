@@ -11,10 +11,26 @@ import pandas as pd
 from openmc_data_downloader import (expand_materials_to_isotopes,
                                     expand_materials_xml_to_isotopes,
                                     identify_isotopes_to_download,
-                                    identify_sab_to_download)
+                                    identify_sab_to_download,
+                                    expand_elements_to_isotopes,
+                                    expand_materials_xml_to_sab,
+                                    expand_materials_to_sabs,
+                                    )
 
 
 class test_isotope_finding(unittest.TestCase):
+
+    def test_expansion_of_elements_with_all_keyword(self):
+        all_stable_isotopes = expand_elements_to_isotopes('all')
+        assert len(all_stable_isotopes) == 290
+
+    def test_expansion_of_elements_with_single_element(self):
+        stable_isotopes = expand_elements_to_isotopes('Be')
+        assert stable_isotopes == ['Be9']
+
+    def test_expansion_of_elements_with_multiple_element(self):
+        stable_isotopes = expand_elements_to_isotopes(['Be', 'Li'])
+        assert stable_isotopes == ['Be9', 'Li6', 'Li7']
 
     def test_identify_sab_to_download_finds_tendl_neutron(self):
 
@@ -35,6 +51,15 @@ class test_isotope_finding(unittest.TestCase):
         assert len(filtered_df.values) == 1
         assert list(filtered_df.keys()) == list(answer_df.keys())
         assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
+
+    def test_identify_sab_to_download_finds_two(self):
+
+        filtered_df = identify_sab_to_download(
+            libraries=['ENDFB-7.1-NNDC'],
+            sab=['Be_in_BeO', 'H_in_H2O']
+        )
+
+        assert len(filtered_df.values) == 2
 
     def test_identify_isotopes_to_download_finds_tendl_neutron(self):
 
@@ -108,6 +133,7 @@ class test_isotope_finding(unittest.TestCase):
         assert list(filtered_df.keys()) == list(answer_df.keys())
         assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
         assert filtered_df.values[1].tolist() == answer_df.values[1].tolist()
+
 
     def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes(
             self):
@@ -201,6 +227,64 @@ class test_isotope_finding(unittest.TestCase):
         openmc.Materials([my_mat]).export_to_xml()
 
         assert expand_materials_xml_to_isotopes('materials.xml') == ['Al27']
+
+    def test_expand_material_xmls_with_two_isotopes(self):
+
+        my_mat = openmc.Material()
+        my_mat.add_element('Li', 0.5)
+        os.system('rm materials.xml')
+        openmc.Materials([my_mat]).export_to_xml()
+
+        assert expand_materials_xml_to_isotopes('materials.xml') == ['Li6', 'Li7']
+
+    def test_expand_material_xmls_with_sab(self):
+
+        my_mat = openmc.Material()
+        my_mat.add_element('Be', 0.5)
+        my_mat.add_s_alpha_beta('Be_in_BeO')
+        os.system('rm materials.xml')
+        openmc.Materials([my_mat]).export_to_xml()
+
+        # sab should not be in this list as this is just isotopes
+        assert expand_materials_xml_to_isotopes('materials.xml') == ['Be9']
+
+    def test_expand_material_xmls_for_sabs_with_sab(self):
+
+        my_mat = openmc.Material()
+        my_mat.add_element('Be', 0.5)
+        my_mat.add_s_alpha_beta('Be_in_BeO')
+        os.system('rm materials.xml')
+        openmc.Materials([my_mat]).export_to_xml()
+
+        assert expand_materials_xml_to_sab('materials.xml') == ['c_Be_in_BeO']
+
+    def test_expand_material_xmls_for_sabs_with_two_sab(self):
+
+        my_mat = openmc.Material()
+        my_mat.add_element('Be', 0.5)
+        my_mat.add_s_alpha_beta('Be_in_BeO')
+        my_mat.add_s_alpha_beta('H_in_H2O')
+        os.system('rm materials.xml')
+        openmc.Materials([my_mat]).export_to_xml()
+
+        assert expand_materials_xml_to_sab('materials.xml') == ['c_Be_in_BeO', 'c_H_in_H2O']
+
+    def test_expand_material_for_sabs_with_two_sab(self):
+
+        my_mat = openmc.Material()
+        my_mat.add_element('Be', 0.5)
+        my_mat.add_s_alpha_beta('Be_in_BeO')
+        my_mat.add_s_alpha_beta('H_in_H2O')
+
+        assert expand_materials_to_sabs(my_mat) == ['c_Be_in_BeO', 'c_H_in_H2O']
+
+    def test_expand_material_for_sabs_with_sab(self):
+
+        my_mat = openmc.Material()
+        my_mat.add_element('Be', 0.5)
+        my_mat.add_s_alpha_beta('H_in_H2O')
+
+        assert expand_materials_to_sabs(my_mat) == ['c_H_in_H2O']
 
     def test_library_values_single_entry_list(self):
 

@@ -70,6 +70,40 @@ def expand_materials_to_isotopes(materials: list):
 
     return []
 
+def expand_materials_to_sabs(materials: list):
+    try:
+        import openmc
+    except ImportError:
+        print('openmc python package was not imported, '
+              'expand_materials_to_isotopes can not be performed.')
+        return None
+
+    if isinstance(materials, openmc.Materials):
+        iterable_of_materials = materials
+    elif isinstance(materials, list):
+        for material in materials:
+            if not isinstance(material, openmc.Material):
+                raise ValueError(
+                    'When passing a list then each entry in the list must be '
+                    'an openmc.Material. Not a', type(material))
+        iterable_of_materials = materials
+    elif isinstance(materials, openmc.Material):
+        iterable_of_materials = [materials]
+    else:
+        raise ValueError(
+            'materials must be of type openmc.Materials, openmc,Material or a '
+            'list or openmc.Material. Not ', type(materials))
+
+    if len(iterable_of_materials) > 0:
+        sabs_from_materials = []
+        for material in iterable_of_materials:
+            for sab_tuple in material._sab:
+                sabs_from_materials.append(sab_tuple[0])
+
+        return sabs_from_materials
+
+    return []
+
 
 def just_in_time_library_generator(
     libraries: List[str] = [],
@@ -88,8 +122,7 @@ def just_in_time_library_generator(
         isotopes_from_elements = expand_elements_to_isotopes(elements)
         isotopes = list(set(isotopes + isotopes_from_elements))
 
-    isotopes_from_material_xml = expand_materials_xml_to_isotopes(
-        materials_xml)
+    isotopes_from_material_xml = expand_materials_xml_to_isotopes(materials_xml)
     isotopes = list(set(isotopes + isotopes_from_material_xml))
 
     isotopes_from_materials = expand_materials_to_isotopes(materials)
@@ -101,6 +134,12 @@ def just_in_time_library_generator(
         particles=particles,
         isotopes=isotopes,
     )
+
+    sab_from_material_xml = expand_materials_xml_to_sab(materials_xml)
+    sab = list(set(sab + sab_from_material_xml))
+
+    sabs_from_materials = expand_materials_to_sabs(materials)
+    sab = list(set(sab + sabs_from_materials))
 
     dataframe_sab = identify_sab_to_download(
         libraries=libraries,
@@ -400,6 +439,30 @@ def expand_materials_xml_to_isotopes(
 
         for elem in root:
             for subelem in elem:
-                if 'name' in subelem.attrib.keys():
-                    isotopes.append(subelem.attrib['name'])
+                if subelem.tag == 'nuclide':
+                    if 'name' in subelem.attrib.keys():
+                        isotopes.append(subelem.attrib['name'])
     return isotopes
+
+
+def expand_materials_xml_to_sab(
+        materials_xml: Union[List[str], str] = 'materials.xml'):
+
+    sabs = []
+
+    if isinstance(materials_xml, str):
+        materials_xml = [materials_xml]
+
+    if materials_xml == []:
+        return []
+
+    for material_xml in materials_xml:
+        tree = ET.parse(material_xml)
+        root = tree.getroot()
+
+        for elem in root:
+            for subelem in elem:
+                if subelem.tag == 'sab':
+                    if 'name' in subelem.attrib.keys():
+                        sabs.append(subelem.attrib['name'])
+    return sabs
