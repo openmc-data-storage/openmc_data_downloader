@@ -134,7 +134,6 @@ class test_isotope_finding(unittest.TestCase):
         assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
         assert filtered_df.values[1].tolist() == answer_df.values[1].tolist()
 
-
     def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes(
             self):
 
@@ -235,7 +234,8 @@ class test_isotope_finding(unittest.TestCase):
         os.system('rm materials.xml')
         openmc.Materials([my_mat]).export_to_xml()
 
-        assert expand_materials_xml_to_isotopes('materials.xml') == ['Li6', 'Li7']
+        assert expand_materials_xml_to_isotopes(
+            'materials.xml') == ['Li6', 'Li7']
 
     def test_expand_material_xmls_with_sab(self):
 
@@ -267,7 +267,8 @@ class test_isotope_finding(unittest.TestCase):
         os.system('rm materials.xml')
         openmc.Materials([my_mat]).export_to_xml()
 
-        assert expand_materials_xml_to_sab('materials.xml') == ['c_Be_in_BeO', 'c_H_in_H2O']
+        assert expand_materials_xml_to_sab('materials.xml') == [
+            'c_Be_in_BeO', 'c_H_in_H2O']
 
     def test_expand_material_for_sabs_with_two_sab(self):
 
@@ -276,7 +277,8 @@ class test_isotope_finding(unittest.TestCase):
         my_mat.add_s_alpha_beta('Be_in_BeO')
         my_mat.add_s_alpha_beta('H_in_H2O')
 
-        assert expand_materials_to_sabs(my_mat) == ['c_Be_in_BeO', 'c_H_in_H2O']
+        assert expand_materials_to_sabs(
+            my_mat) == ['c_Be_in_BeO', 'c_H_in_H2O']
 
     def test_expand_material_for_sabs_with_sab(self):
 
