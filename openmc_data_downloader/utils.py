@@ -305,6 +305,7 @@ def identify_sab_to_download(
     print('SaB found matching library requirements',
           is_library.values.sum())
 
+    print('sab names', sab)
     is_sab = sab_info_df['name'].isin(sab)
     print(
         'SaB found matching name requirements',

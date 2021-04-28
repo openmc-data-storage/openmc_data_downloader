@@ -308,10 +308,10 @@ for element in endfb_71_nndc_photon_isotopes:
 
 
 endfb_71_nndc_thermal = [
-    'Al27', 'Be', 'Be_in_BeO', 'C6H6', 'D_in_D2O', 'Fe56',
-    'Graphite', 'H_in_CH2', 'H_in_CH4_liquid', 'H_in_CH4_solid',
-    'H_in_H2O', 'H_in_ZrH', 'O_in_BeO', 'O_in_UO2', 'U_in_UO2',
-    'Zr_in_ZrH', 'ortho_D', 'ortho_H', 'para_D', 'para_H',
+    'c_Al27', 'c_Be', 'c_Be_in_BeO', 'c_C6H6', 'c_D_in_D2O', 'c_Fe56',
+    'c_Graphite', 'c_H_in_CH2', 'c_H_in_CH4_liquid', 'c_H_in_CH4_solid',
+    'c_H_in_H2O', 'c_H_in_ZrH', 'c_O_in_BeO', 'c_O_in_UO2', 'c_U_in_UO2',
+    'c_Zr_in_ZrH', 'c_ortho_D', 'c_ortho_H', 'c_para_D', 'c_para_H',
 ]
 
 
@@ -322,7 +322,7 @@ for name in endfb_71_nndc_thermal:
     entry['name'] = name
     entry['particle'] = 'thermal'
     entry['library'] = 'ENDFB-7.1-NNDC'
-    entry['remote_file'] = 'c_' + name + '.h5'
+    entry['remote_file'] = name + '.h5'
     entry['url'] = endfb_71_nndc_base_url + \
         'neutron/' + entry['remote_file']
     entry['local_file'] = entry['library'] + '_' + entry['remote_file']
@@ -515,14 +515,14 @@ for entry in xs_info:
 LIB_OPTIONS = list(set(all_libs))
 PARTICLE_OPTIONS = ['neutron', 'photon']
 SAB_OPTIONS = [
-    'Al27', 'Al_in_Sapphire', 'Be', 'BeO', 'Be_in_BeO', 'Be_in_Be2C', 'C6H6',
-    'C_in_SiC', 'Ca_in_CaH2', 'D_in_D2O', 'D_in_D2O_ice', 'Fe56', 'Graphite',
-    'Graphite_10p', 'Graphite_30p', 'H_in_CaH2', 'H_in_CH2', 'H_in_CH4_liquid',
-    'H_in_CH4_solid', 'H_in_CH4_solid_phase_II', 'H_in_H2O', 'H_in_H2O_solid',
-    'H_in_C5O2H8', 'H_in_Mesitylene', 'H_in_Toluene', 'H_in_YH2', 'H_in_ZrH',
-    'Mg24', 'O_in_Sapphire', 'O_in_BeO', 'O_in_D2O', 'O_in_H2O_ice',
-    'O_in_UO2', 'N_in_UN', 'ortho_D', 'ortho_H', 'Si28', 'Si_in_SiC',
-    'SiO2_alpha', 'SiO2_beta', 'para_D', 'para_H', 'U_in_UN', 'U_in_UO2',
-    'Y_in_YH2', 'Zr_in_ZrH',
+    'c_Al27', 'c_Al_in_Sapphire', 'c_Be', 'c_BeO', 'c_Be_in_BeO', 'c_Be_in_Be2C', 'c_C6H6',
+    'c_C_in_SiC', 'c_Ca_in_CaH2', 'c_D_in_D2O', 'c_D_in_D2O_ice', 'c_Fe56', 'c_Graphite',
+    'c_Graphite_10p', 'c_Graphite_30p', 'c_H_in_CaH2', 'c_H_in_CH2', 'c_H_in_CH4_liquid',
+    'c_H_in_CH4_solid', 'c_H_in_CH4_solid_phase_II', 'c_H_in_H2O', 'c_H_in_H2O_solid',
+    'c_H_in_C5O2H8', 'c_H_in_Mesitylene', 'c_H_in_Toluene', 'c_H_in_YH2', 'c_H_in_ZrH',
+    'c_Mg24', 'c_O_in_Sapphire', 'c_O_in_BeO', 'c_O_in_D2O', 'c_O_in_H2O_ice',
+    'c_O_in_UO2', 'c_N_in_UN', 'c_ortho_D', 'c_ortho_H', 'c_Si28', 'c_Si_in_SiC',
+    'c_SiO2_alpha', 'c_SiO2_beta', 'c_para_D', 'c_para_H', 'c_U_in_UN', 'c_U_in_UO2',
+    'c_Y_in_YH2', 'c_Zr_in_ZrH',
 ]
 ISOTOPE_OPTIONS = list(NATURAL_ABUNDANCE.keys())
