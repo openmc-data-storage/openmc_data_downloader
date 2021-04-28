@@ -363,10 +363,10 @@ class test_isotope_finding(unittest.TestCase):
 
     def test_emplty_isotopes(self):
         empty_df = identify_isotopes_to_download(
-                libraries=['TENDL-2019'],
-                isotopes=[],
-                particles=['neutron']
-            )
+            libraries=['TENDL-2019'],
+            isotopes=[],
+            particles=['neutron']
+        )
         assert len(empty_df) == 0
         assert isinstance(empty_df, type(pd.DataFrame()))
 
