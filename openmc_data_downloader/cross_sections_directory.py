@@ -1,6 +1,8 @@
 
 import re
 
+from numpy import nested_iters
+
 # from https://github.com/openmc-dev/openmc/blob/develop/openmc/data/data.py
 # remove when pip install openmc via PyPi is available
 NATURAL_ABUNDANCE = {
@@ -562,4 +564,5 @@ SAB_OPTIONS = [
     'c_Y_in_YH2',
     'c_Zr_in_ZrH',
 ]
-ISOTOPE_OPTIONS = list(NATURAL_ABUNDANCE.keys())
+nested_list = list(NATURAL_ABUNDANCE.values())
+ISOTOPE_OPTIONS = [item for sublist in nested_list for item in sublist]

@@ -293,6 +293,12 @@ def identify_sab_to_download(
                 'The library must be one of the following',
                 LIB_OPTIONS)
 
+    for counter, entry in enumerate(sab):
+        if entry not in SAB_OPTIONS:
+            raise ValueError(
+                'The sab argument must be one of the following',
+                SAB_OPTIONS)
+
         priority_dict[entry] = counter + 1
 
     print('Searching libraries with the following priority', priority_dict)
@@ -338,8 +344,7 @@ def identify_isotopes_to_download(
     if isotopes == []:
         return pd.DataFrame()
     elif isotopes == 'all' or isotopes == ['all']:
-        nested_list = list(NATURAL_ABUNDANCE.values())
-        isotopes = [item for sublist in nested_list for item in sublist]
+        isotopes = ISOTOPE_OPTIONS
 
     print('isotopes', isotopes)
 
@@ -416,8 +421,7 @@ def identify_isotopes_to_download(
 def expand_elements_to_isotopes(elements: Union[str, List[str]]):
 
     if elements == 'all' or elements == ['all']:
-        nested_list = list(NATURAL_ABUNDANCE.values())
-        return [item for sublist in nested_list for item in sublist]
+        return ISOTOPE_OPTIONS
 
     if isinstance(elements, str):
         return NATURAL_ABUNDANCE[elements]
