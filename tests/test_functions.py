@@ -302,6 +302,32 @@ class test_isotope_finding(unittest.TestCase):
 
         assert expand_materials_to_sabs(my_mat) == ['c_H_in_H2O']
 
+    def test_incorrect_sab_name(self):
+
+        def incorrect_sab_string():
+            identify_sab_to_download(
+                libraries=['ENDFB-7.1-NNDC'],
+                sab=['incorrect name']
+            )
+
+        self.assertRaises(
+            ValueError,
+            incorrect_sab_string
+        )
+
+    def test_incorrect_library_name_for_sab_identifying(self):
+
+        def incorrect_library_string():
+            identify_sab_to_download(
+                libraries=['incorrect name'],
+                sab=['c_Fe56']
+            )
+
+        self.assertRaises(
+            ValueError,
+            incorrect_library_string
+        )
+
     def test_library_values_single_entry_list(self):
 
         isotopes_df = identify_isotopes_to_download(
