@@ -10,9 +10,8 @@ generation of custom cross_section.xml files
 
 import argparse
 from pathlib import Path
-from typing import List
 
-from openmc_data_downloader import just_in_time_library_generator, LIB_OPTIONS
+from openmc_data_downloader import just_in_time_library_generator, LIB_OPTIONS, SAB_OPTIONS
 
 
 if __name__ == '__main__':
@@ -32,12 +31,20 @@ if __name__ == '__main__':
         '-i', '--isotopes',
         nargs='*',
         default=[],
-        help="The isotopes to download"
+        help="The isotope or isotopes to download"
     )
+    parser.add_argument(
+        '-s',
+        '--sab',
+        nargs='*',
+        default=[],
+        help="The SaB cross sections to download. Options include " +
+        " ".join(SAB_OPTIONS))
+
     parser.add_argument(
         '-e', '--elements', nargs='*',
         default=[],
-        help="The elements to download"
+        help="The element or elements to download"
     )
     parser.add_argument(
         '-p', '--particles', nargs='*',
@@ -63,6 +70,7 @@ if __name__ == '__main__':
     just_in_time_library_generator(
         libraries=args.libraries,
         isotopes=args.isotopes,
+        sab=args.sab,
         elements=args.elements,
         destination=args.destination,
         materials_xml=args.materials_xml,

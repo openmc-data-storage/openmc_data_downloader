@@ -117,6 +117,11 @@ openmc_data_downloader -l ENDFB-7.1-NNDC -e Li -p photon
 openmc_data_downloader -l ENDFB-7.1-NNDC -e Li -p neutron photon
 ```
 
+### Downloading the neutron cross section for elements and an SaB cross sections
+```bash
+openmc_data_downloader -l ENDFB-7.1-NNDC -e Be O -s c_Be_in_BeO
+```
+
 
 ## Usage - within a Python enviroment
 
@@ -180,6 +185,23 @@ mats = openmc.Materials([mat1, mat2])
 odd.just_in_time_library_generator(
     libraries='ENDFB-7.1-NNDC',
     materials=mats
+)
+```
+
+### Downloading neutron cross sections for a material with an SaB
+```python
+import openmc
+import openmc_data_downloader as odd
+
+my_mat = openmc.Material()
+my_mat.add_element('Be', 0.5)
+my_mat.add_element('O', 0.5)
+my_mat.add_s_alpha_beta('Be_in_BeO')
+
+odd.just_in_time_library_generator(
+    libraries='ENDFB-7.1-NNDC',
+    materials= my_mat
+    particles = ['neutrons'],
 )
 ```
 

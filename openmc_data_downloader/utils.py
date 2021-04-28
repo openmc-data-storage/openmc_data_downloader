@@ -8,13 +8,15 @@ from urllib.parse import urlparse
 from urllib.request import urlopen
 
 import pandas as pd
-from numpy.lib.function_base import iterable
 
 from openmc_data_downloader import (
+    NATURAL_ABUNDANCE,
     LIB_OPTIONS,
     PARTICLE_OPTIONS,
-    NATURAL_ABUNDANCE,
-    xs_info
+    SAB_OPTIONS,
+    ISOTOPE_OPTIONS,
+    xs_info,
+    sab_info
 )
 
 _BLOCK_SIZE = 16384
@@ -69,10 +71,46 @@ def expand_materials_to_isotopes(materials: list):
     return []
 
 
+def expand_materials_to_sabs(materials: list):
+    try:
+        import openmc
+    except ImportError:
+        print('openmc python package was not imported, '
+              'expand_materials_to_isotopes can not be performed.')
+        return None
+
+    if isinstance(materials, openmc.Materials):
+        iterable_of_materials = materials
+    elif isinstance(materials, list):
+        for material in materials:
+            if not isinstance(material, openmc.Material):
+                raise ValueError(
+                    'When passing a list then each entry in the list must be '
+                    'an openmc.Material. Not a', type(material))
+        iterable_of_materials = materials
+    elif isinstance(materials, openmc.Material):
+        iterable_of_materials = [materials]
+    else:
+        raise ValueError(
+            'materials must be of type openmc.Materials, openmc,Material or a '
+            'list or openmc.Material. Not ', type(materials))
+
+    if len(iterable_of_materials) > 0:
+        sabs_from_materials = []
+        for material in iterable_of_materials:
+            for sab_tuple in material._sab:
+                sabs_from_materials.append(sab_tuple[0])
+
+        return sabs_from_materials
+
+    return []
+
+
 def just_in_time_library_generator(
     libraries: List[str] = [],
     isotopes: List[str] = [],
     elements: List[str] = [],
+    sab: List[str] = [],
     destination: Union[str, Path] = None,
     materials_xml: List[Union[str, Path]] = [],
     materials: list = [],
@@ -93,13 +131,27 @@ def just_in_time_library_generator(
     isotopes = list(set(isotopes + isotopes_from_materials))
 
     # filters the large dataframe of all isotopes into just the ones you want
-    dataframe = identify_isotopes_to_download(
+    dataframe_xs = identify_isotopes_to_download(
         libraries=libraries,
         particles=particles,
         isotopes=isotopes,
     )
 
+    sab_from_material_xml = expand_materials_xml_to_sab(materials_xml)
+    sab = list(set(sab + sab_from_material_xml))
+
+    sabs_from_materials = expand_materials_to_sabs(materials)
+    sab = list(set(sab + sabs_from_materials))
+
+    dataframe_sab = identify_sab_to_download(
+        libraries=libraries,
+        sab=sab,
+    )
+
+    dataframe = pd.concat([dataframe_sab, dataframe_xs])
+
     download_data_frame_of_isotopes(dataframe, destination)
+    # download_data_frame_of_isotopes(dataframe_xs, destination)
 
     cross_section_xml_path = create_cross_sections_xml(dataframe, destination)
 
@@ -156,6 +208,7 @@ def download_single_file(
 
         # Copy file to disk in chunks
         print('Downloading {}... '.format(local_path), end='')
+
         with open(local_path, 'wb') as fh:
             while True:
                 chunk = response.read(_BLOCK_SIZE)
@@ -168,10 +221,6 @@ def download_single_file(
 
 
 def download_data_frame_of_isotopes(dataframe, destination: Union[str, Path]):
-
-    if len(dataframe) == 0:
-        print('Error. No isotopes matching the required inputs were found. '
-              'Try including more library options')
 
     local_files = []
     for index, row in dataframe.iterrows():
@@ -216,11 +265,88 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
     return absolute_path
 
 
+def identify_sab_to_download(
+        libraries: List[str],
+        sab: Optional[List[str]] = [],
+):
+    if sab == []:
+        return pd.DataFrame()
+    elif sab == 'all' or sab == ['all']:
+        sab = SAB_OPTIONS
+
+    priority_dict = {}
+
+    if isinstance(libraries, str):
+        libraries = [libraries]
+
+    if isinstance(sab, str):
+        sab = [sab]
+
+    if libraries == []:
+        raise ValueError(
+            'At least one library must be selected, options are',
+            LIB_OPTIONS)
+
+    for counter, entry in enumerate(libraries):
+        if entry not in LIB_OPTIONS:
+            raise ValueError(
+                'The library must be one of the following',
+                LIB_OPTIONS)
+
+    for counter, entry in enumerate(sab):
+        if entry not in SAB_OPTIONS:
+            raise ValueError(
+                'The sab argument must be one of the following',
+                SAB_OPTIONS)
+
+        priority_dict[entry] = counter + 1
+
+    print('Searching libraries with the following priority', priority_dict)
+
+    # Tried to removed this dict to dataframe conversion out of the function
+    # and into the initilisation of the package but this resultied in
+    # a SettingwithCopyWarning which can be fixed and understood here
+    # https://www.dataquest.io/blog/settingwithcopywarning/
+    sab_info_df = pd.DataFrame.from_dict(sab_info)
+
+    is_library = sab_info_df['library'].isin(libraries)
+    print('SaB found matching library requirements',
+          is_library.values.sum())
+
+    print('sab names', sab)
+    is_sab = sab_info_df['name'].isin(sab)
+    print(
+        'SaB found matching name requirements',
+        is_sab.values.sum())
+
+    sab_info_df = sab_info_df[(is_sab) & (is_library)]
+
+    sab_info_df['priority'] = sab_info_df['library'].map(priority_dict)
+
+    sab_info_df = sab_info_df.sort_values(by=['priority'])
+
+    sab_info_df = sab_info_df.drop_duplicates(subset=['name'], keep='first')
+
+    # end url is unique so this avoids downloading duplicates of the same file
+    sab_info_df = sab_info_df.drop_duplicates(subset=['url'], keep='first')
+
+    print('SaB found matching all requirements', len(sab_info_df))
+
+    return sab_info_df
+
+
 def identify_isotopes_to_download(
         libraries: List[str],
         particles: List[str] = [],
         isotopes: Optional[List[str]] = [],
 ):
+
+    if isotopes == []:
+        return pd.DataFrame()
+    elif isotopes == 'all' or isotopes == ['all']:
+        isotopes = ISOTOPE_OPTIONS
+
+    print('isotopes', isotopes)
 
     priority_dict = {}
 
@@ -258,7 +384,7 @@ def identify_isotopes_to_download(
 
     # Tried to removed this dict to dataframe conversion out of the function
     # and into the initilisation of the package but this resultied in
-    # a SettingwithCopyWarning which can be fized and understood here
+    # a SettingwithCopyWarning which can be fixed and understood here
     # https://www.dataquest.io/blog/settingwithcopywarning/
     xs_info_df = pd.DataFrame.from_dict(xs_info)
 
@@ -270,15 +396,12 @@ def identify_isotopes_to_download(
     print('Isotopes found matching particle requirements',
           is_particle.values.sum())
 
-    if isotopes == []:
-        xs_info_df = xs_info_df[(is_library) & (is_particle)]
-    else:
-        is_isotope = xs_info_df['isotope'].isin(isotopes)
-        print(
-            'Isotopes found matching isotope requirements',
-            is_isotope.values.sum())
+    is_isotope = xs_info_df['isotope'].isin(isotopes)
+    print(
+        'Isotopes found matching isotope requirements',
+        is_isotope.values.sum())
 
-        xs_info_df = xs_info_df[(is_isotope) & (is_library) & (is_particle)]
+    xs_info_df = xs_info_df[(is_isotope) & (is_library) & (is_particle)]
 
     xs_info_df['priority'] = xs_info_df['library'].map(priority_dict)
 
@@ -296,6 +419,9 @@ def identify_isotopes_to_download(
 
 
 def expand_elements_to_isotopes(elements: Union[str, List[str]]):
+
+    if elements == 'all' or elements == ['all']:
+        return ISOTOPE_OPTIONS
 
     if isinstance(elements, str):
         return NATURAL_ABUNDANCE[elements]
@@ -323,6 +449,30 @@ def expand_materials_xml_to_isotopes(
 
         for elem in root:
             for subelem in elem:
-                if 'name' in subelem.attrib.keys():
-                    isotopes.append(subelem.attrib['name'])
+                if subelem.tag == 'nuclide':
+                    if 'name' in subelem.attrib.keys():
+                        isotopes.append(subelem.attrib['name'])
     return isotopes
+
+
+def expand_materials_xml_to_sab(
+        materials_xml: Union[List[str], str] = 'materials.xml'):
+
+    sabs = []
+
+    if isinstance(materials_xml, str):
+        materials_xml = [materials_xml]
+
+    if materials_xml == []:
+        return []
+
+    for material_xml in materials_xml:
+        tree = ET.parse(material_xml)
+        root = tree.getroot()
+
+        for elem in root:
+            for subelem in elem:
+                if subelem.tag == 'sab':
+                    if 'name' in subelem.attrib.keys():
+                        sabs.append(subelem.attrib['name'])
+    return sabs

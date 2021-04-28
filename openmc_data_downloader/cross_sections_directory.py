@@ -1,6 +1,8 @@
 
 import re
 
+from numpy import nested_iters
+
 # from https://github.com/openmc-dev/openmc/blob/develop/openmc/data/data.py
 # remove when pip install openmc via PyPi is available
 NATURAL_ABUNDANCE = {
@@ -135,37 +137,29 @@ tendl_2019_neutron_isotopes = [
     'Gd152', 'Gd153', 'Gd154', 'Gd155', 'Gd156', 'Gd157', 'Gd158', 'Gd159',
     'Gd160', 'Gd161', 'Ge70', 'Ge71', 'Ge72', 'Ge73', 'Ge74', 'Ge75', 'Ge76',
     'H1', 'H2', 'H3', 'He3', 'He4', 'Hf174', 'Hf175', 'Hf176', 'Hf177',
-    'Hf178', 'Hf179', 'Hf180', 'Hf181', 'Hf182', 'Hg196', 'Hg197',
-    'Hg197_m1', 'Hg198', 'Hg199', 'Hg200', 'Hg201', 'Hg202',
-    'Hg203', 'Hg204', 'Ho163', 'Ho165', 'Ho166_m1', 'I126',
-    'I127', 'I128', 'I129', 'I130', 'I131', 'I132',
-    'I132_m1', 'I133', 'I134', 'I135', 'In113', 'In114',
-    'In115', 'Ir190', 'Ir191', 'Ir192', 'Ir193', 'Ir194_m1',
-    'K39', 'K40', 'K41', 'Kr78', 'Kr79', 'Kr80', 'Kr81',
-    'Kr82', 'Kr83', 'Kr84', 'Kr85', 'Kr86', 'La137',
-    'La138', 'La139', 'La140', 'Li6', 'Li7', 'Lu173',
-    'Lu174', 'Lu175', 'Lu176', 'Lu177', 'Mg24', 'Mg25',
-    'Mg26', 'Mg27', 'Mn52', 'Mn53', 'Mn54', 'Mn55',
-    'Mo100', 'Mo92', 'Mo93', 'Mo94', 'Mo95', 'Mo96',
-    'Mo97', 'Mo98', 'Mo99', 'N14', 'N15', 'Na22', 'Na23',
-    'Nb91', 'Nb92', 'Nb93', 'Nb94', 'Nb94_m1', 'Nb95',
-    'Nd142', 'Nd143', 'Nd144', 'Nd145', 'Nd146', 'Nd147',
-    'Nd148', 'Nd149', 'Nd150', 'Ne20', 'Ne21', 'Ne22',
-    'Ni56', 'Ni57', 'Ni58', 'Ni59', 'Ni60', 'Ni61',
-    'Ni62', 'Ni63', 'Ni64', 'Ni66', 'Np234', 'Np235',
-    'Np236', 'Np236_m1', 'Np237', 'Np238', 'Np239', 'O16',
-    'O17', 'O18', 'Os184', 'Os185', 'Os186', 'Os187',
-    'Os188', 'Os189', 'Os190', 'Os191', 'Os192', 'Os193',
-    'P31', 'P32', 'P33', 'Pa229', 'Pa230', 'Pa231',
-    'Pa232', 'Pa233', 'Pb204', 'Pb205', 'Pb206', 'Pb207',
-    'Pb208', 'Pd102', 'Pd103', 'Pd104', 'Pd105', 'Pd106',
-    'Pd107', 'Pd108', 'Pd109', 'Pd110', 'Pm143', 'Pm144',
-    'Pm145', 'Pm146', 'Pm147', 'Pm148', 'Pm148_m1', 'Pm149',
-    'Pm150', 'Pm151', 'Po208', 'Po209', 'Po210', 'Pr141',
-    'Pr142', 'Pr143', 'Pt190', 'Pt191', 'Pt192', 'Pt193',
-    'Pt194', 'Pt195', 'Pt196', 'Pt197', 'Pt198', 'Pu236',
-    'Pu237', 'Pu238', 'Pu239', 'Pu240', 'Pu241', 'Pu242',
-    'Pu243', 'Pu244', 'Pu245', 'Pu246', 'Ra223', 'Ra224',
+    'Hf178', 'Hf179', 'Hf180', 'Hf181', 'Hf182', 'Hg196', 'Hg197', 'Hg197_m1',
+    'Hg198', 'Hg199', 'Hg200', 'Hg201', 'Hg202', 'Hg203', 'Hg204', 'Ho163',
+    'Ho165', 'Ho166_m1', 'I126', 'I127', 'I128', 'I129', 'I130', 'I131',
+    'I132', 'I132_m1', 'I133', 'I134', 'I135', 'In113', 'In114', 'In115',
+    'Ir190', 'Ir191', 'Ir192', 'Ir193', 'Ir194_m1', 'K39', 'K40', 'K41', 'Kr78',
+    'Kr79', 'Kr80', 'Kr81', 'Kr82', 'Kr83', 'Kr84', 'Kr85', 'Kr86', 'La137',
+    'La138', 'La139', 'La140', 'Li6', 'Li7', 'Lu173', 'Lu174', 'Lu175', 'Lu176',
+    'Lu177', 'Mg24', 'Mg25', 'Mg26', 'Mg27', 'Mn52', 'Mn53', 'Mn54', 'Mn55',
+    'Mo100', 'Mo92', 'Mo93', 'Mo94', 'Mo95', 'Mo96', 'Mo97', 'Mo98', 'Mo99',
+    'N14', 'N15', 'Na22', 'Na23', 'Nb91', 'Nb92', 'Nb93', 'Nb94', 'Nb94_m1',
+    'Nb95', 'Nd142', 'Nd143', 'Nd144', 'Nd145', 'Nd146', 'Nd147', 'Nd148',
+    'Nd149', 'Nd150', 'Ne20', 'Ne21', 'Ne22', 'Ni56', 'Ni57', 'Ni58', 'Ni59',
+    'Ni60', 'Ni61', 'Ni62', 'Ni63', 'Ni64', 'Ni66', 'Np234', 'Np235', 'Np236',
+    'Np236_m1', 'Np237', 'Np238', 'Np239', 'O16', 'O17', 'O18', 'Os184',
+    'Os185', 'Os186', 'Os187', 'Os188', 'Os189', 'Os190', 'Os191', 'Os192',
+    'Os193', 'P31', 'P32', 'P33', 'Pa229', 'Pa230', 'Pa231', 'Pa232', 'Pa233',
+    'Pb204', 'Pb205', 'Pb206', 'Pb207', 'Pb208', 'Pd102', 'Pd103', 'Pd104',
+    'Pd105', 'Pd106', 'Pd107', 'Pd108', 'Pd109', 'Pd110', 'Pm143', 'Pm144',
+    'Pm145', 'Pm146', 'Pm147', 'Pm148', 'Pm148_m1', 'Pm149', 'Pm150', 'Pm151',
+    'Po208', 'Po209', 'Po210', 'Pr141', 'Pr142', 'Pr143', 'Pt190', 'Pt191',
+    'Pt192', 'Pt193', 'Pt194', 'Pt195', 'Pt196', 'Pt197', 'Pt198', 'Pu236',
+    'Pu237', 'Pu238', 'Pu239', 'Pu240', 'Pu241', 'Pu242', 'Pu243', 'Pu244',
+    'Pu245', 'Pu246', 'Ra223', 'Ra224',
     'Ra225', 'Ra226', 'Rb85', 'Rb86', 'Rb87', 'Rb88',
     'Re185', 'Re186', 'Re186_m1', 'Re187', 'Re188', 'Rh101',
     'Rh102', 'Rh103', 'Rh104', 'Rh105', 'Rh99', 'Ru100',
@@ -227,11 +221,10 @@ endfb_71_nndc_neutron_isotopes = [
     'Ba132', 'Ba133', 'Ba134', 'Ba135', 'Ba136', 'Ba137', 'Ba138', 'Ba140',
     'Be7', 'Be9', 'Bi209', 'Bk245', 'Bk246', 'Bk247', 'Bk248', 'Bk249',
     'Bk250', 'Br79', 'Br81', 'C0', 'Ca40', 'Ca42', 'Ca43', 'Ca44', 'Ca46',
-    'Ca48', 'Cd106', 'Cd108', 'Cd110', 'Cd111',
-    'Cd112', 'Cd113', 'Cd114', 'Cd115_m1', 'Cd116', 'Ce136', 'Ce138', 'Ce139',
-    'Ce140', 'Ce141', 'Ce142', 'Ce143', 'Ce144', 'Cf246', 'Cf248', 'Cf249',
-    'Cf250', 'Cf251', 'Cf252', 'Cf253', 'Cf254', 'Cl35', 'Cl37', 'Cm240',
-    'Cm241', 'Cm242', 'Cm243', 'Cm244', 'Cm245', 'Cm246', 'Cm247', 'Cm248',
+    'Ca48', 'Cd106', 'Cd108', 'Cd110', 'Cd111', 'Cd112', 'Cd113', 'Cd114',
+    'Cd115_m1', 'Cd116', 'Ce136', 'Ce138', 'Ce139', 'Ce140', 'Ce141', 'Ce142',
+    'Ce143', 'Ce144', 'Cf246', 'Cf248', 'Cf249', 'Cf250', 'Cf251', 'Cf252',
+    'Cf253', 'Cf254', 'Cl35', 'Cl37', 'Cm240', 'Cm241', 'Cm242', 'Cm243', 'Cm244', 'Cm245', 'Cm246', 'Cm247', 'Cm248',
     'Cm249', 'Cm250', 'Co58', 'Co58_m1', 'Co59', 'Cr50', 'Cr52', 'Cr53',
     'Cr54', 'Cs133', 'Cs134', 'Cs135', 'Cs136', 'Cs137', 'Cu63', 'Cu65',
     'Dy156', 'Dy158', 'Dy160', 'Dy161', 'Dy162', 'Dy163', 'Dy164', 'Er162',
@@ -316,34 +309,49 @@ for element in endfb_71_nndc_photon_isotopes:
         endfb_71_nndc_xs_info.append(entry)
 
 
+endfb_71_nndc_thermal = [
+    'c_Al27', 'c_Be', 'c_Be_in_BeO', 'c_C6H6', 'c_D_in_D2O', 'c_Fe56',
+    'c_Graphite', 'c_H_in_CH2', 'c_H_in_CH4_liquid', 'c_H_in_CH4_solid',
+    'c_H_in_H2O', 'c_H_in_ZrH', 'c_O_in_BeO', 'c_O_in_UO2', 'c_U_in_UO2',
+    'c_Zr_in_ZrH', 'c_ortho_D', 'c_ortho_H', 'c_para_D', 'c_para_H',
+]
+
+
+endfb_71_nndc_sab_info = []
+for name in endfb_71_nndc_thermal:
+    entry = {}
+    # perhaps there is a better way of doing this
+    entry['name'] = name
+    entry['particle'] = 'thermal'
+    entry['library'] = 'ENDFB-7.1-NNDC'
+    entry['remote_file'] = name + '.h5'
+    entry['url'] = endfb_71_nndc_base_url + \
+        'neutron/' + entry['remote_file']
+    entry['local_file'] = entry['library'] + '_' + entry['remote_file']
+    endfb_71_nndc_sab_info.append(entry)
+
 fendl_31d_neutron_isotopes = [
     'Ag107', 'Ag109', 'Al27', 'Ar36', 'Ar38', 'Ar40', 'Au197', 'B10', 'B11',
     'Ba130', 'Ba132', 'Ba134', 'Ba135', 'Ba136', 'Ba137', 'Ba138', 'Be9',
     'Bi209', 'Br79', 'Br81', 'C12', 'C13', 'Ca40', 'Ca42', 'Ca43', 'Ca44',
     'Ca46', 'Ca48', 'Cd106', 'Cd108', 'Cd110', 'Cd111', 'Cd112', 'Cd113',
     'Cd114', 'Cd116', 'Ce136', 'Ce138', 'Ce140', 'Ce142', 'Cl35', 'Cl37',
-    'Co59', 'Cr50', 'Cr52', 'Cr53', 'Cr54', 'Cs133', 'Cu63',
-    'Cu65', 'Er162', 'Er164', 'Er166', 'Er167', 'Er168',
-    'Er170', 'F19', 'Fe54', 'Fe56', 'Fe57', 'Fe58',
-    'Ga69', 'Ga71', 'Gd152', 'Gd154', 'Gd155', 'Gd156',
-    'Gd157', 'Gd158', 'Gd160', 'Ge70', 'Ge72', 'Ge73',
-    'Ge74', 'Ge76', 'H1', 'H2', 'H3', 'He3', 'He4',
-    'Hf174', 'Hf176', 'Hf177', 'Hf178', 'Hf179', 'Hf180',
-    'I127', 'K39', 'K40', 'K41', 'La138', 'La139', 'Li6',
-    'Li7', 'Lu175', 'Lu176', 'Mg24', 'Mg25', 'Mg26',
-    'Mn55', 'Mo100', 'Mo92', 'Mo94', 'Mo95', 'Mo96',
-    'Mo97', 'Mo98', 'N14', 'N15', 'Na23', 'Nb93', 'Ni58',
-    'Ni60', 'Ni61', 'Ni62', 'Ni64', 'O16', 'O17', 'O18',
-    'P31', 'Pb204', 'Pb206', 'Pb207', 'Pb208', 'Pt190',
-    'Pt192', 'Pt194', 'Pt195', 'Pt196', 'Pt198', 'Re185',
-    'Re187', 'Rh103', 'S32', 'S33', 'S34', 'S36', 'Sb121',
-    'Sb123', 'Sc45', 'Si28', 'Si29', 'Si30', 'Sn112',
-    'Sn114', 'Sn115', 'Sn116', 'Sn117', 'Sn118', 'Sn119',
-    'Sn120', 'Sn122', 'Sn124', 'Ta181', 'Th232', 'Ti46',
-    'Ti47', 'Ti48', 'Ti49', 'Ti50', 'U235', 'U238', 'V50',
-    'V51', 'W180', 'W182', 'W183', 'W184', 'W186', 'Y89',
-    'Zn64', 'Zn66', 'Zn67', 'Zn68', 'Zn70', 'Zr90',
-    'Zr91', 'Zr92', 'Zr94', 'Zr96',
+    'Co59', 'Cr50', 'Cr52', 'Cr53', 'Cr54', 'Cs133', 'Cu63', 'Cu65', 'Er162',
+    'Er164', 'Er166', 'Er167', 'Er168', 'Er170', 'F19', 'Fe54', 'Fe56', 'Fe57',
+    'Fe58', 'Ga69', 'Ga71', 'Gd152', 'Gd154', 'Gd155', 'Gd156', 'Gd157',
+    'Gd158', 'Gd160', 'Ge70', 'Ge72', 'Ge73', 'Ge74', 'Ge76', 'H1', 'H2',
+    'H3', 'He3', 'He4', 'Hf174', 'Hf176', 'Hf177', 'Hf178', 'Hf179', 'Hf180',
+    'I127', 'K39', 'K40', 'K41', 'La138', 'La139', 'Li6', 'Li7', 'Lu175',
+    'Lu176', 'Mg24', 'Mg25', 'Mg26', 'Mn55', 'Mo100', 'Mo92', 'Mo94', 'Mo95',
+    'Mo96', 'Mo97', 'Mo98', 'N14', 'N15', 'Na23', 'Nb93', 'Ni58', 'Ni60',
+    'Ni61', 'Ni62', 'Ni64', 'O16', 'O17', 'O18', 'P31', 'Pb204', 'Pb206',
+    'Pb207', 'Pb208', 'Pt190', 'Pt192', 'Pt194', 'Pt195', 'Pt196', 'Pt198',
+    'Re185', 'Re187', 'Rh103', 'S32', 'S33', 'S34', 'S36', 'Sb121', 'Sb123',
+    'Sc45', 'Si28', 'Si29', 'Si30', 'Sn112', 'Sn114', 'Sn115', 'Sn116',
+    'Sn117', 'Sn118', 'Sn119', 'Sn120', 'Sn122', 'Sn124', 'Ta181', 'Th232',
+    'Ti46', 'Ti47', 'Ti48', 'Ti49', 'Ti50', 'U235', 'U238', 'V50', 'V51',
+    'W180', 'W182', 'W183', 'W184', 'W186', 'Y89', 'Zn64', 'Zn66', 'Zn67',
+    'Zn68', 'Zn70', 'Zr90', 'Zr91', 'Zr92', 'Zr94', 'Zr96',
 ]
 
 fendl_31d_base_url = 'https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/'
@@ -361,7 +369,7 @@ for isotope in fendl_31d_neutron_isotopes:
     fendl_31d_xs_info.append(entry)
     # could add size of file in mb as well
 
-fendl_31d_photon_isotopes = [
+fendl_31d_photon_elements = [
     'Ag', 'Al', 'Ar', 'Au', 'B', 'Ba', 'Be', 'Bi', 'Br', 'C', 'Ca', 'Cd', 'Ce',
     'Cl', 'Co', 'Cr', 'Cs', 'Cu', 'Er', 'F', 'Fe', 'Ga', 'Gd', 'Ge', 'H', 'He',
     'Hf', 'I', 'K', 'La', 'Li', 'Lu', 'Mg', 'Mn', 'Mo', 'N', 'Na', 'Nb', 'Ni',
@@ -369,7 +377,7 @@ fendl_31d_photon_isotopes = [
     'Ti', 'U', 'V', 'W', 'Y', 'Zn', 'Zr'
 ]
 
-for element in fendl_31d_photon_isotopes:
+for element in fendl_31d_photon_elements:
     for isotope in NATURAL_ABUNDANCE[element]:
         entry = {}
         # perhaps there is a better way of doing this
@@ -500,9 +508,61 @@ for zaid in endfb_71_wmp_neutron_isotopes:
 xs_info = endfb_71_nndc_xs_info + tendl_2019_xs_info + \
     fendl_31d_xs_info + endfb_71_wmp_xs_info
 
+sab_info = endfb_71_nndc_sab_info  # + JEFF 3.2 also contains sab
+
 all_libs = []
 for entry in xs_info:
     all_libs.append(entry['library'])
 
 LIB_OPTIONS = list(set(all_libs))
 PARTICLE_OPTIONS = ['neutron', 'photon']
+SAB_OPTIONS = [
+    'c_Al27',
+    'c_Al_in_Sapphire',
+    'c_Be',
+    'c_BeO',
+    'c_Be_in_BeO',
+    'c_Be_in_Be2C',
+    'c_C6H6',
+    'c_C_in_SiC',
+    'c_Ca_in_CaH2',
+    'c_D_in_D2O',
+    'c_D_in_D2O_ice',
+    'c_Fe56',
+    'c_Graphite',
+    'c_Graphite_10p',
+    'c_Graphite_30p',
+    'c_H_in_CaH2',
+    'c_H_in_CH2',
+    'c_H_in_CH4_liquid',
+    'c_H_in_CH4_solid',
+    'c_H_in_CH4_solid_phase_II',
+    'c_H_in_H2O',
+    'c_H_in_H2O_solid',
+    'c_H_in_C5O2H8',
+    'c_H_in_Mesitylene',
+    'c_H_in_Toluene',
+    'c_H_in_YH2',
+    'c_H_in_ZrH',
+    'c_Mg24',
+    'c_O_in_Sapphire',
+    'c_O_in_BeO',
+    'c_O_in_D2O',
+    'c_O_in_H2O_ice',
+    'c_O_in_UO2',
+    'c_N_in_UN',
+    'c_ortho_D',
+    'c_ortho_H',
+    'c_Si28',
+    'c_Si_in_SiC',
+    'c_SiO2_alpha',
+    'c_SiO2_beta',
+    'c_para_D',
+    'c_para_H',
+    'c_U_in_UN',
+    'c_U_in_UO2',
+    'c_Y_in_YH2',
+    'c_Zr_in_ZrH',
+]
+nested_list = list(NATURAL_ABUNDANCE.values())
+ISOTOPE_OPTIONS = [item for sublist in nested_list for item in sublist]
