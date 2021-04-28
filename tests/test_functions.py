@@ -32,31 +32,27 @@ class test_isotope_finding(unittest.TestCase):
         stable_isotopes = expand_elements_to_isotopes(['Be', 'Li'])
         assert stable_isotopes == ['Be9', 'Li6', 'Li7']
 
-    def test_identify_sab_to_download_finds_tendl_neutron(self):
+    def test_identify_sab_to_download_with_all_keyword(self):
 
         filtered_df = identify_sab_to_download(
             libraries=['ENDFB-7.1-NNDC'],
-            sab=['Be_in_BeO']
+            sab=['all']
         )
-        answer_df = pd.DataFrame.from_dict({
-            'name': ['Be_in_BeO'],
-            'particle': ['thermal'],
-            'library': ['ENDFB-7.1-NNDC'],
-            'remote_file': ['c_Be_in_BeO.h5'],
-            'url': ['https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/c_Be_in_BeO.h5'],
-            'local_file': ['ENDFB-7.1-NNDC_c_Be_in_BeO.h5'],
-            'priority': [1]
-        })
-        print(filtered_df)
-        assert len(filtered_df.values) == 1
-        assert list(filtered_df.keys()) == list(answer_df.keys())
-        assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
+
+        assert len(filtered_df.values) == 20
+
+        filtered_df2 = identify_sab_to_download(
+            libraries=['ENDFB-7.1-NNDC'],
+            sab='all'
+        )
+
+        assert len(filtered_df2.values) == 20
 
     def test_identify_sab_to_download_finds_two(self):
 
         filtered_df = identify_sab_to_download(
             libraries=['ENDFB-7.1-NNDC'],
-            sab=['Be_in_BeO', 'H_in_H2O']
+            sab=['c_Be_in_BeO', 'c_H_in_H2O']
         )
 
         assert len(filtered_df.values) == 2
@@ -162,6 +158,24 @@ class test_isotope_finding(unittest.TestCase):
         assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
         assert filtered_df.values[1].tolist() == answer_df.values[1].tolist()
         assert filtered_df.values[2].tolist() == answer_df.values[2].tolist()
+
+    def test_identify_isotopes_to_download_all(self):
+
+        filtered_df = identify_isotopes_to_download(
+            libraries=['FENDL-3.1d'],
+            isotopes=['all'],
+            particles=['photon', 'neutron']
+        )
+
+        assert len(filtered_df.values) == 238
+
+        filtered_df = identify_isotopes_to_download(
+            libraries=['FENDL-3.1d'],
+            isotopes='all',
+            particles=['photon', 'neutron']
+        )
+
+        assert len(filtered_df.values) == 238
 
     def test_expand_materials_from_object_list_with_single_mat(self):
 

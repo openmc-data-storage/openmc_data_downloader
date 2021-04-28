@@ -338,7 +338,10 @@ def identify_isotopes_to_download(
     if isotopes == []:
         return pd.DataFrame()
     elif isotopes == 'all' or isotopes == ['all']:
-        isotopes = LIB_OPTIONS
+        nested_list = list(NATURAL_ABUNDANCE.values())
+        isotopes = [item for sublist in nested_list for item in sublist]
+
+    print('isotopes', isotopes)
 
     priority_dict = {}
 
