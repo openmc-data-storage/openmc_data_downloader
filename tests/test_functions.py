@@ -302,6 +302,16 @@ class test_isotope_finding(unittest.TestCase):
 
         assert expand_materials_to_sabs(my_mat) == ['c_H_in_H2O']
 
+    def test_incorrect_material_enpty(self):
+
+        def incorrect_materials_type():
+            expand_materials_to_sabs('my_mat')
+
+        self.assertRaises(
+            ValueError,
+            incorrect_materials_type
+        )
+
     def test_incorrect_sab_name(self):
 
         def incorrect_sab_string():
@@ -313,6 +323,19 @@ class test_isotope_finding(unittest.TestCase):
         self.assertRaises(
             ValueError,
             incorrect_sab_string
+        )
+
+    def test_incorrect_libraries(self):
+
+        def incorrect_libraries():
+            identify_sab_to_download(
+                libraries=[],
+                sab=['c_Fe56']
+            )
+
+        self.assertRaises(
+            ValueError,
+            incorrect_libraries
         )
 
     def test_incorrect_library_name_for_sab_identifying(self):
@@ -337,6 +360,15 @@ class test_isotope_finding(unittest.TestCase):
         )
 
         assert len(isotopes_df) == 2
+
+    def test_emplty_isotopes(self):
+        empty_df = identify_isotopes_to_download(
+                libraries=['TENDL-2019'],
+                isotopes=[],
+                particles=['neutron']
+            )
+        assert len(empty_df) == 0
+        assert isinstance(empty_df, type(pd.DataFrame()))
 
     def test_incorrect_library_values_empty(self):
 
