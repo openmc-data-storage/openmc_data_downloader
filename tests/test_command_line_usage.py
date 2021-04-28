@@ -132,3 +132,17 @@ class test_command_line_usage(unittest.TestCase):
         assert Path('FENDL-3.1d_He.h5').is_file()
         assert Path('FENDL-3.1d_He4.h5').is_file()
         assert len(list(Path('.').glob('*.h5'))) == 2
+
+    def test_sab_download_with_endf(self):
+        """Tests downloading with FENDL photon data and checks it exists"""
+
+        os.system('rm *.h5')
+
+        os.system('openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -e Be O -s c_Be_in_BeO')
+
+        assert Path('ENDFB-7.1-NNDC_Be9.h5').is_file()
+        assert Path('ENDFB-7.1-NNDC_O16.h5').is_file()
+        assert Path('ENDFB-7.1-NNDC_O17.h5').is_file()
+        assert Path('TENDL-2019_O18.h5').is_file()
+        assert Path('materials.xml').is_file()
+        assert len(list(Path('.').glob('*.h5'))) == 4
