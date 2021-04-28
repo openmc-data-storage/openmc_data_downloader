@@ -138,7 +138,8 @@ class test_command_line_usage(unittest.TestCase):
 
         os.system('rm *.h5')
 
-        os.system('openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -e Be O -s c_Be_in_BeO')
+        os.system(
+            'openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -e Be O -s c_Be_in_BeO')
 
         assert Path('ENDFB-7.1-NNDC_Be9.h5').is_file()
         assert Path('ENDFB-7.1-NNDC_O16.h5').is_file()
