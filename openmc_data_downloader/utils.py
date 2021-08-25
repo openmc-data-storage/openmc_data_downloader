@@ -32,6 +32,11 @@ def set_enviromental_varible(cross_section_xml_path: Union[Path, str]) -> None:
 
 
 def expand_materials_to_isotopes(materials: list):
+
+    if isinstance(materials, list):
+        if len(materials) == 0:
+            return []
+
     try:
         import openmc
     except ImportError:
@@ -69,6 +74,11 @@ def expand_materials_to_isotopes(materials: list):
 
 
 def expand_materials_to_sabs(materials: list):
+
+    if isinstance(materials, list):
+        if len(materials) == 0:
+            return []
+
     try:
         import openmc
     except ImportError:
@@ -112,23 +122,23 @@ def just_in_time_library_generator(
     sab: List[str] = [],
     destination: Union[str, Path] = None,
     materials_xml: List[Union[str, Path]] = [],
-    materials: list = [],
+    materials: list = [], # also accepts a single openmc.Material
     particles: Optional[List[str]] = ['neutron', 'photon'],
     set_OPENMC_CROSS_SECTIONS: bool = True,
 ) -> str:
 
     # expands elements, materials xml into list of isotopes
-    if len(elements) > 0:
-        isotopes_from_elements = expand_elements_to_isotopes(elements)
-        isotopes = list(set(isotopes + isotopes_from_elements))
+
+    isotopes_from_elements = expand_elements_to_isotopes(elements)
+    isotopes = list(set(isotopes + isotopes_from_elements))
 
     isotopes_from_material_xml = expand_materials_xml_to_isotopes(
         materials_xml)
     isotopes = list(set(isotopes + isotopes_from_material_xml))
 
-    if len(materials) > 0:
-        isotopes_from_materials = expand_materials_to_isotopes(materials)
-        isotopes = list(set(isotopes + isotopes_from_materials))
+
+    isotopes_from_materials = expand_materials_to_isotopes(materials)
+    isotopes = list(set(isotopes + isotopes_from_materials))
 
     # filters the large dataframe of all isotopes into just the ones you want
     dataframe_xs = identify_isotopes_to_download(
