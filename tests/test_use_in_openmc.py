@@ -388,6 +388,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
             set_OPENMC_CROSS_SECTIONS=True)
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
+        os.system('ls')
         openmc.run()
 
         assert Path('ENDFB-7.1-WMP_P31.h5').is_file()
