@@ -48,7 +48,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # this clears the enviromental varible just to be sure that current
         # system settings are not being used
-        del os.environ["OPENMC_CROSS_SECTIONS"]
+        try:
+            del os.environ["OPENMC_CROSS_SECTIONS"]
+        except KeyError:
+            # key not found on system
+            pass
 
         just_in_time_library_generator(
             destination='my_custom_nuclear_data_with_materials',
@@ -102,7 +106,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # this clears the enviromental varible just to be sure that current
         # system settings are not being used
-        del os.environ["OPENMC_CROSS_SECTIONS"]
+        try:
+            del os.environ["OPENMC_CROSS_SECTIONS"]
+        except KeyError:
+            # key not found on system
+            pass
 
         just_in_time_library_generator(
             destination='my_custom_nuclear_data_dir',
@@ -129,7 +137,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # this clears the enviromental varible just to be sure that current
         # system settings are not being used
-        del os.environ["OPENMC_CROSS_SECTIONS"]
+        try:
+            del os.environ["OPENMC_CROSS_SECTIONS"]
+        except KeyError:
+            # key not found on system
+            pass
 
         # Define material
         my_mat = openmc.Material()
@@ -184,7 +196,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # this clears the enviromental varible just to be sure that current
         # system settings are not being used
-        del os.environ["OPENMC_CROSS_SECTIONS"]
+        try:
+            del os.environ["OPENMC_CROSS_SECTIONS"]
+        except KeyError:
+            # key not found on system
+            pass
 
         # Define material
         my_mat = openmc.openmc.Material()
@@ -233,7 +249,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # this clears the enviromental varible just to be sure that current
         # system settings are not being used
-        del os.environ["OPENMC_CROSS_SECTIONS"]
+        try:
+            del os.environ["OPENMC_CROSS_SECTIONS"]
+        except KeyError:
+            # key not found on system
+            pass
 
         # Define material
         my_mat = openmc.openmc.Material()
@@ -279,7 +299,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # this clears the enviromental varible just to be sure that current
         # system settings are not being used
-        del os.environ["OPENMC_CROSS_SECTIONS"]
+        try:
+            del os.environ["OPENMC_CROSS_SECTIONS"]
+        except KeyError:
+            # key not found on system
+            pass
 
         # Define material
         my_mat = openmc.Material()
@@ -324,7 +348,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # this clears the enviromental varible just to be sure that current
         # system settings are not being used
-        del os.environ["OPENMC_CROSS_SECTIONS"]
+        try:
+            del os.environ["OPENMC_CROSS_SECTIONS"]
+        except KeyError:
+            # key not found on system
+            pass
 
         # Define material
         my_mat = openmc.openmc.Material()
@@ -374,7 +402,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # this clears the enviromental varible just to be sure that current
         # system settings are not being used
-        del os.environ["OPENMC_CROSS_SECTIONS"]
+        try:
+            del os.environ["OPENMC_CROSS_SECTIONS"]
+        except KeyError:
+            # key not found on system
+            pass
 
         # Define material
         my_mat = openmc.openmc.Material()
@@ -421,7 +453,11 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
 
         # this clears the enviromental varible just to be sure that current
         # system settings are not being used
-        del os.environ["OPENMC_CROSS_SECTIONS"]
+        try:
+            del os.environ["OPENMC_CROSS_SECTIONS"]
+        except KeyError:
+            # key not found on system
+            pass
 
         # Define material
         my_mat1 = openmc.openmc.Material()
