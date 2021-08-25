@@ -40,9 +40,10 @@ def expand_materials_to_isotopes(materials: list):
     try:
         import openmc
     except ImportError:
-        msg = ('import openmc failed. openmc python package could not be found '
-               'and was not imported, the expand_materials_to_isotopes '
-               'opperation can not be performed ithout openmc')
+        msg = (
+            'import openmc failed. openmc python package could not be found '
+            'and was not imported, the expand_materials_to_isotopes '
+            'opperation can not be performed ithout openmc')
         raise ImportError(msg)
 
     if isinstance(materials, openmc.Materials):
@@ -76,9 +77,10 @@ def expand_materials_to_sabs(materials: list):
     try:
         import openmc
     except ImportError:
-        msg = ('import openmc failed. openmc python package could not be found '
-               'and was not imported, the expand_materials_to_sabs '
-               'opperation can not be performed ithout openmc')
+        msg = (
+            'import openmc failed. openmc python package could not be found '
+            'and was not imported, the expand_materials_to_sabs '
+            'opperation can not be performed ithout openmc')
         raise ImportError(msg)
 
     if isinstance(materials, openmc.Materials):
@@ -241,9 +243,10 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
     try:
         import openmc
     except ImportError:
-        msg = ('import openmc failed. openmc python package could not be found '
-               'and was not imported, cross sections.xml can not be made'
-               'without openmc')
+        msg = (
+            'import openmc failed. openmc python package could not be found '
+            'and was not imported, cross sections.xml can not be made'
+            'without openmc')
         raise Warning.warn(msg)
 
     library = openmc.data.DataLibrary()
