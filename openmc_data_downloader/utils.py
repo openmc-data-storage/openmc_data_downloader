@@ -122,7 +122,7 @@ def just_in_time_library_generator(
     sab: List[str] = [],
     destination: Union[str, Path] = None,
     materials_xml: List[Union[str, Path]] = [],
-    materials: list = [], # also accepts a single openmc.Material
+    materials: list = [],  # also accepts a single openmc.Material
     particles: Optional[List[str]] = ['neutron', 'photon'],
     set_OPENMC_CROSS_SECTIONS: bool = True,
 ) -> str:
