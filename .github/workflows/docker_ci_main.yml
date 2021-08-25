@@ -25,15 +25,15 @@ jobs:
 
     - name: test test_command_line_usage.py
       run: |
-        pytest tests/test_command_line_usage.py -v --cov=openmc_data_downloader --cov-report term --cov-report xml ; mv coverage.xml /share/coverage.xml
+        pytest tests/test_command_line_usage.py -v --cov=openmc_data_downloader --cov-report term --cov-report xml
 
     - name: test test_functions.py
       run: |
-        pytest tests/test_functions.py -v --cov=openmc_data_downloader --cov-report term --cov-report xml ; mv coverage.xml /share/coverage.xml
+        pytest tests/test_functions.py -v --cov=openmc_data_downloader --cov-report term --cov-report xml
 
     - name: test test_use_in_openmc.py
       run: |
-        pytest tests/test_use_in_openmc.py -v --cov=openmc_data_downloader --cov-report term --cov-report xml ; mv coverage.xml /share/coverage.xml
+        pytest tests/test_use_in_openmc.py -v --cov=openmc_data_downloader --cov-report term --cov-report xml
 
     - name: upload test results
       run: |
