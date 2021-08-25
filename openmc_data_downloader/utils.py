@@ -40,9 +40,10 @@ def expand_materials_to_isotopes(materials: list):
     try:
         import openmc
     except ImportError:
-        print('openmc python package was not imported, '
-              'expand_materials_to_isotopes can not be performed.')
-        return None
+        msg = ('import openmc failed. openmc python package could not be found '
+               'and was not imported, the expand_materials_to_isotopes '
+               'opperation can not be performed ithout openmc')
+        raise ImportError(msg)
 
     if isinstance(materials, openmc.Materials):
         iterable_of_materials = materials
@@ -75,9 +76,10 @@ def expand_materials_to_sabs(materials: list):
     try:
         import openmc
     except ImportError:
-        print('openmc python package was not imported, '
-              'expand_materials_to_isotopes can not be performed.')
-        return None
+        msg = ('import openmc failed. openmc python package could not be found '
+               'and was not imported, the expand_materials_to_sabs '
+               'opperation can not be performed ithout openmc')
+        raise ImportError(msg)
 
     if isinstance(materials, openmc.Materials):
         iterable_of_materials = materials
@@ -239,9 +241,10 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
     try:
         import openmc
     except ImportError:
-        print('openmc python package was was found, cross_sections.xml can '
-              'not be made.')
-        return None
+        msg = ('import openmc failed. openmc python package could not be found '
+               'and was not imported, cross sections.xml can not be made'
+               'without openmc')
+        raise Warning.warn(msg)
 
     library = openmc.data.DataLibrary()
     for index, row in dataframe.iterrows():
