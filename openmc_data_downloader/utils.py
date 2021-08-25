@@ -136,7 +136,6 @@ def just_in_time_library_generator(
         materials_xml)
     isotopes = list(set(isotopes + isotopes_from_material_xml))
 
-
     isotopes_from_materials = expand_materials_to_isotopes(materials)
     isotopes = list(set(isotopes + isotopes_from_materials))
 
@@ -150,9 +149,8 @@ def just_in_time_library_generator(
     sab_from_material_xml = expand_materials_xml_to_sab(materials_xml)
     sab = list(set(sab + sab_from_material_xml))
 
-    if len(materials) > 0:
-        sabs_from_materials = expand_materials_to_sabs(materials)
-        sab = list(set(sab + sabs_from_materials))
+    sabs_from_materials = expand_materials_to_sabs(materials)
+    sab = list(set(sab + sabs_from_materials))
 
     dataframe_sab = identify_sab_to_download(
         libraries=libraries,
