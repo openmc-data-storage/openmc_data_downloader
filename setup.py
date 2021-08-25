@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="openmc_data_downloader",
-    version="0.3.0",
+    version="develop",
     summary="Download cross section h5 files for use in OpenMC",
     author="Jonathan Shimwell",
     author_email="mail@jshimwell.com",
@@ -24,6 +24,17 @@ setuptools.setup(
             "LICENSE",
         ]
     },
+    classifiers=[
+        'Natural Language :: English',
+        'Topic :: Scientific/Engineering',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+    ],
     tests_require=["pytest-cov", "pytest-runner"],
     install_requires=[
         "pandas",

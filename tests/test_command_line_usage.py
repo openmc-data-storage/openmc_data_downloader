@@ -145,5 +145,6 @@ class test_command_line_usage(unittest.TestCase):
         assert Path('ENDFB-7.1-NNDC_O16.h5').is_file()
         assert Path('ENDFB-7.1-NNDC_O17.h5').is_file()
         assert Path('TENDL-2019_O18.h5').is_file()
+        assert Path('ENDFB-7.1-NNDC_c_Be_in_BeO.h5').is_file()
         assert Path('materials.xml').is_file()
-        assert len(list(Path('.').glob('*.h5'))) == 4
+        assert len(list(Path('.').glob('*.h5'))) == 5

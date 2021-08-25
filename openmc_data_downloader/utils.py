@@ -1,23 +1,18 @@
 
 
 import os
+import warnings
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
 import pandas as pd
 
-from openmc_data_downloader import (
-    NATURAL_ABUNDANCE,
-    LIB_OPTIONS,
-    PARTICLE_OPTIONS,
-    SAB_OPTIONS,
-    ISOTOPE_OPTIONS,
-    xs_info,
-    sab_info
-)
+from openmc_data_downloader import (ISOTOPE_OPTIONS, LIB_OPTIONS,
+                                    NATURAL_ABUNDANCE, PARTICLE_OPTIONS,
+                                    SAB_OPTIONS, sab_info, xs_info)
 
 _BLOCK_SIZE = 16384
 
@@ -37,12 +32,19 @@ def set_enviromental_varible(cross_section_xml_path: Union[Path, str]) -> None:
 
 
 def expand_materials_to_isotopes(materials: list):
+
+    if isinstance(materials, list):
+        if len(materials) == 0:
+            return []
+
     try:
         import openmc
     except ImportError:
-        print('openmc python package was not imported, '
-              'expand_materials_to_isotopes can not be performed.')
-        return None
+        msg = (
+            'import openmc failed. openmc python package could not be found '
+            'and was not imported, the expand_materials_to_isotopes '
+            'opperation can not be performed ithout openmc')
+        raise ImportError(msg)
 
     if isinstance(materials, openmc.Materials):
         iterable_of_materials = materials
@@ -72,12 +74,19 @@ def expand_materials_to_isotopes(materials: list):
 
 
 def expand_materials_to_sabs(materials: list):
+
+    if isinstance(materials, list):
+        if len(materials) == 0:
+            return []
+
     try:
         import openmc
     except ImportError:
-        print('openmc python package was not imported, '
-              'expand_materials_to_isotopes can not be performed.')
-        return None
+        msg = (
+            'import openmc failed. openmc python package could not be found '
+            'and was not imported, the expand_materials_to_sabs '
+            'opperation can not be performed ithout openmc')
+        raise ImportError(msg)
 
     if isinstance(materials, openmc.Materials):
         iterable_of_materials = materials
@@ -113,15 +122,15 @@ def just_in_time_library_generator(
     sab: List[str] = [],
     destination: Union[str, Path] = None,
     materials_xml: List[Union[str, Path]] = [],
-    materials: list = [],
+    materials: list = [],  # also accepts a single openmc.Material
     particles: Optional[List[str]] = ['neutron', 'photon'],
     set_OPENMC_CROSS_SECTIONS: bool = True,
 ) -> str:
 
     # expands elements, materials xml into list of isotopes
-    if len(elements) > 0:
-        isotopes_from_elements = expand_elements_to_isotopes(elements)
-        isotopes = list(set(isotopes + isotopes_from_elements))
+
+    isotopes_from_elements = expand_elements_to_isotopes(elements)
+    isotopes = list(set(isotopes + isotopes_from_elements))
 
     isotopes_from_material_xml = expand_materials_xml_to_isotopes(
         materials_xml)
@@ -156,7 +165,10 @@ def just_in_time_library_generator(
     cross_section_xml_path = create_cross_sections_xml(dataframe, destination)
 
     if set_OPENMC_CROSS_SECTIONS is True:
-        set_enviromental_varible(cross_section_xml_path)
+        # making the cross section xml requires openmc and returns None if
+        # openmc is not found.
+        if cross_section_xml_path is not None:
+            set_enviromental_varible(cross_section_xml_path)
     else:
         print('Set your $OPENMC_CROSS_SECTIONS enviromental varible to {} to '
               'use this custom library'.format(cross_section_xml_path))
@@ -239,8 +251,11 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
     try:
         import openmc
     except ImportError:
-        print('openmc python package was was found, cross_sections.xml can '
-              'not be made.')
+        msg = (
+            'import openmc failed. openmc python package could not be found '
+            'and was not imported, cross sections.xml can not be made'
+            'without openmc')
+        warnings.warn(msg)
         return None
 
     library = openmc.data.DataLibrary()
