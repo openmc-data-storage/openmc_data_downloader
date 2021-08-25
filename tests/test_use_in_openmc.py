@@ -388,10 +388,13 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
             set_OPENMC_CROSS_SECTIONS=True)
 
         os.system('echo $OPENMC_CROSS_SECTIONS')
-        os.system('ls')
         openmc.run()
+        os.system('ls')
 
-        assert Path('ENDFB-7.1-WMP_P31.h5').is_file()
+        # WMP is currently not downloaded due to this issue
+        # https://github.com/openmc-data-storage/openmc_data_downloader/issues/13
+        # assert Path('ENDFB-7.1-WMP_P31.h5').is_file()
+        assert Path('ENDFB-7.1-NNDC_P31.h5').is_file()
 
         assert Path('summary.h5').is_file()
         assert Path('statepoint.2.h5').is_file()
