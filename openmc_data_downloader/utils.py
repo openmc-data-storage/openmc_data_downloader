@@ -1,23 +1,18 @@
 
 
 import os
+import warnings
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
 import pandas as pd
 
-from openmc_data_downloader import (
-    NATURAL_ABUNDANCE,
-    LIB_OPTIONS,
-    PARTICLE_OPTIONS,
-    SAB_OPTIONS,
-    ISOTOPE_OPTIONS,
-    xs_info,
-    sab_info
-)
+from openmc_data_downloader import (ISOTOPE_OPTIONS, LIB_OPTIONS,
+                                    NATURAL_ABUNDANCE, PARTICLE_OPTIONS,
+                                    SAB_OPTIONS, sab_info, xs_info)
 
 _BLOCK_SIZE = 16384
 
@@ -127,12 +122,12 @@ def just_in_time_library_generator(
         isotopes_from_elements = expand_elements_to_isotopes(elements)
         isotopes = list(set(isotopes + isotopes_from_elements))
 
-    isotopes_from_material_xml = expand_materials_xml_to_isotopes(
-        materials_xml)
+    isotopes_from_material_xml = expand_materials_xml_to_isotopes(materials_xml)
     isotopes = list(set(isotopes + isotopes_from_material_xml))
 
-    isotopes_from_materials = expand_materials_to_isotopes(materials)
-    isotopes = list(set(isotopes + isotopes_from_materials))
+    if len(materials) > 0:
+        isotopes_from_materials = expand_materials_to_isotopes(materials)
+        isotopes = list(set(isotopes + isotopes_from_materials))
 
     # filters the large dataframe of all isotopes into just the ones you want
     dataframe_xs = identify_isotopes_to_download(
@@ -144,8 +139,9 @@ def just_in_time_library_generator(
     sab_from_material_xml = expand_materials_xml_to_sab(materials_xml)
     sab = list(set(sab + sab_from_material_xml))
 
-    sabs_from_materials = expand_materials_to_sabs(materials)
-    sab = list(set(sab + sabs_from_materials))
+    if len(materials) > 0:
+        sabs_from_materials = expand_materials_to_sabs(materials)
+        sab = list(set(sab + sabs_from_materials))
 
     dataframe_sab = identify_sab_to_download(
         libraries=libraries,
@@ -160,7 +156,10 @@ def just_in_time_library_generator(
     cross_section_xml_path = create_cross_sections_xml(dataframe, destination)
 
     if set_OPENMC_CROSS_SECTIONS is True:
-        set_enviromental_varible(cross_section_xml_path)
+        # making the cross section xml requires openmc and returns None if
+        # openmc is not found.
+        if cross_section_xml_path is not None:
+            set_enviromental_varible(cross_section_xml_path)
     else:
         print('Set your $OPENMC_CROSS_SECTIONS enviromental varible to {} to '
               'use this custom library'.format(cross_section_xml_path))
@@ -247,7 +246,8 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
             'import openmc failed. openmc python package could not be found '
             'and was not imported, cross sections.xml can not be made'
             'without openmc')
-        raise Warning.warn(msg)
+        warnings.warn(msg)
+        return None
 
     library = openmc.data.DataLibrary()
     for index, row in dataframe.iterrows():
