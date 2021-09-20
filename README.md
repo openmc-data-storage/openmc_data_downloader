@@ -201,7 +201,7 @@ my_mat.add_s_alpha_beta('Be_in_BeO')
 odd.just_in_time_library_generator(
     libraries='ENDFB-7.1-NNDC',
     materials= my_mat
-    particles = ['neutrons'],
+    particles = ['neutron'],
 )
 ```
 
@@ -213,7 +213,7 @@ import openmc_data_downloader as odd
 odd.just_in_time_library_generator(
     libraries='TENDL-2019',
     elements=['Li', 'Be'],
-    particles = ['photon', 'neutrons'],
+    particles = ['photon', 'neutron'],
     isotopes=['Fe56', 'U235'],
 )
 ```
