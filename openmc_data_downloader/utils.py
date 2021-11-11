@@ -17,7 +17,7 @@ from openmc_data_downloader import (ISOTOPE_OPTIONS, LIB_OPTIONS,
 _BLOCK_SIZE = 16384
 
 
-def set_enviromental_varible(cross_section_xml_path: Union[Path, str]) -> None:
+def set_environmental_variable(cross_section_xml_path: Union[Path, str]) -> None:
 
     if not isinstance(cross_section_xml_path, Path):
         cross_section_xml_path = Path(cross_section_xml_path)
@@ -25,7 +25,7 @@ def set_enviromental_varible(cross_section_xml_path: Union[Path, str]) -> None:
     if cross_section_xml_path.is_file() is False:
         raise FileNotFoundError(
             '{} was not found, therefore not setting OPENMC_CROSS_SECTIONS '
-            'enviromental varible'.format(cross_section_xml_path))
+            'environmental variable'.format(cross_section_xml_path))
 
     print('setting OPENMC_CROSS_SECTIONS', str(cross_section_xml_path))
     os.environ["OPENMC_CROSS_SECTIONS"] = str(cross_section_xml_path)
@@ -125,6 +125,7 @@ def just_in_time_library_generator(
     materials: list = [],  # also accepts a single openmc.Material
     particles: Optional[List[str]] = ['neutron', 'photon'],
     set_OPENMC_CROSS_SECTIONS: bool = True,
+    overwrite: bool = True
 ) -> str:
 
     # expands elements, materials xml into list of isotopes
@@ -159,8 +160,11 @@ def just_in_time_library_generator(
 
     dataframe = pd.concat([dataframe_sab, dataframe_xs])
 
-    download_data_frame_of_isotopes(dataframe, destination)
-    # download_data_frame_of_isotopes(dataframe_xs, destination)
+    download_data_frame_of_isotopes(
+        dataframe=dataframe,
+        destination=destination,
+        overwrite=overwrite
+    )
 
     cross_section_xml_path = create_cross_sections_xml(dataframe, destination)
 
@@ -168,10 +172,10 @@ def just_in_time_library_generator(
         # making the cross section xml requires openmc and returns None if
         # openmc is not found.
         if cross_section_xml_path is not None:
-            set_enviromental_varible(cross_section_xml_path)
+            set_environmental_variable(cross_section_xml_path)
     else:
-        print('Set your $OPENMC_CROSS_SECTIONS enviromental varible to {} to '
-              'use this custom library'.format(cross_section_xml_path))
+        print('Set your $OPENMC_CROSS_SECTIONS environmental variable to '
+              f'{cross_section_xml_path} to use this custom library')
 
     return cross_section_xml_path
 
@@ -179,7 +183,8 @@ def just_in_time_library_generator(
 def download_single_file(
     url: str,
     output_filename: Union[str, Path] = None,
-    destination: Union[str, Path] = None
+    destination: Union[str, Path] = None,
+    overwrite: bool = True,
 ) -> Path:
     """Download file from a URL
 
@@ -199,24 +204,20 @@ def download_single_file(
         if not isinstance(destination, Path):
             destination = Path(destination)
 
+    if output_filename is None:
+        local_path = Path(Path(urlparse(url).path).name)
+    else:
+        local_path = output_filename
+
+    if destination is not None:
+        Path(destination).mkdir(parents=True, exist_ok=True)
+        local_path = destination / local_path
+
+    if overwrite is False and local_path.is_file():
+        print('Skipping {}, already downloaded'.format(local_path))
+        return local_path
+
     with urlopen(url) as response:
-        # Get file size from header
-        file_size = response.length
-
-        if output_filename is None:
-            local_path = Path(Path(urlparse(url).path).name)
-        else:
-            local_path = output_filename
-
-        if destination is not None:
-            Path(destination).mkdir(parents=True, exist_ok=True)
-            local_path = destination / local_path
-
-        # Check if file already downloaded
-        if local_path.is_file():
-            if local_path.stat().st_size == file_size:
-                print('Skipping {}, already downloaded'.format(local_path))
-                return local_path
 
         # Copy file to disk in chunks
         print('Downloading {}... '.format(local_path), end='')
@@ -232,14 +233,19 @@ def download_single_file(
     return local_path
 
 
-def download_data_frame_of_isotopes(dataframe, destination: Union[str, Path]):
+def download_data_frame_of_isotopes(
+    dataframe,
+    destination: Union[str, Path],
+    overwrite: bool = True
+):
 
     local_files = []
     for index, row in dataframe.iterrows():
         local_file = download_single_file(
             url=row['url'],
             output_filename=row['local_file'],
-            destination=destination
+            destination=destination,
+            overwrite=overwrite
         )
         local_files.append(local_file)
 

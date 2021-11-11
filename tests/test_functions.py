@@ -5,6 +5,7 @@ __author__ = "Jonathan Shimwell"
 
 import os
 import unittest
+import  time
 
 import openmc
 import pandas as pd
@@ -15,6 +16,7 @@ from openmc_data_downloader import (expand_materials_to_isotopes,
                                     expand_elements_to_isotopes,
                                     expand_materials_xml_to_sab,
                                     expand_materials_to_sabs,
+                                    download_single_file,
                                     )
 
 
@@ -410,3 +412,26 @@ class test_isotope_finding(unittest.TestCase):
 
         self.assertRaises(ValueError, incorrect_material_type)
         self.assertRaises(ValueError, incorrect_materials_list_type)
+
+    def test_download_single_file_with_overwrite_speed_up(self):
+        """Checks that downloading with overwrite to False is quicker"""
+
+        current_time = time.time()
+        download_single_file(
+            url='https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/Fe.h5',
+            output_filename='Fe56_new_download.h5',
+            overwrite=True
+        )
+        time_after_download = time.time()
+        time_to_download = time_after_download-current_time
+
+        current_time = time.time()
+        download_single_file(
+            url='https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/Fe.h5',
+            output_filename='Fe56_new_download.h5',
+            overwrite=False
+        )
+        time_after_download = time.time()
+        time_to_not_download = time_after_download-current_time
+
+        assert time_to_not_download < time_to_download
