@@ -1,3 +1,4 @@
 
 pandas
+retry
 # openmc is optional, but not avaialbe via pip

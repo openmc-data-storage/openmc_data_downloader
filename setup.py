@@ -38,6 +38,7 @@ setuptools.setup(
     tests_require=["pytest-cov", "pytest-runner"],
     install_requires=[
         "pandas",
+        "retry",
         # 'openmc' is optional for this package but is not available via pip install at the moment
     ],
 )
