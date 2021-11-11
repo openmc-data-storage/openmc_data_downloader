@@ -5,14 +5,19 @@ from pathlib import Path
 from typing import List, Optional, Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
-from urllib.error import HTTPError
 
 import pandas as pd
 from retry import retry
 
-from openmc_data_downloader import (ISOTOPE_OPTIONS, LIB_OPTIONS,
-                                    NATURAL_ABUNDANCE, PARTICLE_OPTIONS,
-                                    SAB_OPTIONS, sab_info, xs_info)
+from openmc_data_downloader import (
+    ISOTOPE_OPTIONS,
+    LIB_OPTIONS,
+    NATURAL_ABUNDANCE,
+    PARTICLE_OPTIONS,
+    SAB_OPTIONS,
+    sab_info,
+    xs_info,
+)
 
 _BLOCK_SIZE = 16384
 
