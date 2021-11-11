@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import List, Optional, Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
-from urllib.error import HTTPError
 
 import pandas as pd
 from retry import retry
