@@ -5,18 +5,14 @@ from pathlib import Path
 from typing import List, Optional, Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
+from urllib.error import HTTPError
 
 import pandas as pd
+from retry import retry
 
-from openmc_data_downloader import (
-    ISOTOPE_OPTIONS,
-    LIB_OPTIONS,
-    NATURAL_ABUNDANCE,
-    PARTICLE_OPTIONS,
-    SAB_OPTIONS,
-    sab_info,
-    xs_info,
-)
+from openmc_data_downloader import (ISOTOPE_OPTIONS, LIB_OPTIONS,
+                                    NATURAL_ABUNDANCE, PARTICLE_OPTIONS,
+                                    SAB_OPTIONS, sab_info, xs_info)
 
 _BLOCK_SIZE = 16384
 
@@ -48,7 +44,7 @@ def expand_materials_to_isotopes(materials: list):
         msg = (
             "import openmc failed. openmc python package could not be found "
             "and was not imported, the expand_materials_to_isotopes "
-            "opperation can not be performed ithout openmc"
+            "opperation can not be performed without openmc"
         )
         raise ImportError(msg)
 
@@ -95,7 +91,7 @@ def expand_materials_to_sabs(materials: list):
         msg = (
             "import openmc failed. openmc python package could not be found "
             "and was not imported, the expand_materials_to_sabs "
-            "opperation can not be performed ithout openmc"
+            "opperation can not be performed without openmc"
         )
         raise ImportError(msg)
 
@@ -231,6 +227,13 @@ def download_single_file(
         print("Skipping {}, already downloaded".format(local_path))
         return local_path
 
+    local_path = download_url_in_chuncks(url, local_path)
+
+    return local_path
+
+
+@retry(HTTPError, tries=3)
+def download_url_in_chuncks(url, local_path):
     with urlopen(url) as response:
 
         # Copy file to disk in chunks
@@ -336,7 +339,7 @@ def identify_sab_to_download(
     print("Searching libraries with the following priority", priority_dict)
 
     # Tried to removed this dict to dataframe conversion out of the function
-    # and into the initilisation of the package but this resultied in
+    # and into the initialization of the package but this resultied in
     # a SettingwithCopyWarning which can be fixed and understood here
     # https://www.dataquest.io/blog/settingwithcopywarning/
     sab_info_df = pd.DataFrame.from_dict(sab_info)
@@ -410,7 +413,7 @@ def identify_isotopes_to_download(
     print("Searching libraries with the following priority", priority_dict)
 
     # Tried to removed this dict to dataframe conversion out of the function
-    # and into the initilisation of the package but this resultied in
+    # and into the initialization of the package but this resultied in
     # a SettingwithCopyWarning which can be fixed and understood here
     # https://www.dataquest.io/blog/settingwithcopywarning/
     xs_info_df = pd.DataFrame.from_dict(xs_info)
