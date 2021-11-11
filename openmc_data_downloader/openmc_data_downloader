@@ -4,7 +4,7 @@
 A nuclear data downloading package that facilitates the reproduction of cross
 section collections. Use the command line tool or Python API to download the h5
 cross sections for just the isotopes / elements that you want. Specify the
-prefered nuclear data libraries to use. Automaticallly avoid duplication and
+preferred nuclear data libraries to use. Automatically avoid duplication and
 generation of custom cross_section.xml files
 """
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
         choices=LIB_OPTIONS, nargs='*',
         help="The nuclear data libraries to search through when searching for \
         cross sections. Multiple libaries are acceptable and will be \
-        preferentially utilised in the order provided",
+        preferentially utilized in the order provided",
         default=[],
         required=True
     )
@@ -65,6 +65,12 @@ if __name__ == '__main__':
         help='Directory to create new library in'
     )
 
+    parser.add_argument(
+        '-o', '--overwrite',
+        type=bool, default=True,
+        help='Should exiting files be overwritten'
+    )
+
     args = parser.parse_args()
 
     just_in_time_library_generator(
@@ -75,5 +81,6 @@ if __name__ == '__main__':
         destination=args.destination,
         materials_xml=args.materials_xml,
         particles=args.particles,
-        set_OPENMC_CROSS_SECTIONS=False
+        set_OPENMC_CROSS_SECTIONS=False,
+        overwrite=args.overwrite
     )
