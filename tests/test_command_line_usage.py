@@ -4,6 +4,7 @@ __author__ = "Jonathan Shimwell"
 
 
 import os
+import time
 import unittest
 from pathlib import Path
 
@@ -146,3 +147,22 @@ class test_command_line_usage(unittest.TestCase):
         assert Path("ENDFB-7.1-NNDC_c_Be_in_BeO.h5").is_file()
         assert Path("materials.xml").is_file()
         assert len(list(Path(".").glob("*.h5"))) == 5
+
+    def test_download_single_file_with_overwrite_speed_up(self):
+        """Checks that downloading with overwrite to False is quicker"""
+
+        current_time = time.time()
+        os.system(
+            "openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -e Be --overwrite"
+        )
+        time_after_download = time.time()
+        time_to_download = time_after_download - current_time
+
+        current_time = time.time()
+        os.system(
+            "openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -e Be --no-overwrite",
+        )
+        time_after_download = time.time()
+        time_to_not_download = time_after_download - current_time
+
+        assert time_to_not_download < time_to_download

@@ -66,11 +66,18 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '-o', '--overwrite',
-        type=bool, default=True,
-        help='Should exiting files be overwritten'
+        '--overwrite',
+        action='store_true',
+        help='Exiting files will be overwritten'
     )
 
+    parser.add_argument(
+        '--no-overwrite',
+        action='store_false',
+        help='Exiting files will not be overwritten'
+    )
+
+    parser.set_defaults(overwrite=False)
     args = parser.parse_args()
 
     just_in_time_library_generator(
