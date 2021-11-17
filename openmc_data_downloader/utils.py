@@ -141,7 +141,7 @@ def just_in_time_library_generator(
     materials: list = [],  # also accepts a single openmc.Material
     particles: Optional[List[str]] = ["neutron", "photon"],
     set_OPENMC_CROSS_SECTIONS: bool = True,
-    overwrite: bool = True,
+    overwrite: bool = False,
 ) -> str:
 
     # expands elements, materials xml into list of isotopes
