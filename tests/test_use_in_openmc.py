@@ -311,7 +311,7 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         # Define material
         my_mat = openmc.Material()
         my_mat.add_element("Be", 0.5)
-        my_mat.add_s_alpha_beta("Be_in_BeO")
+        my_mat.add_s_alpha_beta("c_Be_in_BeO")
         openmc.openmc.Materials([my_mat]).export_to_xml()
 
         # Create a sphere of my_mat
