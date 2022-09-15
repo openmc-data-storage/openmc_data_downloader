@@ -1,0 +1,51 @@
+{% set name = "openmc_data_downloader" %}
+
+package:
+  name: "{{ name|lower }}"
+  # conda package version tag is obtained from the git release version tag
+  version: {{ GIT_DESCRIBE_TAG }}
+
+source:
+  path: ..
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  
+  # could be changed to use pip install in the future
+  # script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  build:
+    - python {{ python }}
+    - setuptools>=46.4.0
+    - setuptools_scm>=6.3.1
+  run:
+    - python
+    - pandas
+    - retry
+    - openmc
+
+test:
+  imports:
+    - openmc_data_downloader
+  requires:
+    - pytest
+  source_files:
+    - tests/
+  commands:
+    - pytest tests
+
+
+about:
+  home: "https://github.com/openmc-data-storage/openmc_data_downloader"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  doc_url: https://github.com/openmc-data-storage/openmc_data_downloader
+  dev_url: https://github.com/openmc-data-storage/openmc_data_downloader
+  summary: openmc_data_downloader - A Python package for downloading h5 cross section files for use in OpenMC.
+
+extra:
+  recipe-maintainers:
+    - shimwell
