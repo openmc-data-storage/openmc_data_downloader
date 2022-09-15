@@ -41,7 +41,7 @@ about:
   home: "https://github.com/openmc-data-storage/openmc_data_downloader"
   license: MIT
   license_family: MIT
-  license_file: LICENSE.txt
+  license_file: LICENSE
   doc_url: https://github.com/openmc-data-storage/openmc_data_downloader
   dev_url: https://github.com/openmc-data-storage/openmc_data_downloader
   summary: openmc_data_downloader - A Python package for downloading h5 cross section files for use in OpenMC.
