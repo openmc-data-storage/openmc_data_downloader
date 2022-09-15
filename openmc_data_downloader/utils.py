@@ -336,7 +336,8 @@ def identify_sab_to_download(
     for counter, entry in enumerate(sab):
         if entry not in SAB_OPTIONS:
             raise ValueError(
-                "The sab argument must be one of the following", SAB_OPTIONS
+                "The sab argument must be one of the following", SAB_OPTIONS,
+                " Not {entry}"
             )
 
         priority_dict[entry] = counter + 1
