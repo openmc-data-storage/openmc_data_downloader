@@ -258,7 +258,7 @@ class test_isotope_finding(unittest.TestCase):
 
         my_mat = openmc.Material()
         my_mat.add_element("Be", 0.5)
-        my_mat.add_s_alpha_beta("Be_in_BeO")
+        my_mat.add_s_alpha_beta("c_Be_in_BeO")
         os.system("rm materials.xml")
         openmc.Materials([my_mat]).export_to_xml()
 
@@ -269,7 +269,7 @@ class test_isotope_finding(unittest.TestCase):
 
         my_mat = openmc.Material()
         my_mat.add_element("Be", 0.5)
-        my_mat.add_s_alpha_beta("Be_in_BeO")
+        my_mat.add_s_alpha_beta("c_Be_in_BeO")
         os.system("rm materials.xml")
         openmc.Materials([my_mat]).export_to_xml()
 
@@ -279,8 +279,8 @@ class test_isotope_finding(unittest.TestCase):
 
         my_mat = openmc.Material()
         my_mat.add_element("Be", 0.5)
-        my_mat.add_s_alpha_beta("Be_in_BeO")
-        my_mat.add_s_alpha_beta("H_in_H2O")
+        my_mat.add_s_alpha_beta("c_Be_in_BeO")
+        my_mat.add_s_alpha_beta("c_H_in_H2O")
         os.system("rm materials.xml")
         openmc.Materials([my_mat]).export_to_xml()
 
@@ -293,8 +293,8 @@ class test_isotope_finding(unittest.TestCase):
 
         my_mat = openmc.Material()
         my_mat.add_element("Be", 0.5)
-        my_mat.add_s_alpha_beta("Be_in_BeO")
-        my_mat.add_s_alpha_beta("H_in_H2O")
+        my_mat.add_s_alpha_beta("c_Be_in_BeO")
+        my_mat.add_s_alpha_beta("c_H_in_H2O")
 
         assert expand_materials_to_sabs(my_mat) == ["c_Be_in_BeO", "c_H_in_H2O"]
 
@@ -302,7 +302,7 @@ class test_isotope_finding(unittest.TestCase):
 
         my_mat = openmc.Material()
         my_mat.add_element("Be", 0.5)
-        my_mat.add_s_alpha_beta("H_in_H2O")
+        my_mat.add_s_alpha_beta("c_H_in_H2O")
 
         assert expand_materials_to_sabs(my_mat) == ["c_H_in_H2O"]
 
