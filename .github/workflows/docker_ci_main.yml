@@ -21,7 +21,7 @@ jobs:
 
     - name: Setup package
       run: |
-        python setup.py install
+        pip install .
 
     - name: test test_command_line_usage.py
       run: |
