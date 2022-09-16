@@ -252,7 +252,7 @@ class test_isotope_finding(unittest.TestCase):
         os.system("rm materials.xml")
         openmc.Materials([my_mat]).export_to_xml()
 
-        assert expand_materials_xml_to_isotopes("materials.xml") == ["Li7", "Li6"]
+        assert expand_materials_xml_to_isotopes("materials.xml") == ["Li6", "Li7"]
 
     def test_expand_material_xmls_with_sab(self):
 
