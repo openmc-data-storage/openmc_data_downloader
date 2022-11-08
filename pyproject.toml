@@ -27,7 +27,6 @@ dependencies = [
 ]
 dynamic = ["version"]
 
-
 [tool.setuptools_scm]
 write_to = "src/_version.py"
 
@@ -45,4 +44,4 @@ tests = [
 package-dir = {"" = "src"}
 
 [project.scripts]
-open_data_downloader = "openmc_data_downloader.openmc_data_downloader:main"
+openmc_data_downloader = "openmc_data_downloader.openmc_data_downloader:main"
