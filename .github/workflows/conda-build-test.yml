@@ -20,9 +20,8 @@ jobs:
             apt-get --allow-releaseinfo-change update
             conda install -y anaconda-client conda-build
             conda config --set anaconda_upload no
-            conda install -y boa -c conda-forge
       - name: Build and test
         env:
           GIT_DESCRIBE_TAG: 0.1
         run: |
-            conda mambabuild conda -c conda-forge --config-file conda/conda_build_config.yaml
+            conda build conda -c conda-forge --config-file conda/conda_build_config.yaml
