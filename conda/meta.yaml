@@ -10,10 +10,7 @@ source:
 
 build:
   number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
-  
-  # could be changed to use pip install in the future
-  # script: python -m pip install --no-deps --ignore-installed .
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:

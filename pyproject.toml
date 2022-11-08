@@ -23,7 +23,7 @@ classifiers = [
 ]
 dependencies = [
     "pandas",
-    "retry",
+    "retry"
 ]
 dynamic = ["version"]
 
@@ -34,7 +34,7 @@ write_to = "src/_version.py"
 
 [project.optional-dependencies]
 tests = [
-    "pytest",
+    "pytest"
 ]
 
 [project.urls]
