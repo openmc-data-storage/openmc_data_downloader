@@ -26,29 +26,32 @@ def test_expansion_of_elements_with_stable_keyword():
     all_stable_isotopes = expand_elements_to_isotopes("stable")
     assert len(all_stable_isotopes) == 290
 
+
 def test_expansion_of_elements_with_all_keyword():
     all_stable_isotopes = expand_elements_to_isotopes("all")
     assert len(all_stable_isotopes) == 1233
+
 
 def test_expansion_of_elements_with_single_element():
     stable_isotopes = expand_elements_to_isotopes("Be")
     assert stable_isotopes == ["Be9"]
 
+
 def test_expansion_of_elements_with_multiple_element():
     stable_isotopes = expand_elements_to_isotopes(["Be", "Li"])
     assert stable_isotopes == ["Be9", "Li6", "Li7"]
 
+
 def test_identify_sab_to_download_with_all_keyword():
 
-    filtered_df = identify_sab_to_download(
-        libraries=["ENDFB-7.1-NNDC"], sab=["all"]
-    )
+    filtered_df = identify_sab_to_download(libraries=["ENDFB-7.1-NNDC"], sab=["all"])
 
     assert len(filtered_df.values) == 20
 
     filtered_df2 = identify_sab_to_download(libraries=["ENDFB-7.1-NNDC"], sab="all")
 
     assert len(filtered_df2.values) == 20
+
 
 def test_identify_sab_to_download_finds_two():
 
@@ -57,6 +60,7 @@ def test_identify_sab_to_download_finds_two():
     )
 
     assert len(filtered_df.values) == 2
+
 
 def test_identify_isotopes_to_download_finds_tendl_neutron():
 
@@ -85,6 +89,7 @@ def test_identify_isotopes_to_download_finds_tendl_neutron():
     # can't get pandas dataframe comparison to work so resorted to the lists above
     # assert_frame_equal(answer_df, filtered_df)
 
+
 def test_identify_isotopes_to_download_finds_fendl_photon():
 
     filtered_df = identify_isotopes_to_download(
@@ -108,6 +113,7 @@ def test_identify_isotopes_to_download_finds_fendl_photon():
     assert len(filtered_df.values) == 1
     assert list(filtered_df.keys()) == list(answer_df.keys())
     assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
+
 
 def test_identify_isotopes_to_download_finds_fendl_photon_neutron():
 
@@ -134,6 +140,7 @@ def test_identify_isotopes_to_download_finds_fendl_photon_neutron():
     assert list(filtered_df.keys()) == list(answer_df.keys())
     assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
     assert filtered_df.values[1].tolist() == answer_df.values[1].tolist()
+
 
 def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes():
 
@@ -169,6 +176,7 @@ def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes
     assert filtered_df.values[1].tolist() == answer_df.values[1].tolist()
     assert filtered_df.values[2].tolist() == answer_df.values[2].tolist()
 
+
 def test_identify_isotopes_to_download_all():
 
     filtered_df = identify_isotopes_to_download(
@@ -183,6 +191,7 @@ def test_identify_isotopes_to_download_all():
 
     assert len(filtered_df.values) == 239
 
+
 def test_expand_materials_from_object_list_with_single_mat():
 
     my_mat = openmc.Material()
@@ -192,6 +201,7 @@ def test_expand_materials_from_object_list_with_single_mat():
 
     assert expand_materials_to_isotopes([my_mat]) == ["Pu239", "Pu240", "Pu241"]
 
+
 def test_expand_materials_from_object_with_single_mat():
 
     my_mat = openmc.Material()
@@ -200,6 +210,7 @@ def test_expand_materials_from_object_with_single_mat():
     my_mat.add_nuclide("Pu241", 1.1674e-4)
 
     assert expand_materials_to_isotopes(my_mat) == ["Pu239", "Pu240", "Pu241"]
+
 
 def test_expand_materials_from_object_list_with_multiple_mat():
 
@@ -216,6 +227,7 @@ def test_expand_materials_from_object_list_with_multiple_mat():
         "Al27",
     ]
 
+
 def test_expand_materials_from_object_list_with_openmc_materials():
 
     my_mat1 = openmc.Material()
@@ -229,6 +241,7 @@ def test_expand_materials_from_object_list_with_openmc_materials():
 
     assert expand_materials_to_isotopes(mats) == ["Li6", "Li7", "Al27"]
 
+
 def test_expand_material_xmls_with_list_input():
 
     my_mat = openmc.Material()
@@ -237,6 +250,7 @@ def test_expand_material_xmls_with_list_input():
     openmc.Materials([my_mat]).export_to_xml()
 
     assert expand_materials_xml_to_isotopes(["materials.xml"]) == ["Be9"]
+
 
 def test_expand_material_xmls_with_str_input():
 
@@ -247,6 +261,7 @@ def test_expand_material_xmls_with_str_input():
 
     assert expand_materials_xml_to_isotopes("materials.xml") == ["Al27"]
 
+
 def test_expand_material_xmls_with_two_isotopes():
 
     my_mat = openmc.Material()
@@ -256,6 +271,7 @@ def test_expand_material_xmls_with_two_isotopes():
 
     assert "Li6" in expand_materials_xml_to_isotopes("materials.xml")
     assert "Li7" in expand_materials_xml_to_isotopes("materials.xml")
+
 
 def test_expand_material_xmls_with_sab():
 
@@ -268,6 +284,7 @@ def test_expand_material_xmls_with_sab():
     # sab should not be in this list as this is just isotopes
     assert expand_materials_xml_to_isotopes("materials.xml") == ["Be9"]
 
+
 def test_expand_material_xmls_for_sabs_with_sab():
 
     my_mat = openmc.Material()
@@ -277,6 +294,7 @@ def test_expand_material_xmls_for_sabs_with_sab():
     openmc.Materials([my_mat]).export_to_xml()
 
     assert expand_materials_xml_to_sab("materials.xml") == ["c_Be_in_BeO"]
+
 
 def test_expand_material_xmls_for_sabs_with_two_sab():
 
@@ -292,6 +310,7 @@ def test_expand_material_xmls_for_sabs_with_two_sab():
         "c_H_in_H2O",
     ]
 
+
 def test_expand_material_for_sabs_with_two_sab():
 
     my_mat = openmc.Material()
@@ -301,6 +320,7 @@ def test_expand_material_for_sabs_with_two_sab():
 
     assert expand_materials_to_sabs(my_mat) == ["c_Be_in_BeO", "c_H_in_H2O"]
 
+
 def test_expand_material_for_sabs_with_sab():
 
     my_mat = openmc.Material()
@@ -309,23 +329,26 @@ def test_expand_material_for_sabs_with_sab():
 
     assert expand_materials_to_sabs(my_mat) == ["c_H_in_H2O"]
 
+
 def test_incorrect_material_enpty():
     with pytest.raises(ValueError):
         expand_materials_to_sabs("my_mat")
 
+
 def test_incorrect_sab_name():
     with pytest.raises(ValueError):
-        identify_sab_to_download(
-            libraries=["ENDFB-7.1-NNDC"], sab=["incorrect name"]
-        )
+        identify_sab_to_download(libraries=["ENDFB-7.1-NNDC"], sab=["incorrect name"])
+
 
 def test_incorrect_libraries():
     with pytest.raises(ValueError):
         identify_sab_to_download(libraries=[], sab=["c_Fe56"])
 
+
 def test_incorrect_library_name_for_sab_identifying():
     with pytest.raises(ValueError):
         identify_sab_to_download(libraries=["incorrect name"], sab=["c_Fe56"])
+
 
 def test_library_values_single_entry_list():
 
@@ -335,6 +358,7 @@ def test_library_values_single_entry_list():
 
     assert len(isotopes_df) == 2
 
+
 def test_emplty_isotopes():
     empty_df = identify_isotopes_to_download(
         libraries=["TENDL-2019"], isotopes=[], particles=["neutron"]
@@ -342,17 +366,20 @@ def test_emplty_isotopes():
     assert len(empty_df) == 0
     assert isinstance(empty_df, type(pd.DataFrame()))
 
+
 def test_incorrect_library_values_empty():
     with pytest.raises(ValueError):
         identify_isotopes_to_download(
             libraries=[], isotopes="Li6", particles=["neutron"]
         )
 
+
 def test_incorrect_library_values_wrong():
     with pytest.raises(ValueError):
         identify_isotopes_to_download(
             libraries=["coucou"], isotopes="Li6", particles=["neutron"]
         )
+
 
 def test_incorrect_expand_materials_to_isotopes_with_incorrect_args():
     """Checks than an error is raised when incorrect values of materials
@@ -363,6 +390,7 @@ def test_incorrect_expand_materials_to_isotopes_with_incorrect_args():
 
     with pytest.raises(ValueError):
         expand_materials_to_isotopes([1, 2, 3])
+
 
 def test_download_single_file_with_overwrite_speed_up():
     """Checks that downloading with overwrite to False is quicker"""

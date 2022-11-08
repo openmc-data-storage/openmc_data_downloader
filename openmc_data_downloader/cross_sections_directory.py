@@ -2292,4 +2292,8 @@ SAB_OPTIONS = [
 ]
 nested_list = list(NATURAL_ABUNDANCE.values())
 STABLE_ISOTOPE_OPTIONS = [item for sublist in nested_list for item in sublist]
-ALL_ISOTOPE_OPTIONS = tendl_2019_neutron_isotopes + fendl_31d_neutron_isotopes + endfb_71_nndc_neutron_isotopes
+ALL_ISOTOPE_OPTIONS = (
+    tendl_2019_neutron_isotopes
+    + fendl_31d_neutron_isotopes
+    + endfb_71_nndc_neutron_isotopes
+)
