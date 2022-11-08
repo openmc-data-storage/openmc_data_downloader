@@ -10,7 +10,8 @@ import pandas as pd
 from retry import retry
 
 from openmc_data_downloader import (
-    ISOTOPE_OPTIONS,
+    ALL_ISOTOPE_OPTIONS,
+    STABLE_ISOTOPE_OPTIONS,
     LIB_OPTIONS,
     NATURAL_ABUNDANCE,
     PARTICLE_OPTIONS,
@@ -383,7 +384,9 @@ def identify_isotopes_to_download(
     if isotopes == []:
         return pd.DataFrame()
     elif isotopes == "all" or isotopes == ["all"]:
-        isotopes = ISOTOPE_OPTIONS
+        isotopes = ALL_ISOTOPE_OPTIONS
+    elif isotopes == "stable" or isotopes == ["stable"]:
+        isotopes = STABLE_ISOTOPE_OPTIONS
 
     print("isotopes", isotopes)
 
@@ -454,8 +457,11 @@ def identify_isotopes_to_download(
 
 def expand_elements_to_isotopes(elements: Union[str, List[str]]):
 
+    if elements == "stable" or elements == ["stable"]:
+        return STABLE_ISOTOPE_OPTIONS
+
     if elements == "all" or elements == ["all"]:
-        return ISOTOPE_OPTIONS
+        return ALL_ISOTOPE_OPTIONS
 
     if isinstance(elements, str):
         return NATURAL_ABUNDANCE[elements]

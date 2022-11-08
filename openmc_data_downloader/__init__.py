@@ -18,7 +18,8 @@ from .cross_sections_directory import (
     LIB_OPTIONS,
     PARTICLE_OPTIONS,
     SAB_OPTIONS,
-    ISOTOPE_OPTIONS,
+    STABLE_ISOTOPE_OPTIONS,
+    ALL_ISOTOPE_OPTIONS,
     xs_info,
     sab_info,
 )

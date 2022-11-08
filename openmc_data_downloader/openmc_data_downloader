@@ -31,7 +31,7 @@ if __name__ == '__main__':
         '-i', '--isotopes',
         nargs='*',
         default=[],
-        help="The isotope or isotopes to download"
+        help="The isotope or isotopes to download, name of isotope e.g. 'Al27' or keyword 'all' or 'stable'"
     )
     parser.add_argument(
         '-s',
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-e', '--elements', nargs='*',
         default=[],
-        help="The element or elements to download"
+        help="The element or elements to download, name of element e.g. 'Al' or keyword 'all' or 'stable'"
     )
     parser.add_argument(
         '-p', '--particles', nargs='*',
