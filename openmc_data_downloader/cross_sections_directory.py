@@ -128,6 +128,15 @@ NATURAL_ABUNDANCE = {
     "Tc": [],  # no stable isotopes
 }
 
+
+def zaid_to_isotope(zaid: str) -> str:
+    """converts an isotope into a zaid e.g. 003006 -> Li6"""
+    a = str(zaid)[-3:]
+    z = str(zaid)[:-3]
+    symbol = ATOMIC_SYMBOL[int(z)]
+    return symbol + str(int(a))
+
+
 tendl_2019_neutron_isotopes = [
     "Ac225",
     "Ac226",
@@ -2200,14 +2209,6 @@ ATOMIC_SYMBOL = {
 }
 
 
-def zaid_to_isotope(zaid: str) -> str:
-    """converts an isotope into a zaid e.g. 003006 -> Li6"""
-    a = str(zaid)[-3:]
-    z = str(zaid)[:-3]
-    symbol = ATOMIC_SYMBOL[int(z)]
-    return symbol + str(int(a))
-
-
 endf_71_wmp_base_url = (
     "https://github.com/openmc-data-storage/ENDF-B-VII.1-WMP/raw/master/WMP_Library/"
 )
@@ -2290,4 +2291,5 @@ SAB_OPTIONS = [
     "c_Zr_in_ZrH",
 ]
 nested_list = list(NATURAL_ABUNDANCE.values())
-ISOTOPE_OPTIONS = [item for sublist in nested_list for item in sublist]
+STABLE_ISOTOPE_OPTIONS = [item for sublist in nested_list for item in sublist]
+ALL_ISOTOPE_OPTIONS = tendl_2019_neutron_isotopes + fendl_31d_neutron_isotopes + endfb_71_nndc_neutron_isotopes

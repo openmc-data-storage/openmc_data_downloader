@@ -101,6 +101,16 @@ openmc_data_downloader -l ENDFB-7.1-NNDC -i Be9 -d my_h5_files
 ```bash
 openmc_data_downloader -l TENDL-2019 -e Li Si Na -i Fe56 U235
 ```
+### Downloading all the isotopes from the TENDL 2019 nuclear library
+
+```bash
+openmc_data_downloader -l TENDL-2019 -i all
+```
+### Downloading all the stable isotopes from the TENDL 2019 nuclear library
+
+```bash
+openmc_data_downloader -l TENDL-2019 -i stable
+```
 
 ### Downloading all the isotopes in a materials.xml file from the TENDL 2019 nuclear library
 
