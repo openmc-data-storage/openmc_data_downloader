@@ -14,7 +14,7 @@ from pathlib import Path
 from openmc_data_downloader import just_in_time_library_generator, LIB_OPTIONS, SAB_OPTIONS
 
 
-if __name__ == '__main__':
+def main():
 
     parser = argparse.ArgumentParser()
 
@@ -91,3 +91,6 @@ if __name__ == '__main__':
         set_OPENMC_CROSS_SECTIONS=False,
         overwrite=args.overwrite
     )
+
+if __name__ == '__main__':
+    main()

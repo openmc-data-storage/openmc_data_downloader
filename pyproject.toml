@@ -45,4 +45,4 @@ tests = [
 package-dir = {"" = "src"}
 
 [project.scripts]
-convert_fendl = "openmc_data_downloader.openmc_data_downloader:main"
+open_data_downloader = "openmc_data_downloader.openmc_data_downloader:main"
