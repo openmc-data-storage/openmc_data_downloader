@@ -44,4 +44,4 @@ tests = [
 package-dir = {"" = "src"}
 
 [project.scripts]
-openmc_data_downloader = "openmc_data_downloader.openmc_data_downloader:main"
+openmc_data_downloader = "openmc_data_downloader.terminal_cmd:main"
