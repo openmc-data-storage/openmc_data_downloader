@@ -138,7 +138,9 @@ def just_in_time_library_generator(
     sab: typing.Iterable[str] = [],
     destination: Union[str, Path] = None,
     materials_xml: typing.Iterable[Union[str, Path]] = [],
-    materials: typing.Iterable['openmc.Material'] = [],  # also accepts a single openmc.Material
+    materials: typing.Iterable[
+        "openmc.Material"
+    ] = [],  # also accepts a single openmc.Material
     particles: Optional[typing.Iterable[str]] = ("neutron", "photon"),
     set_OPENMC_CROSS_SECTIONS: bool = True,
     overwrite: bool = False,
@@ -459,7 +461,7 @@ def expand_elements_to_isotopes(elements: Union[str, typing.Iterable[str]]):
 
     elif isinstance(elements, str):
         return NATURAL_ABUNDANCE[elements]
-    
+
     isotopes = []
     for element in elements:
         isotopes = isotopes + NATURAL_ABUNDANCE[element]
