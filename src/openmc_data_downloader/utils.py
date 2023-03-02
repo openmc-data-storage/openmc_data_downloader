@@ -10,6 +10,7 @@ from urllib.error import HTTPError
 import pandas as pd
 from retry import retry
 
+
 from openmc_data_downloader import (
     ALL_ISOTOPE_OPTIONS,
     STABLE_ISOTOPE_OPTIONS,
@@ -134,14 +135,14 @@ def expand_materials_to_sabs(materials: list):
 
 
 def just_in_time_library_generator(
-    libraries: typing.iterable[str] = (),
-    isotopes: typing.iterable[str] = (),
-    elements: typing.iterable[str] = (),
-    sab: typing.iterable[str] = (),
+    libraries: typing.Iterable[str] = [],
+    isotopes: typing.Iterable[str] = [],
+    elements: typing.Iterable[str] = [],
+    sab: typing.Iterable[str] = [],
     destination: Union[str, Path] = None,
-    materials_xml: typing.iterable[Union[str, Path]] = (),
-    materials: typing.iterable['openmc.Material'] = (),  # also accepts a single openmc.Material
-    particles: Optional[typing.iterable[str]] = ("neutron", "photon"),
+    materials_xml: typing.Iterable[Union[str, Path]] = [],
+    materials: typing.Iterable['openmc.Material'] = [],  # also accepts a single openmc.Material
+    particles: Optional[typing.Iterable[str]] = ("neutron", "photon"),
     set_OPENMC_CROSS_SECTIONS: bool = True,
     overwrite: bool = False,
 ) -> str:
@@ -456,17 +457,17 @@ def identify_isotopes_to_download(
     return xs_info_df
 
 
-def expand_elements_to_isotopes(elements: Union[str, List[str]]):
+def expand_elements_to_isotopes(elements: Union[str, typing.Iterable[str]]):
 
     if elements == "stable" or elements == ["stable"]:
         return STABLE_ISOTOPE_OPTIONS
 
-    if elements == "all" or elements == ["all"]:
+    elif elements == "all" or elements == ["all"]:
         return ALL_ISOTOPE_OPTIONS
 
-    if isinstance(elements, str):
+    elif isinstance(elements, str):
         return NATURAL_ABUNDANCE[elements]
-
+    
     isotopes = []
     for element in elements:
         isotopes = isotopes + NATURAL_ABUNDANCE[element]

@@ -28,8 +28,8 @@ def test_expansion_of_elements_with_stable_keyword():
 
 
 def test_expansion_of_elements_with_all_keyword():
-    all_stable_isotopes = expand_elements_to_isotopes("all")
-    assert len(all_stable_isotopes) == 1233
+    all_isotopes = expand_elements_to_isotopes("all")
+    assert len(all_isotopes) == 1233
 
 
 def test_expansion_of_elements_with_single_element():
