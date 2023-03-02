@@ -43,7 +43,6 @@ def test_expansion_of_elements_with_multiple_element():
 
 
 def test_identify_sab_to_download_with_all_keyword():
-
     filtered_df = identify_sab_to_download(libraries=["ENDFB-7.1-NNDC"], sab=["all"])
 
     assert len(filtered_df.values) == 20
@@ -54,7 +53,6 @@ def test_identify_sab_to_download_with_all_keyword():
 
 
 def test_identify_sab_to_download_finds_two():
-
     filtered_df = identify_sab_to_download(
         libraries=["ENDFB-7.1-NNDC"], sab=["c_Be_in_BeO", "c_H_in_H2O"]
     )
@@ -63,7 +61,6 @@ def test_identify_sab_to_download_finds_two():
 
 
 def test_identify_isotopes_to_download_finds_tendl_neutron():
-
     filtered_df = identify_isotopes_to_download(
         libraries=["TENDL-2019"], isotopes=["Be9"], particles=["neutron"]
     )
@@ -91,7 +88,6 @@ def test_identify_isotopes_to_download_finds_tendl_neutron():
 
 
 def test_identify_isotopes_to_download_finds_fendl_photon():
-
     filtered_df = identify_isotopes_to_download(
         libraries=["FENDL-3.1d"], isotopes=["Be9"], particles=["photon"]
     )
@@ -116,7 +112,6 @@ def test_identify_isotopes_to_download_finds_fendl_photon():
 
 
 def test_identify_isotopes_to_download_finds_fendl_photon_neutron():
-
     filtered_df = identify_isotopes_to_download(
         libraries=["FENDL-3.1d"], isotopes=["Be9"], particles=["photon", "neutron"]
     )
@@ -143,7 +138,6 @@ def test_identify_isotopes_to_download_finds_fendl_photon_neutron():
 
 
 def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes():
-
     filtered_df = identify_isotopes_to_download(
         libraries=["FENDL-3.1d"],
         isotopes=["Fe56", "Fe57"],
@@ -178,7 +172,6 @@ def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes
 
 
 def test_identify_isotopes_to_download_all():
-
     filtered_df = identify_isotopes_to_download(
         libraries=["FENDL-3.1d"], isotopes=["all"], particles=["photon", "neutron"]
     )
@@ -193,7 +186,6 @@ def test_identify_isotopes_to_download_all():
 
 
 def test_expand_materials_from_object_list_with_single_mat():
-
     my_mat = openmc.Material()
     my_mat.add_nuclide("Pu239", 3.7047e-2)
     my_mat.add_nuclide("Pu240", 1.7512e-3)
@@ -203,7 +195,6 @@ def test_expand_materials_from_object_list_with_single_mat():
 
 
 def test_expand_materials_from_object_with_single_mat():
-
     my_mat = openmc.Material()
     my_mat.add_nuclide("Pu239", 3.7047e-2)
     my_mat.add_nuclide("Pu240", 1.7512e-3)
@@ -213,7 +204,6 @@ def test_expand_materials_from_object_with_single_mat():
 
 
 def test_expand_materials_from_object_list_with_multiple_mat():
-
     my_mat1 = openmc.Material()
     my_mat1.add_nuclide("Li6", 0.5)
     my_mat1.add_nuclide("Li7", 0.25)
@@ -229,7 +219,6 @@ def test_expand_materials_from_object_list_with_multiple_mat():
 
 
 def test_expand_materials_from_object_list_with_openmc_materials():
-
     my_mat1 = openmc.Material()
     my_mat1.add_nuclide("Li6", 0.5)
     my_mat1.add_nuclide("Li7", 0.25)
@@ -243,7 +232,6 @@ def test_expand_materials_from_object_list_with_openmc_materials():
 
 
 def test_expand_material_xmls_with_list_input():
-
     my_mat = openmc.Material()
     my_mat.add_nuclide("Be9", 0.5)
     os.system("rm materials.xml")
@@ -253,7 +241,6 @@ def test_expand_material_xmls_with_list_input():
 
 
 def test_expand_material_xmls_with_str_input():
-
     my_mat = openmc.Material()
     my_mat.add_element("Al", 0.5)
     os.system("rm materials.xml")
@@ -263,7 +250,6 @@ def test_expand_material_xmls_with_str_input():
 
 
 def test_expand_material_xmls_with_two_isotopes():
-
     my_mat = openmc.Material()
     my_mat.add_element("Li", 0.5)
     os.system("rm materials.xml")
@@ -274,7 +260,6 @@ def test_expand_material_xmls_with_two_isotopes():
 
 
 def test_expand_material_xmls_with_sab():
-
     my_mat = openmc.Material()
     my_mat.add_element("Be", 0.5)
     my_mat.add_s_alpha_beta("c_Be_in_BeO")
@@ -286,7 +271,6 @@ def test_expand_material_xmls_with_sab():
 
 
 def test_expand_material_xmls_for_sabs_with_sab():
-
     my_mat = openmc.Material()
     my_mat.add_element("Be", 0.5)
     my_mat.add_s_alpha_beta("c_Be_in_BeO")
@@ -297,7 +281,6 @@ def test_expand_material_xmls_for_sabs_with_sab():
 
 
 def test_expand_material_xmls_for_sabs_with_two_sab():
-
     my_mat = openmc.Material()
     my_mat.add_element("Be", 0.5)
     my_mat.add_s_alpha_beta("c_Be_in_BeO")
@@ -312,7 +295,6 @@ def test_expand_material_xmls_for_sabs_with_two_sab():
 
 
 def test_expand_material_for_sabs_with_two_sab():
-
     my_mat = openmc.Material()
     my_mat.add_element("Be", 0.5)
     my_mat.add_s_alpha_beta("c_Be_in_BeO")
@@ -322,7 +304,6 @@ def test_expand_material_for_sabs_with_two_sab():
 
 
 def test_expand_material_for_sabs_with_sab():
-
     my_mat = openmc.Material()
     my_mat.add_element("Be", 0.5)
     my_mat.add_s_alpha_beta("c_H_in_H2O")
@@ -351,7 +332,6 @@ def test_incorrect_library_name_for_sab_identifying():
 
 
 def test_library_values_single_entry_list():
-
     isotopes_df = identify_isotopes_to_download(
         libraries="TENDL-2019", isotopes=["Li6", "Al27"], particles=["neutron"]
     )

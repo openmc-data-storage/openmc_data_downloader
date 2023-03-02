@@ -19,7 +19,6 @@ from openmc_data_downloader import (
 
 
 def main():
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument(

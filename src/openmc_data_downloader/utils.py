@@ -25,7 +25,6 @@ _BLOCK_SIZE = 16384
 
 
 def set_environmental_variable(cross_section_xml_path: Union[Path, str]) -> None:
-
     if not isinstance(cross_section_xml_path, Path):
         cross_section_xml_path = Path(cross_section_xml_path)
 
@@ -40,7 +39,6 @@ def set_environmental_variable(cross_section_xml_path: Union[Path, str]) -> None
 
 
 def expand_materials_to_isotopes(materials: list):
-
     if isinstance(materials, list):
         if len(materials) == 0:
             return []
@@ -87,7 +85,6 @@ def expand_materials_to_isotopes(materials: list):
 
 
 def expand_materials_to_sabs(materials: list):
-
     if isinstance(materials, list):
         if len(materials) == 0:
             return []
@@ -140,12 +137,13 @@ def just_in_time_library_generator(
     sab: typing.iterable[str] = (),
     destination: Union[str, Path] = None,
     materials_xml: typing.iterable[Union[str, Path]] = (),
-    materials: typing.iterable['openmc.Material'] = (),  # also accepts a single openmc.Material
+    materials: typing.iterable[
+        "openmc.Material"
+    ] = (),  # also accepts a single openmc.Material
     particles: Optional[typing.iterable[str]] = ("neutron", "photon"),
     set_OPENMC_CROSS_SECTIONS: bool = True,
     overwrite: bool = False,
 ) -> str:
-
     # expands elements, materials xml into list of isotopes
 
     isotopes_from_elements = expand_elements_to_isotopes(elements)
@@ -242,7 +240,6 @@ def download_single_file(
 @retry(HTTPError, tries=3)
 def download_url_in_chuncks(url, local_path):
     with urlopen(url) as response:
-
         # Copy file to disk in chunks
         print("Downloading {}... ".format(local_path), end="")
 
@@ -260,7 +257,6 @@ def download_url_in_chuncks(url, local_path):
 def download_data_frame_of_isotopes(
     dataframe, destination: Union[str, Path], overwrite: bool = True
 ):
-
     local_files = []
     for index, row in dataframe.iterrows():
         local_file = download_single_file(
@@ -275,7 +271,6 @@ def download_data_frame_of_isotopes(
 
 
 def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
-
     try:
         import openmc
     except ImportError:
@@ -381,7 +376,6 @@ def identify_isotopes_to_download(
     particles: List[str] = [],
     isotopes: Optional[List[str]] = [],
 ):
-
     if isotopes == []:
         return pd.DataFrame()
     elif isotopes == "all" or isotopes == ["all"]:
@@ -457,7 +451,6 @@ def identify_isotopes_to_download(
 
 
 def expand_elements_to_isotopes(elements: Union[str, List[str]]):
-
     if elements == "stable" or elements == ["stable"]:
         return STABLE_ISOTOPE_OPTIONS
 
@@ -476,7 +469,6 @@ def expand_elements_to_isotopes(elements: Union[str, List[str]]):
 def expand_materials_xml_to_isotopes(
     materials_xml: Union[List[str], str] = "materials.xml"
 ):
-
     isotopes = []
 
     if isinstance(materials_xml, str):
@@ -498,7 +490,6 @@ def expand_materials_xml_to_isotopes(
 
 
 def expand_materials_xml_to_sab(materials_xml: Union[List[str], str] = "materials.xml"):
-
     sabs = []
 
     if isinstance(materials_xml, str):
