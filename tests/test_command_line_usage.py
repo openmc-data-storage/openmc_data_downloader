@@ -44,7 +44,6 @@ class test_command_line_usage(unittest.TestCase):
         assert len(list(Path(".").glob("*.h5"))) == 1
 
     def test_correct_files_from_command_line_usage_3(self):
-
         os.system("rm *.h5")
 
         os.system("openmc_data_downloader -l ENDFB-7.1-NNDC -e Co Y")
@@ -54,7 +53,6 @@ class test_command_line_usage(unittest.TestCase):
         assert len(list(Path(".").glob("*.h5"))) == 2
 
     def test_correct_files_from_command_line_usage_4(self):
-
         os.system("rm *.h5 materials.xml")
 
         my_mat = openmc.Material()
