@@ -81,7 +81,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         )
 
     def test_simulation_with_destination(self):
-
         os.system("rm *.h5")
         os.system("rm my_custom_nuclear_data_dir/*.h5")
 
@@ -134,7 +133,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert len(list(Path("my_custom_nuclear_data_dir").glob("*.h5"))) == 3
 
     def test_photon_simulation_with_single_mat(self):
-
         os.system("rm *.h5")
 
         # this clears the enviromental varible just to be sure that current
@@ -193,7 +191,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert len(list(Path(".").glob("*.h5"))) == 7
 
     def test_photon_neutron_simulation_with_single_mat(self):
-
         os.system("rm *.h5")
 
         # this clears the enviromental varible just to be sure that current
@@ -246,7 +243,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert len(list(Path(".").glob("*.h5"))) == 7  # summary and statepoint
 
     def test_simulation_with_single_mat(self):
-
         os.system("rm *.h5")
 
         # this clears the enviromental varible just to be sure that current
@@ -297,7 +293,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert len(list(Path(".").glob("*.h5"))) == 5  # summary and statepoint
 
     def test_simulation_with_sab(self):
-
         os.system("rm *.h5")
 
         # this clears the enviromental varible just to be sure that current
@@ -347,7 +342,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert len(list(Path(".").glob("*.h5"))) == 4  # summary and statepoint
 
     def test_wmp_simulation_with_single_mat(self):
-
         os.system("rm *.h5")
 
         # this clears the enviromental varible just to be sure that current
@@ -406,7 +400,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert len(list(Path(".").glob("*.h5"))) == 3
 
     def test_simulation_with_single_mat_list(self):
-
         os.system("rm *.h5")
 
         # this clears the enviromental varible just to be sure that current
@@ -458,7 +451,6 @@ class test_usage_with_openmc_python_api(unittest.TestCase):
         assert len(list(Path(".").glob("*.h5"))) == 5  # summary and statepoint
 
     def test_simulation_with_multi_mat_list(self):
-
         os.system("rm *.h5")
 
         # this clears the enviromental varible just to be sure that current
