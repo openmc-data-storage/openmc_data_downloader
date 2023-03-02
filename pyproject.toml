@@ -1,10 +1,47 @@
 [build-system]
 requires = [
-    "setuptools >= 46.4.0",
-    "wheel",
-    "setuptools_scm[toml] >= 6.3.1",
+    "setuptools >= 65.5.0",
+    "setuptools_scm[toml] >= 7.0.5",
 ]
 build-backend = "setuptools.build_meta"
 
+
+[project]
+name = "openmc_data_downloader"
+authors = [
+  { name="Jonathan Shimwell", email="mail@jshimwell.com" },
+]
+license = {file = "LICENSE"}
+description = "A tool for selectively downloading h5 files for specified isotopes / elements from your libraries of choice"
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["openmc", "nuclear", "data", "download", "process", "cross", "section"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pandas",
+    "retry"
+]
+dynamic = ["version"]
+
 [tool.setuptools_scm]
-write_to = "openmc_data_downloader/_version.py"
+write_to = "src/_version.py"
+
+
+[project.optional-dependencies]
+tests = [
+    "pytest"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/fusion-energy/openmc_data_downloader"
+"Bug Tracker" = "https://github.com/fusion-energy/openmc_data_downloader/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[project.scripts]
+openmc_data_downloader = "openmc_data_downloader.terminal_cmd:main"

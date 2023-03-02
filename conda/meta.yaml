@@ -10,16 +10,13 @@ source:
 
 build:
   number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
-  
-  # could be changed to use pip install in the future
-  # script: python -m pip install --no-deps --ignore-installed .
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
     - python {{ python }}
-    - setuptools>=46.4.0
-    - setuptools_scm>=6.3.1
+    - setuptools>=65.4.0
+    - setuptools_scm[toml]>=7.0.5
   run:
     - python
     - pandas
