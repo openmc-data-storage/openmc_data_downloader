@@ -2,6 +2,7 @@ import os
 import warnings
 import xml.etree.ElementTree as ET
 from pathlib import Path
+import typing
 from typing import List, Optional, Union
 from urllib.parse import urlparse
 from urllib.request import urlopen
@@ -133,14 +134,14 @@ def expand_materials_to_sabs(materials: list):
 
 
 def just_in_time_library_generator(
-    libraries: List[str] = [],
-    isotopes: List[str] = [],
-    elements: List[str] = [],
-    sab: List[str] = [],
+    libraries: typing.iterable[str] = (),
+    isotopes: typing.iterable[str] = (),
+    elements: typing.iterable[str] = (),
+    sab: typing.iterable[str] = (),
     destination: Union[str, Path] = None,
-    materials_xml: List[Union[str, Path]] = [],
-    materials: list = [],  # also accepts a single openmc.Material
-    particles: Optional[List[str]] = ["neutron", "photon"],
+    materials_xml: typing.iterable[Union[str, Path]] = (),
+    materials: typing.iterable['openmc.Material'] = (),  # also accepts a single openmc.Material
+    particles: Optional[typing.iterable[str]] = ("neutron", "photon"),
     set_OPENMC_CROSS_SECTIONS: bool = True,
     overwrite: bool = False,
 ) -> str:
