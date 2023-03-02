@@ -452,7 +452,6 @@ def identify_isotopes_to_download(
 
 
 def expand_elements_to_isotopes(elements: Union[str, typing.Iterable[str]]):
-
     if elements == "stable" or elements == ["stable"]:
         return STABLE_ISOTOPE_OPTIONS
 
