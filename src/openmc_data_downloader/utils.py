@@ -449,12 +449,8 @@ def identify_isotopes_to_download(
     return xs_info_df
 
 
-<<<<<<< HEAD
 def expand_elements_to_isotopes(elements: Union[str, typing.Iterable[str]]):
 
-=======
-def expand_elements_to_isotopes(elements: Union[str, List[str]]):
->>>>>>> e843cb50793bce0e23c97970c08f3ba6cbee265c
     if elements == "stable" or elements == ["stable"]:
         return STABLE_ISOTOPE_OPTIONS
 
