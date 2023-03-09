@@ -150,576 +150,82 @@ def get_isotopes_or_elements_from_xml(filename, particle_type):
         raise ValueError(f"no {particle_type} were found in {filename}")
     return neutron_isotopes
 
-
-tendl_2019_neutron_isotopes = get_isotopes_or_elements_from_xml(
-    "tendl_2019_cross_sections.xml", "neutron"
-)
-
-endfb_71_nndc_photon_elements = get_isotopes_or_elements_from_xml(
-    "nndc_7.1_cross_sections.xml", "photon"
-)
-endfb_71_nndc_neutron_isotopes = get_isotopes_or_elements_from_xml(
-    "nndc_7.1_cross_sections.xml", "neutron"
-)
-
-fendl_31d_neutron_isotopes = get_isotopes_or_elements_from_xml(
-    "fendl_3.1d_cross_sections.xml", "neutron"
-)
-fendl_31d_photon_elements = get_isotopes_or_elements_from_xml(
-    "fendl_3.1d_cross_sections.xml", "photon"
-)
-
-
-tendl_2019_base_url = (
-    "https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/"
-)
-
-tendl_2019_xs_info = []
-for isotope in tendl_2019_neutron_isotopes:
-    entry = {}
-    entry["isotope"] = isotope
-    entry["particle"] = "neutron"
-    entry["library"] = "TENDL-2019"
-    entry["remote_file"] = entry["isotope"] + ".h5"
-    entry["url"] = tendl_2019_base_url + entry["remote_file"]
-    entry["element"] = re.split(r"(\d+)", entry["isotope"])[0]
-    entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
-    tendl_2019_xs_info.append(entry)
-    # could add size of file in mb as well
-
-
-endfb_71_nndc_base_url = (
-    "https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/"
-)
-
-endfb_71_nndc_xs_info = []
-for isotope in endfb_71_nndc_neutron_isotopes:
-    entry = {}
-    entry["isotope"] = isotope
-    entry["particle"] = "neutron"
-    entry["library"] = "ENDFB-7.1-NNDC"
-    entry["remote_file"] = entry["isotope"] + ".h5"
-    entry["url"] = endfb_71_nndc_base_url + "neutron/" + entry["remote_file"]
-    entry["element"] = re.split(r"(\d+)", entry["isotope"])[0]
-    entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
-    endfb_71_nndc_xs_info.append(entry)
-    # could add size of file in mb as well
-
-
-for element in endfb_71_nndc_photon_elements:
-    for isotope in NATURAL_ABUNDANCE[element]:
+def populate_neutron_cross_section_list(isotopes, base_url, library):
+    xs_info = []
+    for isotope in isotopes:
         entry = {}
-        # perhaps there is a better way of doing this
         entry["isotope"] = isotope
+        entry["particle"] = "neutron"
+        entry["library"] = library
+        entry["remote_file"] = isotope + ".h5"
+        entry["url"] = base_url + entry["remote_file"]
+        entry["element"] = re.split(r"(\d+)", entry["isotope"])[0]
+        entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
+        xs_info.append(entry)
+    return xs_info
+
+def populate_photon_cross_section_list(elements, base_url, library):
+    xs_info = []
+    for element in elements:
+        entry = {}
         entry["particle"] = "photon"
-        entry["library"] = "ENDFB-7.1-NNDC"
+        entry["library"] = library
         entry["remote_file"] = element + ".h5"
-        entry["url"] = endfb_71_nndc_base_url + "photon/" + entry["remote_file"]
+        entry["url"] = base_url + entry["remote_file"]
         entry["element"] = element
         entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
-        endfb_71_nndc_xs_info.append(entry)
+        xs_info.append(entry)
+    return xs_info
 
-# TODO see if we can use this approach for thermal list
-# tree = ET.parse(Path(__file__).parent/'nndc_7.1_cross_sections.xml')
-# root = tree.getroot()
-# endfb_71_nndc_thermal = []
-# for elem in root:
-#     if elem.attrib['type'] == 'thermal':
-#         endfb_71_nndc_thermal.append(elem.attrib['materials'])
+def get_isotopes_or_elements_info_from_xml(
+    filename, particle_type, base_url, library
+):
+    isotopes_or_elements = get_isotopes_or_elements_from_xml(filename, particle_type)
+    
+    if particle_type =='photon':
+        
+        info = populate_photon_cross_section_list(isotopes_or_elements, base_url, library)
+    
+    elif particle_type =='neutron':
+    
+        info = populate_neutron_cross_section_list(isotopes_or_elements, base_url, library)
+    else:
+        raise ValueError(f'particle type {particle_type} not supported, acceptable particle types are "neutron" or "photon')
+    return info
 
-endfb_71_nndc_thermal = [
-    "c_Al27",
-    "c_Be",
-    "c_Be_in_BeO",
-    "c_C6H6",
-    "c_D_in_D2O",
-    "c_Fe56",
-    "c_Graphite",
-    "c_H_in_CH2",
-    "c_H_in_CH4_liquid",
-    "c_H_in_CH4_solid",
-    "c_H_in_H2O",
-    "c_H_in_ZrH",
-    "c_O_in_BeO",
-    "c_O_in_UO2",
-    "c_U_in_UO2",
-    "c_Zr_in_ZrH",
-    "c_ortho_D",
-    "c_ortho_H",
-    "c_para_D",
-    "c_para_H",
-]
-
-
-endfb_71_nndc_sab_info = []
-for name in endfb_71_nndc_thermal:
-    entry = {}
-    # perhaps there is a better way of doing this
-    entry["name"] = name
-    entry["particle"] = "thermal"
-    entry["library"] = "ENDFB-7.1-NNDC"
-    entry["remote_file"] = name + ".h5"
-    entry["url"] = endfb_71_nndc_base_url + "neutron/" + entry["remote_file"]
-    entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
-    endfb_71_nndc_sab_info.append(entry)
-
-fendl_31d_base_url = (
-    "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/"
+tendl_2019_xs_neutron_info =get_isotopes_or_elements_info_from_xml(
+    "tendl_2019_cross_sections.xml",
+    "neutron",
+    "https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/",
+    "TENDL-2019",
 )
 
-fendl_31d_xs_info = []
-for isotope in fendl_31d_neutron_isotopes:
-    entry = {}
-    entry["isotope"] = isotope
-    entry["particle"] = "neutron"
-    entry["library"] = "FENDL-3.1d"
-    entry["remote_file"] = entry["isotope"] + ".h5"
-    entry["url"] = fendl_31d_base_url + "neutron/" + entry["remote_file"]
-    entry["element"] = re.split(r"(\d+)", entry["isotope"])[0]
-    entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
-    fendl_31d_xs_info.append(entry)
-    # could add size of file in mb as well
+nndc_71_neutron_xs_info = get_isotopes_or_elements_info_from_xml(
+    "nndc_7.1_cross_sections.xml",
+    "neutron",
+    "https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/",
+    "ENDFB-7.1-NNDC"
+)
+nndc_71_photon_xs_info = get_isotopes_or_elements_info_from_xml(
+    "nndc_7.1_cross_sections.xml",
+    "photon",
+    "https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/photon/",
+    "ENDFB-7.1-NNDC"
+)
 
+fendl_31d_neutron_xs_info = get_isotopes_or_elements_info_from_xml(
+    "fendl_3.1d_cross_sections.xml",
+    "neutron",
+    "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/",
+    "FENDL-3.1d",
+)
+fendl_31d_photon_xs_info = get_isotopes_or_elements_info_from_xml(
+    "fendl_3.1d_cross_sections.xml",
+    "photon",
+    "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/",
+    "FENDL-3.1d",
+)
 
-for element in fendl_31d_photon_elements:
-    for isotope in NATURAL_ABUNDANCE[element]:
-        entry = {}
-        # perhaps there is a better way of doing this
-        entry["isotope"] = isotope
-        entry["particle"] = "photon"
-        entry["library"] = "FENDL-3.1d"
-        entry["remote_file"] = element + ".h5"
-        entry["url"] = fendl_31d_base_url + "photon/" + entry["remote_file"]
-        entry["element"] = element
-        entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
-        fendl_31d_xs_info.append(entry)
-
-
-endfb_71_wmp_neutron_isotopes = [
-    "001001",
-    "001002",
-    "001003",
-    "002003",
-    "002004",
-    "003006",
-    "003007",
-    "004007",
-    "004009",
-    "005010",
-    "005011",
-    "006000",
-    "007014",
-    "007015",
-    "008016",
-    "008017",
-    "009019",
-    "011022",
-    "011023",
-    "012024",
-    "012025",
-    "012026",
-    "013027",
-    "014028",
-    "014029",
-    "014030",
-    "015031",
-    "016032",
-    "016033",
-    "016034",
-    "016036",
-    "017035",
-    "017037",
-    "018036",
-    "018038",
-    "018040",
-    "019039",
-    "019040",
-    "019041",
-    "020040",
-    "020042",
-    "020043",
-    "020044",
-    "020046",
-    "020048",
-    "021045",
-    "022046",
-    "022047",
-    "022048",
-    "022049",
-    "022050",
-    "023050",
-    "023051",
-    "024050",
-    "024052",
-    "024053",
-    "024054",
-    "025055",
-    "026054",
-    "026056",
-    "026057",
-    "026058",
-    "027058",
-    "027058m1",
-    "027059",
-    "028058",
-    "028059",
-    "028060",
-    "028061",
-    "028062",
-    "028064",
-    "029063",
-    "029065",
-    "030064",
-    "030065",
-    "030066",
-    "030067",
-    "030068",
-    "030070",
-    "031069",
-    "031071",
-    "032070",
-    "032072",
-    "032073",
-    "032074",
-    "032076",
-    "033074",
-    "033075",
-    "034074",
-    "034076",
-    "034077",
-    "034078",
-    "034079",
-    "034080",
-    "034082",
-    "035079",
-    "035081",
-    "036078",
-    "036080",
-    "036082",
-    "036083",
-    "036084",
-    "036085",
-    "036086",
-    "037085",
-    "037086",
-    "037087",
-    "038084",
-    "038086",
-    "038087",
-    "038088",
-    "038089",
-    "038090",
-    "039089",
-    "039090",
-    "039091",
-    "040090",
-    "040091",
-    "040092",
-    "040093",
-    "040094",
-    "040095",
-    "040096",
-    "041093",
-    "041094",
-    "041095",
-    "042092",
-    "042094",
-    "042095",
-    "042096",
-    "042097",
-    "042098",
-    "042099",
-    "042100",
-    "043099",
-    "044096",
-    "044098",
-    "044099",
-    "044100",
-    "044101",
-    "044102",
-    "044103",
-    "044104",
-    "044105",
-    "044106",
-    "045103",
-    "045105",
-    "046102",
-    "046104",
-    "046105",
-    "046106",
-    "046107",
-    "046108",
-    "046110",
-    "047107",
-    "047109",
-    "047110m1",
-    "047111",
-    "048106",
-    "048108",
-    "048110",
-    "048111",
-    "048112",
-    "048113",
-    "048114",
-    "048115m1",
-    "048116",
-    "049113",
-    "049115",
-    "050112",
-    "050113",
-    "050114",
-    "050115",
-    "050116",
-    "050117",
-    "050118",
-    "050119",
-    "050120",
-    "050122",
-    "050123",
-    "050124",
-    "050125",
-    "050126",
-    "051121",
-    "051123",
-    "051124",
-    "051125",
-    "051126",
-    "052120",
-    "052122",
-    "052123",
-    "052124",
-    "052125",
-    "052126",
-    "052127m1",
-    "052128",
-    "052129m1",
-    "052130",
-    "052132",
-    "053127",
-    "053129",
-    "053130",
-    "053131",
-    "053135",
-    "054123",
-    "054124",
-    "054126",
-    "054128",
-    "054129",
-    "054130",
-    "054131",
-    "054132",
-    "054133",
-    "054134",
-    "054135",
-    "054136",
-    "055133",
-    "055134",
-    "055135",
-    "055136",
-    "055137",
-    "056130",
-    "056132",
-    "056133",
-    "056134",
-    "056135",
-    "056136",
-    "056137",
-    "056138",
-    "056140",
-    "057138",
-    "057139",
-    "057140",
-    "058136",
-    "058138",
-    "058139",
-    "058140",
-    "058141",
-    "058142",
-    "058143",
-    "058144",
-    "059141",
-    "059142",
-    "059143",
-    "060142",
-    "060143",
-    "060144",
-    "060145",
-    "060146",
-    "060147",
-    "060148",
-    "060150",
-    "061147",
-    "061148",
-    "061148m1",
-    "061149",
-    "061151",
-    "062144",
-    "062147",
-    "062148",
-    "062149",
-    "062150",
-    "062151",
-    "062152",
-    "062153",
-    "062154",
-    "063151",
-    "063152",
-    "063153",
-    "063154",
-    "063155",
-    "063156",
-    "063157",
-    "064152",
-    "064153",
-    "064154",
-    "064155",
-    "064156",
-    "064157",
-    "064158",
-    "064160",
-    "065159",
-    "065160",
-    "066156",
-    "066158",
-    "066160",
-    "066161",
-    "066162",
-    "066163",
-    "066164",
-    "067165",
-    "067166m1",
-    "068162",
-    "068164",
-    "068166",
-    "068167",
-    "068168",
-    "068170",
-    "069168",
-    "069169",
-    "069170",
-    "071175",
-    "071176",
-    "072174",
-    "072176",
-    "072177",
-    "072178",
-    "072179",
-    "072180",
-    "073180",
-    "073181",
-    "073182",
-    "074180",
-    "074182",
-    "074183",
-    "074184",
-    "074186",
-    "075185",
-    "075187",
-    "077191",
-    "077193",
-    "079197",
-    "080196",
-    "080198",
-    "080199",
-    "080200",
-    "080201",
-    "080202",
-    "080204",
-    "081203",
-    "081205",
-    "082204",
-    "082206",
-    "082207",
-    "082208",
-    "083209",
-    "088223",
-    "088224",
-    "088225",
-    "088226",
-    "089225",
-    "089226",
-    "089227",
-    "090227",
-    "090228",
-    "090229",
-    "090230",
-    "090231",
-    "090232",
-    "090233",
-    "090234",
-    "091229",
-    "091230",
-    "091231",
-    "091232",
-    "091233",
-    "092230",
-    "092231",
-    "092232",
-    "092233",
-    "092234",
-    "092235",
-    "092236",
-    "092237",
-    "092238",
-    "092239",
-    "092240",
-    "092241",
-    "093234",
-    "093235",
-    "093236",
-    "093237",
-    "093238",
-    "093239",
-    "094236",
-    "094237",
-    "094238",
-    "094239",
-    "094240",
-    "094241",
-    "094242",
-    "094243",
-    "094244",
-    "094246",
-    "095240",
-    "095241",
-    "095242",
-    "095242m1",
-    "095243",
-    "095244",
-    "095244m1",
-    "096240",
-    "096241",
-    "096242",
-    "096243",
-    "096244",
-    "096245",
-    "096246",
-    "096247",
-    "096248",
-    "096249",
-    "096250",
-    "097245",
-    "097246",
-    "097247",
-    "097248",
-    "097249",
-    "097250",
-    "098246",
-    "098248",
-    "098249",
-    "098250",
-    "098251",
-    "098252",
-    "098253",
-    "098254",
-    "099251",
-    "099252",
-    "099253",
-    "099254",
-    "099254m1",
-    "099255",
-    "100255",
-]
 
 ATOMIC_SYMBOL = {
     0: "n",
@@ -844,91 +350,21 @@ ATOMIC_SYMBOL = {
 }
 
 
-endf_71_wmp_base_url = (
-    "https://github.com/openmc-data-storage/ENDF-B-VII.1-WMP/raw/master/WMP_Library/"
-)
+neutron_xs_info = tendl_2019_xs_neutron_info + nndc_71_neutron_xs_info + fendl_31d_neutron_xs_info
+photon_xs_info =  nndc_71_photon_xs_info + fendl_31d_photon_xs_info
 
-endfb_71_wmp_xs_info = []
-for zaid in endfb_71_wmp_neutron_isotopes:
-    if not zaid.endswith("m1"):  # avoids meta stable files
-        entry = {}
-        entry["isotope"] = zaid_to_isotope(zaid)
-        entry["particle"] = "neutron"
-        entry["library"] = "ENDFB-7.1-WMP"
-        entry["remote_file"] = zaid + ".h5"
-        entry["url"] = endf_71_wmp_base_url + entry["remote_file"]
-        entry["element"] = re.split(r"(\d+)", entry["isotope"])[0]
-        entry["local_file"] = entry["library"] + "_" + zaid_to_isotope(zaid) + ".h5"
-        endfb_71_wmp_xs_info.append(entry)
-        # could add size of file in mb as well
-
-xs_info = (
-    endfb_71_nndc_xs_info
-    + tendl_2019_xs_info
-    + fendl_31d_xs_info
-    + endfb_71_wmp_xs_info
-)
-
-sab_info = endfb_71_nndc_sab_info  # + JEFF 3.2 also contains sab
 
 all_libs = []
-for entry in xs_info:
+for entry in neutron_xs_info:
     all_libs.append(entry["library"])
 
 LIB_OPTIONS = list(set(all_libs))
-PARTICLE_OPTIONS = ["neutron", "photon"]
-SAB_OPTIONS = [
-    "c_Al27",
-    "c_Al_in_Sapphire",
-    "c_Be",
-    "c_BeO",
-    "c_Be_in_BeO",
-    "c_Be_in_Be2C",
-    "c_C6H6",
-    "c_C_in_SiC",
-    "c_Ca_in_CaH2",
-    "c_D_in_D2O",
-    "c_D_in_D2O_ice",
-    "c_Fe56",
-    "c_Graphite",
-    "c_Graphite_10p",
-    "c_Graphite_30p",
-    "c_H_in_CaH2",
-    "c_H_in_CH2",
-    "c_H_in_CH4_liquid",
-    "c_H_in_CH4_solid",
-    "c_H_in_CH4_solid_phase_II",
-    "c_H_in_H2O",
-    "c_H_in_H2O_solid",
-    "c_H_in_C5O2H8",
-    "c_H_in_Mesitylene",
-    "c_H_in_Toluene",
-    "c_H_in_YH2",
-    "c_H_in_ZrH",
-    "c_Mg24",
-    "c_O_in_Sapphire",
-    "c_O_in_BeO",
-    "c_O_in_D2O",
-    "c_O_in_H2O_ice",
-    "c_O_in_UO2",
-    "c_N_in_UN",
-    "c_ortho_D",
-    "c_ortho_H",
-    "c_Si28",
-    "c_Si_in_SiC",
-    "c_SiO2_alpha",
-    "c_SiO2_beta",
-    "c_para_D",
-    "c_para_H",
-    "c_U_in_UN",
-    "c_U_in_UO2",
-    "c_Y_in_YH2",
-    "c_Zr_in_ZrH",
-]
+PARTICLE_OPTIONS = ["neutron", "photon"]  #TODO add thermal
+
 nested_list = list(NATURAL_ABUNDANCE.values())
 STABLE_ISOTOPE_OPTIONS = [item for sublist in nested_list for item in sublist]
-ALL_ISOTOPE_OPTIONS = (
-    tendl_2019_neutron_isotopes
-    + fendl_31d_neutron_isotopes
-    + endfb_71_nndc_neutron_isotopes
-)
+
+ALL_ISOTOPE_OPTIONS = []
+for xml in ["tendl_2019_cross_sections.xml","nndc_7.1_cross_sections.xml","fendl_3.1d_cross_sections.xml"]:
+    isotopes = get_isotopes_or_elements_from_xml(xml,"neutron")
+    ALL_ISOTOPE_OPTIONS = ALL_ISOTOPE_OPTIONS +isotopes

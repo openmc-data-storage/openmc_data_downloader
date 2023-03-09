@@ -31,9 +31,8 @@ def set_environmental_variable(cross_section_xml_path: Union[Path, str]) -> None
 
     if cross_section_xml_path.is_file() is False:
         raise FileNotFoundError(
-            "{} was not found, therefore not setting OPENMC_CROSS_SECTIONS "
-            "environmental variable".format(cross_section_xml_path)
-        )
+            f"{cross_section_xml_path} was not found, therefore not setting "
+            "OPENMC_CROSS_SECTIONS environmental variable")
 
     print("setting OPENMC_CROSS_SECTIONS", str(cross_section_xml_path))
     os.environ["OPENMC_CROSS_SECTIONS"] = str(cross_section_xml_path)
@@ -85,67 +84,18 @@ def expand_materials_to_isotopes(materials: list):
     return []
 
 
-def expand_materials_to_sabs(materials: list):
-    if isinstance(materials, list):
-        if len(materials) == 0:
-            return []
 
-    try:
-        import openmc
-    except ImportError:
-        msg = (
-            "import openmc failed. openmc python package could not be found "
-            "and was not imported, the expand_materials_to_sabs "
-            "opperation can not be performed without openmc"
-        )
-        raise ImportError(msg)
-
-    if isinstance(materials, openmc.Materials):
-        iterable_of_materials = materials
-    elif isinstance(materials, list):
-        for material in materials:
-            if not isinstance(material, openmc.Material):
-                raise ValueError(
-                    "When passing a list then each entry in the list must be "
-                    "an openmc.Material. Not a",
-                    type(material),
-                )
-        iterable_of_materials = materials
-    elif isinstance(materials, openmc.Material):
-        iterable_of_materials = [materials]
-    else:
-        raise ValueError(
-            "materials must be of type openmc.Materials, openmc,Material or a "
-            "list or openmc.Material. Not ",
-            type(materials),
-        )
-
-    if len(iterable_of_materials) > 0:
-        sabs_from_materials = []
-        for material in iterable_of_materials:
-            for sab_tuple in material._sab:
-                sabs_from_materials.append(sab_tuple[0])
-
-        return sabs_from_materials
-
-    return []
-
-
-def just_in_time_library_generator(
-    libraries: typing.Iterable[str] = [],
-    isotopes: typing.Iterable[str] = [],
-    elements: typing.Iterable[str] = [],
-    sab: typing.Iterable[str] = [],
+def download_cross_section_data(
+    materials: openmc.Materials,
+    libraries: typing.Iterable[str] = ("TENDL-2019", "ENDFB-7.1-NNDC", "FENDL-3.1d"),
     destination: Union[str, Path] = None,
-    materials_xml: typing.Iterable[Union[str, Path]] = [],
-    materials: typing.Iterable[
-        "openmc.Material"
-    ] = [],  # also accepts a single openmc.Material
     particles: Optional[typing.Iterable[str]] = ("neutron", "photon"),
     set_OPENMC_CROSS_SECTIONS: bool = True,
     overwrite: bool = False,
 ) -> str:
-    # expands elements, materials xml into list of isotopes
+    """
+    
+    """
 
     isotopes_from_elements = expand_elements_to_isotopes(elements)
     isotopes = list(set(isotopes + isotopes_from_elements))
@@ -195,6 +145,8 @@ def just_in_time_library_generator(
 
     return cross_section_xml_path
 
+import openmc
+openmc.Materials.download_cross_section_data = download_cross_section_data
 
 def download_single_file(
     url: str,
@@ -465,47 +417,3 @@ def expand_elements_to_isotopes(elements: Union[str, typing.Iterable[str]]):
     for element in elements:
         isotopes = isotopes + NATURAL_ABUNDANCE[element]
     return isotopes
-
-
-def expand_materials_xml_to_isotopes(
-    materials_xml: Union[List[str], str] = "materials.xml"
-):
-    isotopes = []
-
-    if isinstance(materials_xml, str):
-        materials_xml = [materials_xml]
-
-    if materials_xml == []:
-        return []
-
-    for material_xml in materials_xml:
-        tree = ET.parse(material_xml)
-        root = tree.getroot()
-
-        for elem in root:
-            for subelem in elem:
-                if subelem.tag == "nuclide":
-                    if "name" in subelem.attrib.keys():
-                        isotopes.append(subelem.attrib["name"])
-    return isotopes
-
-
-def expand_materials_xml_to_sab(materials_xml: Union[List[str], str] = "materials.xml"):
-    sabs = []
-
-    if isinstance(materials_xml, str):
-        materials_xml = [materials_xml]
-
-    if materials_xml == []:
-        return []
-
-    for material_xml in materials_xml:
-        tree = ET.parse(material_xml)
-        root = tree.getroot()
-
-        for elem in root:
-            for subelem in elem:
-                if subelem.tag == "sab":
-                    if "name" in subelem.attrib.keys():
-                        sabs.append(subelem.attrib["name"])
-    return sabs

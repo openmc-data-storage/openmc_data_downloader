@@ -17,11 +17,10 @@ from .cross_sections_directory import (
     NATURAL_ABUNDANCE,
     LIB_OPTIONS,
     PARTICLE_OPTIONS,
-    SAB_OPTIONS,
     STABLE_ISOTOPE_OPTIONS,
     ALL_ISOTOPE_OPTIONS,
-    xs_info,
-    sab_info,
+    neutron_xs_info,
+    photon_xs_info
 )
 
 from .utils import (
