@@ -129,7 +129,10 @@ dmypy.json
 .pyre/
 
 # OpenMC files
-*.xml
+materials.xml
+tallies.xml
+geometry.xml
+settings.xml
 *.h5
 
 **_version.py
