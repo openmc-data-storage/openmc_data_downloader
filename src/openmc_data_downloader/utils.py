@@ -32,7 +32,8 @@ def set_environmental_variable(cross_section_xml_path: Union[Path, str]) -> None
     if cross_section_xml_path.is_file() is False:
         raise FileNotFoundError(
             f"{cross_section_xml_path} was not found, therefore not setting "
-            "OPENMC_CROSS_SECTIONS environmental variable")
+            "OPENMC_CROSS_SECTIONS environmental variable"
+        )
 
     print("setting OPENMC_CROSS_SECTIONS", str(cross_section_xml_path))
     os.environ["OPENMC_CROSS_SECTIONS"] = str(cross_section_xml_path)
@@ -84,7 +85,6 @@ def expand_materials_to_isotopes(materials: list):
     return []
 
 
-
 def download_cross_section_data(
     materials: openmc.Materials,
     libraries: typing.Iterable[str] = ("TENDL-2019", "ENDFB-7.1-NNDC", "FENDL-3.1d"),
@@ -93,9 +93,7 @@ def download_cross_section_data(
     set_OPENMC_CROSS_SECTIONS: bool = True,
     overwrite: bool = False,
 ) -> str:
-    """
-    
-    """
+    """ """
 
     isotopes_from_elements = expand_elements_to_isotopes(elements)
     isotopes = list(set(isotopes + isotopes_from_elements))
@@ -145,8 +143,11 @@ def download_cross_section_data(
 
     return cross_section_xml_path
 
+
 import openmc
+
 openmc.Materials.download_cross_section_data = download_cross_section_data
+
 
 def download_single_file(
     url: str,

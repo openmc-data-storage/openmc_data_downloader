@@ -20,7 +20,7 @@ from .cross_sections_directory import (
     STABLE_ISOTOPE_OPTIONS,
     ALL_ISOTOPE_OPTIONS,
     neutron_xs_info,
-    photon_xs_info
+    photon_xs_info,
 )
 
 from .utils import (

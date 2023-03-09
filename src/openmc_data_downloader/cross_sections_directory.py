@@ -150,6 +150,7 @@ def get_isotopes_or_elements_from_xml(filename, particle_type):
         raise ValueError(f"no {particle_type} were found in {filename}")
     return neutron_isotopes
 
+
 def populate_neutron_cross_section_list(isotopes, base_url, library):
     xs_info = []
     for isotope in isotopes:
@@ -164,6 +165,7 @@ def populate_neutron_cross_section_list(isotopes, base_url, library):
         xs_info.append(entry)
     return xs_info
 
+
 def populate_photon_cross_section_list(elements, base_url, library):
     xs_info = []
     for element in elements:
@@ -177,23 +179,27 @@ def populate_photon_cross_section_list(elements, base_url, library):
         xs_info.append(entry)
     return xs_info
 
-def get_isotopes_or_elements_info_from_xml(
-    filename, particle_type, base_url, library
-):
+
+def get_isotopes_or_elements_info_from_xml(filename, particle_type, base_url, library):
     isotopes_or_elements = get_isotopes_or_elements_from_xml(filename, particle_type)
-    
-    if particle_type =='photon':
-        
-        info = populate_photon_cross_section_list(isotopes_or_elements, base_url, library)
-    
-    elif particle_type =='neutron':
-    
-        info = populate_neutron_cross_section_list(isotopes_or_elements, base_url, library)
+
+    if particle_type == "photon":
+        info = populate_photon_cross_section_list(
+            isotopes_or_elements, base_url, library
+        )
+
+    elif particle_type == "neutron":
+        info = populate_neutron_cross_section_list(
+            isotopes_or_elements, base_url, library
+        )
     else:
-        raise ValueError(f'particle type {particle_type} not supported, acceptable particle types are "neutron" or "photon')
+        raise ValueError(
+            f'particle type {particle_type} not supported, acceptable particle types are "neutron" or "photon'
+        )
     return info
 
-tendl_2019_xs_neutron_info =get_isotopes_or_elements_info_from_xml(
+
+tendl_2019_xs_neutron_info = get_isotopes_or_elements_info_from_xml(
     "tendl_2019_cross_sections.xml",
     "neutron",
     "https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/",
@@ -204,13 +210,13 @@ nndc_71_neutron_xs_info = get_isotopes_or_elements_info_from_xml(
     "nndc_7.1_cross_sections.xml",
     "neutron",
     "https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/",
-    "ENDFB-7.1-NNDC"
+    "ENDFB-7.1-NNDC",
 )
 nndc_71_photon_xs_info = get_isotopes_or_elements_info_from_xml(
     "nndc_7.1_cross_sections.xml",
     "photon",
     "https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/photon/",
-    "ENDFB-7.1-NNDC"
+    "ENDFB-7.1-NNDC",
 )
 
 fendl_31d_neutron_xs_info = get_isotopes_or_elements_info_from_xml(
@@ -350,8 +356,10 @@ ATOMIC_SYMBOL = {
 }
 
 
-neutron_xs_info = tendl_2019_xs_neutron_info + nndc_71_neutron_xs_info + fendl_31d_neutron_xs_info
-photon_xs_info =  nndc_71_photon_xs_info + fendl_31d_photon_xs_info
+neutron_xs_info = (
+    tendl_2019_xs_neutron_info + nndc_71_neutron_xs_info + fendl_31d_neutron_xs_info
+)
+photon_xs_info = nndc_71_photon_xs_info + fendl_31d_photon_xs_info
 
 
 all_libs = []
@@ -359,12 +367,16 @@ for entry in neutron_xs_info:
     all_libs.append(entry["library"])
 
 LIB_OPTIONS = list(set(all_libs))
-PARTICLE_OPTIONS = ["neutron", "photon"]  #TODO add thermal
+PARTICLE_OPTIONS = ["neutron", "photon"]  # TODO add thermal
 
 nested_list = list(NATURAL_ABUNDANCE.values())
 STABLE_ISOTOPE_OPTIONS = [item for sublist in nested_list for item in sublist]
 
 ALL_ISOTOPE_OPTIONS = []
-for xml in ["tendl_2019_cross_sections.xml","nndc_7.1_cross_sections.xml","fendl_3.1d_cross_sections.xml"]:
-    isotopes = get_isotopes_or_elements_from_xml(xml,"neutron")
-    ALL_ISOTOPE_OPTIONS = ALL_ISOTOPE_OPTIONS +isotopes
+for xml in [
+    "tendl_2019_cross_sections.xml",
+    "nndc_7.1_cross_sections.xml",
+    "fendl_3.1d_cross_sections.xml",
+]:
+    isotopes = get_isotopes_or_elements_from_xml(xml, "neutron")
+    ALL_ISOTOPE_OPTIONS = ALL_ISOTOPE_OPTIONS + isotopes
