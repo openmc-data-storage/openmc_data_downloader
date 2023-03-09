@@ -140,25 +140,34 @@ def zaid_to_isotope(zaid: str) -> str:
 
 
 def get_isotopes_or_elements_from_xml(filename, particle_type):
-
-    tree = ET.parse(Path(__file__).parent/filename)
+    tree = ET.parse(Path(__file__).parent / filename)
     root = tree.getroot()
     neutron_isotopes = []
     for elem in root:
-        if elem.attrib['type'] == particle_type:
-            neutron_isotopes.append(elem.attrib['materials'])
+        if elem.attrib["type"] == particle_type:
+            neutron_isotopes.append(elem.attrib["materials"])
     if len(neutron_isotopes) == 0:
-        raise ValueError(f'no {particle_type} were found in {filename}')
+        raise ValueError(f"no {particle_type} were found in {filename}")
     return neutron_isotopes
 
 
-tendl_2019_neutron_isotopes = get_isotopes_or_elements_from_xml('tendl_2019_cross_sections.xml', 'neutron')
+tendl_2019_neutron_isotopes = get_isotopes_or_elements_from_xml(
+    "tendl_2019_cross_sections.xml", "neutron"
+)
 
-endfb_71_nndc_photon_elements = get_isotopes_or_elements_from_xml('nndc_7.1_cross_sections.xml', 'photon')
-endfb_71_nndc_neutron_isotopes = get_isotopes_or_elements_from_xml('nndc_7.1_cross_sections.xml', 'neutron')
+endfb_71_nndc_photon_elements = get_isotopes_or_elements_from_xml(
+    "nndc_7.1_cross_sections.xml", "photon"
+)
+endfb_71_nndc_neutron_isotopes = get_isotopes_or_elements_from_xml(
+    "nndc_7.1_cross_sections.xml", "neutron"
+)
 
-fendl_31d_neutron_isotopes = get_isotopes_or_elements_from_xml('fendl_3.1d_cross_sections.xml', "neutron")
-fendl_31d_photon_elements = get_isotopes_or_elements_from_xml('fendl_3.1d_cross_sections.xml', "photon")
+fendl_31d_neutron_isotopes = get_isotopes_or_elements_from_xml(
+    "fendl_3.1d_cross_sections.xml", "neutron"
+)
+fendl_31d_photon_elements = get_isotopes_or_elements_from_xml(
+    "fendl_3.1d_cross_sections.xml", "photon"
+)
 
 
 tendl_2019_base_url = (
@@ -177,7 +186,6 @@ for isotope in tendl_2019_neutron_isotopes:
     entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
     tendl_2019_xs_info.append(entry)
     # could add size of file in mb as well
-
 
 
 endfb_71_nndc_base_url = (
