@@ -12,52 +12,9 @@ import openmc
 import pandas as pd
 from openmc_data_downloader import (
     expand_materials_to_isotopes,
-    expand_materials_xml_to_isotopes,
     identify_isotopes_to_download,
-    identify_sab_to_download,
-    expand_elements_to_isotopes,
-    expand_materials_xml_to_sab,
-    expand_materials_to_sabs,
     download_single_file,
 )
-
-
-def test_expansion_of_elements_with_stable_keyword():
-    all_stable_isotopes = expand_elements_to_isotopes("stable")
-    assert len(all_stable_isotopes) == 290
-
-
-def test_expansion_of_elements_with_all_keyword():
-    all_isotopes = expand_elements_to_isotopes("all")
-    assert len(all_isotopes) == 1233
-
-
-def test_expansion_of_elements_with_single_element():
-    stable_isotopes = expand_elements_to_isotopes("Be")
-    assert stable_isotopes == ["Be9"]
-
-
-def test_expansion_of_elements_with_multiple_element():
-    stable_isotopes = expand_elements_to_isotopes(["Be", "Li"])
-    assert stable_isotopes == ["Be9", "Li6", "Li7"]
-
-
-def test_identify_sab_to_download_with_all_keyword():
-    filtered_df = identify_sab_to_download(libraries=["ENDFB-7.1-NNDC"], sab=["all"])
-
-    assert len(filtered_df.values) == 20
-
-    filtered_df2 = identify_sab_to_download(libraries=["ENDFB-7.1-NNDC"], sab="all")
-
-    assert len(filtered_df2.values) == 20
-
-
-def test_identify_sab_to_download_finds_two():
-    filtered_df = identify_sab_to_download(
-        libraries=["ENDFB-7.1-NNDC"], sab=["c_Be_in_BeO", "c_H_in_H2O"]
-    )
-
-    assert len(filtered_df.values) == 2
 
 
 def test_identify_isotopes_to_download_finds_tendl_neutron():

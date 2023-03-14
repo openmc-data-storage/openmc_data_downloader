@@ -198,6 +198,12 @@ def get_isotopes_or_elements_info_from_xml(filename, particle_type, base_url, li
         )
     return info
 
+# {
+#     'filename':
+#     'particle_type':
+#     'base_url':,
+#     'library':
+# }
 
 tendl_2019_xs_neutron_info = get_isotopes_or_elements_info_from_xml(
     "tendl_2019_cross_sections.xml",
@@ -232,6 +238,18 @@ fendl_31d_photon_xs_info = get_isotopes_or_elements_info_from_xml(
     "FENDL-3.1d",
 )
 
+nndc_80_neutron_xs_info = get_isotopes_or_elements_info_from_xml(
+    "nndc_8.0_cross_sections.xml",
+    "neutron",
+    "https://github.com/openmc-data-storage/ENDF-B-VIII.0-NNDC/raw/main/h5_files/neutron/",
+    "ENDFB-8.0-NNDC",
+)
+nndc_80_photon_xs_info = get_isotopes_or_elements_info_from_xml(
+    "nndc_8.0_cross_sections.xml",
+    "photon",
+    "https://github.com/openmc-data-storage/ENDF-B-VIII.0-NNDC/raw/main/h5_files/photon/",
+    "ENDFB-8.0-NNDC",
+)
 
 ATOMIC_SYMBOL = {
     0: "n",
@@ -357,9 +375,9 @@ ATOMIC_SYMBOL = {
 
 
 neutron_xs_info = (
-    tendl_2019_xs_neutron_info + nndc_71_neutron_xs_info + fendl_31d_neutron_xs_info
+    tendl_2019_xs_neutron_info + nndc_71_neutron_xs_info + fendl_31d_neutron_xs_info + nndc_80_neutron_xs_info
 )
-photon_xs_info = nndc_71_photon_xs_info + fendl_31d_photon_xs_info
+photon_xs_info = nndc_71_photon_xs_info + fendl_31d_photon_xs_info + nndc_80_photon_xs_info
 
 
 all_libs = []
@@ -370,13 +388,21 @@ LIB_OPTIONS = list(set(all_libs))
 PARTICLE_OPTIONS = ["neutron", "photon"]  # TODO add thermal
 
 nested_list = list(NATURAL_ABUNDANCE.values())
+
+# should this come from the isotopes available in the xml files
 STABLE_ISOTOPE_OPTIONS = [item for sublist in nested_list for item in sublist]
 
 ALL_ISOTOPE_OPTIONS = []
 for xml in [
     "tendl_2019_cross_sections.xml",
     "nndc_7.1_cross_sections.xml",
+    "nndc_8.0_cross_sections.xml",
     "fendl_3.1d_cross_sections.xml",
 ]:
     isotopes = get_isotopes_or_elements_from_xml(xml, "neutron")
     ALL_ISOTOPE_OPTIONS = ALL_ISOTOPE_OPTIONS + isotopes
+
+ALL_ISOTOPE_OPTIONS = sorted(list(set(ALL_ISOTOPE_OPTIONS)))
+
+ALL_ELEMENT_OPTIONS = sorted(list(set([re.split(r"(\d+)", i)[0] for i in ALL_ISOTOPE_OPTIONS])))
+STABLE_ELEMENT_OPTIONS = sorted(list(set([re.split(r"(\d+)", i)[0] for i in STABLE_ISOTOPE_OPTIONS])))
