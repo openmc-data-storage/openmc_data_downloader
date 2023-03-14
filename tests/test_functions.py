@@ -19,7 +19,7 @@ from openmc_data_downloader import (
 
 def test_identify_isotopes_to_download_finds_tendl_neutron():
     filtered_df = identify_isotopes_to_download(
-        libraries=["TENDL-2019"], isotopes=["Be9"], particles=["neutron"]
+        libraries=["TENDL-2019"], isotopes=["Be9"]
     )
     answer_df = pd.DataFrame.from_dict(
         {
@@ -46,19 +46,19 @@ def test_identify_isotopes_to_download_finds_tendl_neutron():
 
 def test_identify_isotopes_to_download_finds_fendl_photon():
     filtered_df = identify_isotopes_to_download(
-        libraries=["FENDL-3.1d"], isotopes=["Be9"], particles=["photon"]
+        libraries=["FENDL-3.1d"], isotopes=["Be9"]
     )
     answer_df = pd.DataFrame.from_dict(
         {
             "isotope": ["Be9"],
-            "particle": ["photon"],
+            "particle": ["neutron"],
             "library": ["FENDL-3.1d"],
-            "remote_file": ["Be.h5"],
+            "remote_file": ["Be9.h5"],
             "url": [
-                "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/Be.h5"
+                "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Be9.h5"
             ],
             "element": ["Be"],
-            "local_file": ["FENDL-3.1d_Be.h5"],
+            "local_file": ["FENDL-3.1d_Be9.h5"],
             "priority": [1],
         }
     )
@@ -70,20 +70,48 @@ def test_identify_isotopes_to_download_finds_fendl_photon():
 
 def test_identify_isotopes_to_download_finds_fendl_photon_neutron():
     filtered_df = identify_isotopes_to_download(
-        libraries=["FENDL-3.1d"], isotopes=["Be9"], particles=["photon", "neutron"]
+        libraries=["FENDL-3.1d"], isotopes=["Be9"]
     )
     answer_df = pd.DataFrame.from_dict(
         {
-            "isotope": ["Be9", "Be9"],
-            "particle": ["neutron", "photon"],
-            "library": ["FENDL-3.1d", "FENDL-3.1d"],
-            "remote_file": ["Be9.h5", "Be.h5"],
+            "isotope": ["Be9"],
+            "particle": ["neutron"],
+            "library": ["FENDL-3.1d"],
+            "remote_file": ["Be9.h5"],
             "url": [
                 "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Be9.h5",
-                "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/Be.h5",
             ],
-            "element": ["Be", "Be"],
-            "local_file": ["FENDL-3.1d_Be9.h5", "FENDL-3.1d_Be.h5"],
+            "element": ["Be"],
+            "local_file": ["FENDL-3.1d_Be9.h5"],
+            "priority": [1],
+        }
+    )
+
+    assert len(filtered_df.values) == 1
+    assert list(filtered_df.keys()) == list(answer_df.keys())
+    assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
+
+
+def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes():
+    filtered_df = identify_isotopes_to_download(
+        libraries=["FENDL-3.1d"],
+        isotopes=["Fe56", "Fe57"],
+    )
+    answer_df = pd.DataFrame.from_dict(
+        {
+            "isotope": ["Fe56", "Fe57"],
+            "particle": ["neutron", "neutron"],
+            "library": ["FENDL-3.1d", "FENDL-3.1d"],
+            "remote_file": ["Fe56.h5", "Fe57.h5"],
+            "url": [
+                "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Fe56.h5",
+                "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Fe57.h5",
+            ],
+            "element": ["Fe", "Fe"],
+            "local_file": [
+                "FENDL-3.1d_Fe56.h5",
+                "FENDL-3.1d_Fe57.h5",
+            ],
             "priority": [1, 1],
         }
     )
@@ -94,52 +122,18 @@ def test_identify_isotopes_to_download_finds_fendl_photon_neutron():
     assert filtered_df.values[1].tolist() == answer_df.values[1].tolist()
 
 
-def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes():
-    filtered_df = identify_isotopes_to_download(
-        libraries=["FENDL-3.1d"],
-        isotopes=["Fe56", "Fe57"],
-        particles=["photon", "neutron"],
-    )
-    answer_df = pd.DataFrame.from_dict(
-        {
-            "isotope": ["Fe56", "Fe57", "Fe56"],
-            "particle": ["neutron", "neutron", "photon"],
-            "library": ["FENDL-3.1d", "FENDL-3.1d", "FENDL-3.1d"],
-            "remote_file": ["Fe56.h5", "Fe57.h5", "Fe.h5"],
-            "url": [
-                "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Fe56.h5",
-                "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Fe57.h5",
-                "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/Fe.h5",
-            ],
-            "element": ["Fe", "Fe", "Fe"],
-            "local_file": [
-                "FENDL-3.1d_Fe56.h5",
-                "FENDL-3.1d_Fe57.h5",
-                "FENDL-3.1d_Fe.h5",
-            ],
-            "priority": [1, 1, 1],
-        }
-    )
-
-    assert len(filtered_df.values) == 3
-    assert list(filtered_df.keys()) == list(answer_df.keys())
-    assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
-    assert filtered_df.values[1].tolist() == answer_df.values[1].tolist()
-    assert filtered_df.values[2].tolist() == answer_df.values[2].tolist()
-
-
 def test_identify_isotopes_to_download_all():
     filtered_df = identify_isotopes_to_download(
-        libraries=["FENDL-3.1d"], isotopes=["all"], particles=["photon", "neutron"]
+        libraries=["FENDL-3.1d"], isotopes=["all"]
     )
 
-    assert len(filtered_df.values) == 239
+    assert len(filtered_df.values) == 180
 
     filtered_df = identify_isotopes_to_download(
-        libraries=["FENDL-3.1d"], isotopes="all", particles=["photon", "neutron"]
+        libraries=["FENDL-3.1d"], isotopes="all"
     )
 
-    assert len(filtered_df.values) == 239
+    assert len(filtered_df.values) == 180
 
 
 def test_expand_materials_from_object_list_with_single_mat():
@@ -148,7 +142,7 @@ def test_expand_materials_from_object_list_with_single_mat():
     my_mat.add_nuclide("Pu240", 1.7512e-3)
     my_mat.add_nuclide("Pu241", 1.1674e-4)
 
-    assert expand_materials_to_isotopes([my_mat]) == ["Pu239", "Pu240", "Pu241"]
+    assert expand_materials_to_isotopes(openmc.Materials([my_mat])) == ["Pu239", "Pu240", "Pu241"]
 
 
 def test_expand_materials_from_object_with_single_mat():
@@ -157,7 +151,7 @@ def test_expand_materials_from_object_with_single_mat():
     my_mat.add_nuclide("Pu240", 1.7512e-3)
     my_mat.add_nuclide("Pu241", 1.1674e-4)
 
-    assert expand_materials_to_isotopes(my_mat) == ["Pu239", "Pu240", "Pu241"]
+    assert expand_materials_to_isotopes(openmc.Materials([my_mat])) == ["Pu239", "Pu240", "Pu241"]
 
 
 def test_expand_materials_from_object_list_with_multiple_mat():
@@ -168,10 +162,10 @@ def test_expand_materials_from_object_list_with_multiple_mat():
     my_mat2 = openmc.Material()
     my_mat2.add_nuclide("Al27", 0.25)
 
-    assert expand_materials_to_isotopes([my_mat1, my_mat2]) == [
+    assert expand_materials_to_isotopes(openmc.Materials([my_mat1, my_mat2])) == [
+        "Al27",
         "Li6",
         "Li7",
-        "Al27",
     ]
 
 
@@ -185,112 +179,73 @@ def test_expand_materials_from_object_list_with_openmc_materials():
 
     mats = openmc.Materials([my_mat1, my_mat2])
 
-    assert expand_materials_to_isotopes(mats) == ["Li6", "Li7", "Al27"]
+    assert expand_materials_to_isotopes(mats) == ["Al27", "Li6", "Li7"]
+
+# todo bring back if sab returns
+# def test_expand_material_xmls_for_sabs_with_sab():
+#     my_mat = openmc.Material()
+#     my_mat.add_element("Be", 0.5)
+#     my_mat.add_s_alpha_beta("c_Be_in_BeO")
+#     os.system("rm materials.xml")
+#     openmc.Materials([my_mat]).export_to_xml()
+
+#     assert expand_materials_xml_to_sab("materials.xml") == ["c_Be_in_BeO"]
 
 
-def test_expand_material_xmls_with_list_input():
-    my_mat = openmc.Material()
-    my_mat.add_nuclide("Be9", 0.5)
-    os.system("rm materials.xml")
-    openmc.Materials([my_mat]).export_to_xml()
+# def test_expand_material_xmls_for_sabs_with_two_sab():
+#     my_mat = openmc.Material()
+#     my_mat.add_element("Be", 0.5)
+#     my_mat.add_s_alpha_beta("c_Be_in_BeO")
+#     my_mat.add_s_alpha_beta("c_H_in_H2O")
+#     os.system("rm materials.xml")
+#     openmc.Materials([my_mat]).export_to_xml()
 
-    assert expand_materials_xml_to_isotopes(["materials.xml"]) == ["Be9"]
-
-
-def test_expand_material_xmls_with_str_input():
-    my_mat = openmc.Material()
-    my_mat.add_element("Al", 0.5)
-    os.system("rm materials.xml")
-    openmc.Materials([my_mat]).export_to_xml()
-
-    assert expand_materials_xml_to_isotopes("materials.xml") == ["Al27"]
+#     assert expand_materials_xml_to_sab("materials.xml") == [
+#         "c_Be_in_BeO",
+#         "c_H_in_H2O",
+#     ]
 
 
-def test_expand_material_xmls_with_two_isotopes():
-    my_mat = openmc.Material()
-    my_mat.add_element("Li", 0.5)
-    os.system("rm materials.xml")
-    openmc.Materials([my_mat]).export_to_xml()
+# def test_expand_material_for_sabs_with_two_sab():
+#     my_mat = openmc.Material()
+#     my_mat.add_element("Be", 0.5)
+#     my_mat.add_s_alpha_beta("c_Be_in_BeO")
+#     my_mat.add_s_alpha_beta("c_H_in_H2O")
 
-    assert "Li6" in expand_materials_xml_to_isotopes("materials.xml")
-    assert "Li7" in expand_materials_xml_to_isotopes("materials.xml")
-
-
-def test_expand_material_xmls_with_sab():
-    my_mat = openmc.Material()
-    my_mat.add_element("Be", 0.5)
-    my_mat.add_s_alpha_beta("c_Be_in_BeO")
-    os.system("rm materials.xml")
-    openmc.Materials([my_mat]).export_to_xml()
-
-    # sab should not be in this list as this is just isotopes
-    assert expand_materials_xml_to_isotopes("materials.xml") == ["Be9"]
+#     assert expand_materials_to_sabs(my_mat) == ["c_Be_in_BeO", "c_H_in_H2O"]
 
 
-def test_expand_material_xmls_for_sabs_with_sab():
-    my_mat = openmc.Material()
-    my_mat.add_element("Be", 0.5)
-    my_mat.add_s_alpha_beta("c_Be_in_BeO")
-    os.system("rm materials.xml")
-    openmc.Materials([my_mat]).export_to_xml()
+# def test_expand_material_for_sabs_with_sab():
+#     my_mat = openmc.Material()
+#     my_mat.add_element("Be", 0.5)
+#     my_mat.add_s_alpha_beta("c_H_in_H2O")
 
-    assert expand_materials_xml_to_sab("materials.xml") == ["c_Be_in_BeO"]
+#     assert expand_materials_to_sabs(my_mat) == ["c_H_in_H2O"]
 
 
-def test_expand_material_xmls_for_sabs_with_two_sab():
-    my_mat = openmc.Material()
-    my_mat.add_element("Be", 0.5)
-    my_mat.add_s_alpha_beta("c_Be_in_BeO")
-    my_mat.add_s_alpha_beta("c_H_in_H2O")
-    os.system("rm materials.xml")
-    openmc.Materials([my_mat]).export_to_xml()
-
-    assert expand_materials_xml_to_sab("materials.xml") == [
-        "c_Be_in_BeO",
-        "c_H_in_H2O",
-    ]
+# def test_incorrect_material_enpty():
+#     with pytest.raises(ValueError):
+#         expand_materials_to_sabs("my_mat")
 
 
-def test_expand_material_for_sabs_with_two_sab():
-    my_mat = openmc.Material()
-    my_mat.add_element("Be", 0.5)
-    my_mat.add_s_alpha_beta("c_Be_in_BeO")
-    my_mat.add_s_alpha_beta("c_H_in_H2O")
-
-    assert expand_materials_to_sabs(my_mat) == ["c_Be_in_BeO", "c_H_in_H2O"]
+# def test_incorrect_sab_name():
+#     with pytest.raises(ValueError):
+#         identify_sab_to_download(libraries=["ENDFB-7.1-NNDC"], sab=["incorrect name"])
 
 
-def test_expand_material_for_sabs_with_sab():
-    my_mat = openmc.Material()
-    my_mat.add_element("Be", 0.5)
-    my_mat.add_s_alpha_beta("c_H_in_H2O")
-
-    assert expand_materials_to_sabs(my_mat) == ["c_H_in_H2O"]
+# def test_incorrect_libraries():
+#     with pytest.raises(ValueError):
+#         identify_sab_to_download(libraries=[], sab=["c_Fe56"])
 
 
-def test_incorrect_material_enpty():
-    with pytest.raises(ValueError):
-        expand_materials_to_sabs("my_mat")
-
-
-def test_incorrect_sab_name():
-    with pytest.raises(ValueError):
-        identify_sab_to_download(libraries=["ENDFB-7.1-NNDC"], sab=["incorrect name"])
-
-
-def test_incorrect_libraries():
-    with pytest.raises(ValueError):
-        identify_sab_to_download(libraries=[], sab=["c_Fe56"])
-
-
-def test_incorrect_library_name_for_sab_identifying():
-    with pytest.raises(ValueError):
-        identify_sab_to_download(libraries=["incorrect name"], sab=["c_Fe56"])
+# def test_incorrect_library_name_for_sab_identifying():
+#     with pytest.raises(ValueError):
+#         identify_sab_to_download(libraries=["incorrect name"], sab=["c_Fe56"])
 
 
 def test_library_values_single_entry_list():
     isotopes_df = identify_isotopes_to_download(
-        libraries="TENDL-2019", isotopes=["Li6", "Al27"], particles=["neutron"]
+        libraries=["TENDL-2019"], isotopes=["Al27", "Li6"]
     )
 
     assert len(isotopes_df) == 2
@@ -298,7 +253,7 @@ def test_library_values_single_entry_list():
 
 def test_emplty_isotopes():
     empty_df = identify_isotopes_to_download(
-        libraries=["TENDL-2019"], isotopes=[], particles=["neutron"]
+        libraries=["TENDL-2019"], isotopes=[]
     )
     assert len(empty_df) == 0
     assert isinstance(empty_df, type(pd.DataFrame()))
@@ -307,14 +262,14 @@ def test_emplty_isotopes():
 def test_incorrect_library_values_empty():
     with pytest.raises(ValueError):
         identify_isotopes_to_download(
-            libraries=[], isotopes="Li6", particles=["neutron"]
+            libraries=[], isotopes="Li6"
         )
 
 
 def test_incorrect_library_values_wrong():
     with pytest.raises(ValueError):
         identify_isotopes_to_download(
-            libraries=["coucou"], isotopes="Li6", particles=["neutron"]
+            libraries=["coucou"], isotopes="Li6"
         )
 
 

@@ -55,7 +55,7 @@ def expand_materials_to_isotopes(materials: openmc.Materials):
         for nuc in material.nuclides:
             isotopes_from_materials.append(nuc.name)
 
-    return list(set(isotopes_from_materials))
+    return sorted(list(set(isotopes_from_materials)))
 
 
 def expand_materials_to_elements(materials: openmc.Materials):
@@ -84,7 +84,6 @@ def download_cross_section_data(
     overwrite: bool = False,
 ) -> str:
     """ """
-
 
     for entry in particles:
         if entry not in PARTICLE_OPTIONS:
@@ -254,7 +253,7 @@ def identify_isotopes_to_download(
     priority_dict = {}
     for counter, entry in enumerate(libraries):
         if entry not in LIB_OPTIONS:
-            raise ValueError("The library must be one of the following", LIB_OPTIONS)
+            raise ValueError(f"The library must be one of the following {LIB_OPTIONS}. Not {entry}.")
 
         priority_dict[entry] = counter + 1
 
