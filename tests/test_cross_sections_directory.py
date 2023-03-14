@@ -2,11 +2,13 @@ from openmc_data_downloader import cross_sections_directory
 
 
 def test_neutron_isotopes():
-    tendl_2019_xs_neutron_info = cross_sections_directory.get_isotopes_or_elements_info_from_xml(
-        "tendl_2019_cross_sections.xml",
-        "neutron",
-        "https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/",
-        "TENDL-2019",
+    tendl_2019_xs_neutron_info = (
+        cross_sections_directory.get_isotopes_or_elements_info_from_xml(
+            "tendl_2019_cross_sections.xml",
+            "neutron",
+            "https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/",
+            "TENDL-2019",
+        )
     )
     assert len(tendl_2019_xs_neutron_info) == 630
 

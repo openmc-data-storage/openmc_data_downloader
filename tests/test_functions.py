@@ -142,7 +142,11 @@ def test_expand_materials_from_object_list_with_single_mat():
     my_mat.add_nuclide("Pu240", 1.7512e-3)
     my_mat.add_nuclide("Pu241", 1.1674e-4)
 
-    assert expand_materials_to_isotopes(openmc.Materials([my_mat])) == ["Pu239", "Pu240", "Pu241"]
+    assert expand_materials_to_isotopes(openmc.Materials([my_mat])) == [
+        "Pu239",
+        "Pu240",
+        "Pu241",
+    ]
 
 
 def test_expand_materials_from_object_with_single_mat():
@@ -151,7 +155,11 @@ def test_expand_materials_from_object_with_single_mat():
     my_mat.add_nuclide("Pu240", 1.7512e-3)
     my_mat.add_nuclide("Pu241", 1.1674e-4)
 
-    assert expand_materials_to_isotopes(openmc.Materials([my_mat])) == ["Pu239", "Pu240", "Pu241"]
+    assert expand_materials_to_isotopes(openmc.Materials([my_mat])) == [
+        "Pu239",
+        "Pu240",
+        "Pu241",
+    ]
 
 
 def test_expand_materials_from_object_list_with_multiple_mat():
@@ -180,6 +188,7 @@ def test_expand_materials_from_object_list_with_openmc_materials():
     mats = openmc.Materials([my_mat1, my_mat2])
 
     assert expand_materials_to_isotopes(mats) == ["Al27", "Li6", "Li7"]
+
 
 # todo bring back if sab returns
 # def test_expand_material_xmls_for_sabs_with_sab():
@@ -252,25 +261,19 @@ def test_library_values_single_entry_list():
 
 
 def test_emplty_isotopes():
-    empty_df = identify_isotopes_to_download(
-        libraries=["TENDL-2019"], isotopes=[]
-    )
+    empty_df = identify_isotopes_to_download(libraries=["TENDL-2019"], isotopes=[])
     assert len(empty_df) == 0
     assert isinstance(empty_df, type(pd.DataFrame()))
 
 
 def test_incorrect_library_values_empty():
     with pytest.raises(ValueError):
-        identify_isotopes_to_download(
-            libraries=[], isotopes="Li6"
-        )
+        identify_isotopes_to_download(libraries=[], isotopes="Li6")
 
 
 def test_incorrect_library_values_wrong():
     with pytest.raises(ValueError):
-        identify_isotopes_to_download(
-            libraries=["coucou"], isotopes="Li6"
-        )
+        identify_isotopes_to_download(libraries=["coucou"], isotopes="Li6")
 
 
 def test_incorrect_expand_materials_to_isotopes_with_incorrect_args():

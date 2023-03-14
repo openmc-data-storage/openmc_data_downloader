@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 import openmc
-import openmc_data_downloader 
+import openmc_data_downloader
 
 
 def test_materials_download():
@@ -28,7 +28,7 @@ def test_materials_download():
         destination="my_custom_nuclear_data_with_materials",
         libraries=["ENDFB-8.0-NNDC"],
         set_OPENMC_CROSS_SECTIONS=True,
-        particles=['neutron']
+        particles=["neutron"],
     )
     mats.export_to_xml()
 
@@ -72,9 +72,7 @@ def test_materials_download():
     assert Path("summary.h5").is_file()
     assert Path("statepoint.3.h5").is_file()
 
-    assert (
-        len(list(Path("my_custom_nuclear_data_with_materials").glob("*.h5"))) == 3
-    )
+    assert len(list(Path("my_custom_nuclear_data_with_materials").glob("*.h5"))) == 3
 
 
 def test_simulation_with_destination():
@@ -287,6 +285,7 @@ def test_simulation_with_single_mat():
     assert Path("summary.h5").is_file()
     assert Path("statepoint.2.h5").is_file()
     assert len(list(Path(".").glob("*.h5"))) == 5  # summary and statepoint
+
 
 # TODO bring this test back when we have sab again
 # def test_simulation_with_sab():

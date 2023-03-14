@@ -198,6 +198,7 @@ def get_isotopes_or_elements_info_from_xml(filename, particle_type, base_url, li
         )
     return info
 
+
 # {
 #     'filename':
 #     'particle_type':
@@ -375,9 +376,14 @@ ATOMIC_SYMBOL = {
 
 
 neutron_xs_info = (
-    tendl_2019_xs_neutron_info + nndc_71_neutron_xs_info + fendl_31d_neutron_xs_info + nndc_80_neutron_xs_info
+    tendl_2019_xs_neutron_info
+    + nndc_71_neutron_xs_info
+    + fendl_31d_neutron_xs_info
+    + nndc_80_neutron_xs_info
 )
-photon_xs_info = nndc_71_photon_xs_info + fendl_31d_photon_xs_info + nndc_80_photon_xs_info
+photon_xs_info = (
+    nndc_71_photon_xs_info + fendl_31d_photon_xs_info + nndc_80_photon_xs_info
+)
 
 
 all_libs = []
@@ -404,5 +410,9 @@ for xml in [
 
 ALL_ISOTOPE_OPTIONS = sorted(list(set(ALL_ISOTOPE_OPTIONS)))
 
-ALL_ELEMENT_OPTIONS = sorted(list(set([re.split(r"(\d+)", i)[0] for i in ALL_ISOTOPE_OPTIONS])))
-STABLE_ELEMENT_OPTIONS = sorted(list(set([re.split(r"(\d+)", i)[0] for i in STABLE_ISOTOPE_OPTIONS])))
+ALL_ELEMENT_OPTIONS = sorted(
+    list(set([re.split(r"(\d+)", i)[0] for i in ALL_ISOTOPE_OPTIONS]))
+)
+STABLE_ELEMENT_OPTIONS = sorted(
+    list(set([re.split(r"(\d+)", i)[0] for i in STABLE_ISOTOPE_OPTIONS]))
+)

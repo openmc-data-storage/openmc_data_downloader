@@ -42,7 +42,6 @@ def set_environmental_variable(cross_section_xml_path: Union[Path, str]) -> None
 
 
 def expand_materials_to_isotopes(materials: openmc.Materials):
-
     if not isinstance(materials, openmc.Materials):
         raise ValueError("materials argument must be an openmc.Materials() object")
     if len(materials) == 0:
@@ -59,7 +58,6 @@ def expand_materials_to_isotopes(materials: openmc.Materials):
 
 
 def expand_materials_to_elements(materials: openmc.Materials):
-
     if not isinstance(materials, openmc.Materials):
         raise ValueError("materials argument must be an openmc.Materials() object")
     if len(materials) == 0:
@@ -77,7 +75,12 @@ def expand_materials_to_elements(materials: openmc.Materials):
 
 def download_cross_section_data(
     self,
-    libraries: typing.Iterable[str] = ("TENDL-2019", "ENDFB-7.1-NNDC", "ENDFB-8.0-NNDC", "FENDL-3.1d"),
+    libraries: typing.Iterable[str] = (
+        "TENDL-2019",
+        "ENDFB-7.1-NNDC",
+        "ENDFB-8.0-NNDC",
+        "FENDL-3.1d",
+    ),
     destination: Union[str, Path] = None,
     particles: Optional[typing.Iterable[str]] = ("neutron", "photon"),
     set_OPENMC_CROSS_SECTIONS: bool = True,
@@ -209,7 +212,6 @@ def download_data_frame_of(
 def create_cross_sections_xml(
     dataframe: pd.DataFrame, destination: Union[str, Path]
 ) -> str:
-
     library = openmc.data.DataLibrary()
     for index, row in dataframe.iterrows():
         if destination is None:
@@ -253,10 +255,11 @@ def identify_isotopes_to_download(
     priority_dict = {}
     for counter, entry in enumerate(libraries):
         if entry not in LIB_OPTIONS:
-            raise ValueError(f"The library must be one of the following {LIB_OPTIONS}. Not {entry}.")
+            raise ValueError(
+                f"The library must be one of the following {LIB_OPTIONS}. Not {entry}."
+            )
 
         priority_dict[entry] = counter + 1
-
 
     print("Searching libraries with the following priority", priority_dict)
 
@@ -269,7 +272,7 @@ def identify_isotopes_to_download(
     is_library = xs_info_df["library"].isin(libraries)
     print("Isotopes found matching library requirements", is_library.values.sum())
 
-    is_particle = xs_info_df["particle"].isin(['neutron'])
+    is_particle = xs_info_df["particle"].isin(["neutron"])
     print("Isotopes found matching particle requirements", is_particle.values.sum())
 
     is_isotope = xs_info_df["isotope"].isin(isotopes)
@@ -311,7 +314,6 @@ def identify_elements_to_download(
             "At least one library must be selected, options are", LIB_OPTIONS
         )
 
-
     priority_dict = {}
     for counter, entry in enumerate(libraries):
         if entry not in LIB_OPTIONS:
@@ -330,7 +332,7 @@ def identify_elements_to_download(
     is_library = xs_info_df["library"].isin(libraries)
     print("Elements found matching library requirements", is_library.values.sum())
 
-    is_particle = xs_info_df["particle"].isin(['photon'])
+    is_particle = xs_info_df["particle"].isin(["photon"])
     print("Elements found matching particle requirements", is_particle.values.sum())
 
     is_element = xs_info_df["element"].isin(elements)
