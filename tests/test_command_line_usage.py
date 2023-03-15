@@ -85,7 +85,7 @@ def test_correct_files_from_command_line_usage_5():
 
 
 def test_correct_files_from_command_line_usage_6():
-    """Tests downloading with FENDL as prioity but without the element in
+    """Tests downloading with FENDL as priority but without the element in
     FENDL"""
 
     os.system("rm *.h5")
