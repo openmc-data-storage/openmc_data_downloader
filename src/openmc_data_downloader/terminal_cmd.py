@@ -10,12 +10,8 @@ generation of custom cross_section.xml files
 
 import argparse
 from pathlib import Path
-
-from openmc_data_downloader import (
-    just_in_time_library_generator,
-    LIB_OPTIONS,
-    SAB_OPTIONS,
-)
+import openmc_data_downloader
+import openmc
 
 
 def main():
@@ -24,7 +20,7 @@ def main():
     parser.add_argument(
         "-l",
         "--libraries",
-        choices=LIB_OPTIONS,
+        choices=openmc_data_downloader.LIB_OPTIONS,
         nargs="*",
         help="The nuclear data libraries to search through when searching for \
         cross sections. Multiple libaries are acceptable and will be \
@@ -39,14 +35,14 @@ def main():
         default=[],
         help="The isotope or isotopes to download, name of isotope e.g. 'Al27' or keyword 'all' or 'stable'",
     )
-    parser.add_argument(
-        "-s",
-        "--sab",
-        nargs="*",
-        default=[],
-        help="The SaB cross sections to download. Options include "
-        + " ".join(SAB_OPTIONS),
-    )
+    # parser.add_argument(
+    #     "-s",
+    #     "--sab",
+    #     nargs="*",
+    #     default=[],
+    #     help="The SaB cross sections to download. Options include "
+    #     + " ".join(SAB_OPTIONS),
+    # )
 
     parser.add_argument(
         "-e",
@@ -92,13 +88,28 @@ def main():
     parser.set_defaults(overwrite=False)
     args = parser.parse_args()
 
-    just_in_time_library_generator(
+    if args.materials_xml:
+        for material_xml in args.materials_xml:
+            mats = openmc.Materials.from_xml(material_xml)
+            mats.download_cross_section_data(
+                libraries=args.libraries,
+                destination=args.destination,
+                particles=args.particles,
+                set_OPENMC_CROSS_SECTIONS=False,
+                overwrite=args.overwrite,
+            )
+
+    mat = openmc.Material()
+    for isotope in args.isotopes:
+        mat.add_nuclide(isotope, 1)
+    for element in args.elements:
+        mat.add_element(element, 1)
+
+    mats = openmc.Materials([mat])
+    print(mats)
+    mats.download_cross_section_data(
         libraries=args.libraries,
-        isotopes=args.isotopes,
-        sab=args.sab,
-        elements=args.elements,
         destination=args.destination,
-        materials_xml=args.materials_xml,
         particles=args.particles,
         set_OPENMC_CROSS_SECTIONS=False,
         overwrite=args.overwrite,
