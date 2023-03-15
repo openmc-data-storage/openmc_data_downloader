@@ -11,7 +11,10 @@ generation of custom cross_section.xml files
 import argparse
 from pathlib import Path
 import openmc_data_downloader
-from openmc_data_downloader.cross_sections_directory import lib_to_xml, NATURAL_ABUNDANCE
+from openmc_data_downloader.cross_sections_directory import (
+    lib_to_xml,
+    NATURAL_ABUNDANCE,
+)
 import openmc
 
 
@@ -89,14 +92,14 @@ def main():
     parser.set_defaults(overwrite=False)
     args = parser.parse_args()
 
-    if args.elements == ['all']:
+    if args.elements == ["all"]:
         args.elements = openmc_data_downloader.ALL_ELEMENT_OPTIONS
-    if args.elements == ['stable']:
+    if args.elements == ["stable"]:
         args.elements = openmc_data_downloader.STABLE_ELEMENT_OPTIONS
 
-    if args.isotopes == ['all']:
+    if args.isotopes == ["all"]:
         args.isotopes = openmc_data_downloader.ALL_ISOTOPE_OPTIONS
-    if args.isotopes == ['stable']:
+    if args.isotopes == ["stable"]:
         args.isotopes = openmc_data_downloader.STABLE_ISOTOPE_OPTIONS
 
     mat = openmc.Material()

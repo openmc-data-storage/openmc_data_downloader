@@ -181,7 +181,6 @@ def populate_photon_cross_section_list(elements, base_url, library):
 
 
 def get_isotopes_or_elements_info_from_xml(particle_type, library):
-
     base_url = lib_to_base_url[(library, particle_type)]
     filename = lib_to_xml[library]
 
@@ -211,19 +210,40 @@ def get_isotopes_or_elements_info_from_xml(particle_type, library):
 # }
 
 lib_to_xml = {
-    "FENDL-3.1d":'fendl_3.1d_cross_sections.xml',
-    "ENDFB-8.0-NNDC": 'nndc_8.0_cross_sections.xml',
-    "ENDFB-7.1-NNDC": 'nndc_7.1_cross_sections.xml',
-    "TENDL-2019": 'tendl_2019_cross_sections.xml'
+    "FENDL-3.1d": "fendl_3.1d_cross_sections.xml",
+    "ENDFB-8.0-NNDC": "nndc_8.0_cross_sections.xml",
+    "ENDFB-7.1-NNDC": "nndc_7.1_cross_sections.xml",
+    "TENDL-2019": "tendl_2019_cross_sections.xml",
 }
 lib_to_base_url = {
-    ("FENDL-3.1d","neutron"):"https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/",
-    ("FENDL-3.1d","photon"):"https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/",
-    ("ENDFB-8.0-NNDC","neutron"):"https://github.com/openmc-data-storage/ENDF-B-VIII.0-NNDC/raw/main/h5_files/neutron/",
-    ("ENDFB-8.0-NNDC","photon"):"https://github.com/openmc-data-storage/ENDF-B-VIII.0-NNDC/raw/main/h5_files/photon/",
-    ("ENDFB-7.1-NNDC","neutron"):"https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/",
-    ("ENDFB-7.1-NNDC","photon"):"https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/photon/",
-    ("TENDL-2019","neutron"):"https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/",
+    (
+        "FENDL-3.1d",
+        "neutron",
+    ): "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/",
+    (
+        "FENDL-3.1d",
+        "photon",
+    ): "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/",
+    (
+        "ENDFB-8.0-NNDC",
+        "neutron",
+    ): "https://github.com/openmc-data-storage/ENDF-B-VIII.0-NNDC/raw/main/h5_files/neutron/",
+    (
+        "ENDFB-8.0-NNDC",
+        "photon",
+    ): "https://github.com/openmc-data-storage/ENDF-B-VIII.0-NNDC/raw/main/h5_files/photon/",
+    (
+        "ENDFB-7.1-NNDC",
+        "neutron",
+    ): "https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/",
+    (
+        "ENDFB-7.1-NNDC",
+        "photon",
+    ): "https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/photon/",
+    (
+        "TENDL-2019",
+        "neutron",
+    ): "https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/",
 }
 
 tendl_2019_xs_neutron_info = get_isotopes_or_elements_info_from_xml(
