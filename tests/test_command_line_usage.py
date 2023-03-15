@@ -18,6 +18,7 @@ import openmc_data_downloader
 #     assert Path("ENDFB-7.1-WMP_H1.h5").is_file()
 #     assert len(list(Path(".").glob("*.h5"))) == 1
 
+
 def test_single_isotope_download_tendl_2019():
     os.system("rm *.h5")
     os.system("openmc_data_downloader -l TENDL-2019 -i H1")
@@ -129,6 +130,7 @@ def test_neutron_and_photon_download_of_isotope_fendl():
     assert Path("FENDL-3.1d_He4.h5").is_file()
     assert len(list(Path(".").glob("*.h5"))) == 2
 
+
 # todo bring test back is sab returns
 # def test_sab_download_with_endf():
 #     """Tests downloading with FENDL photon data and checks it exists"""
@@ -152,9 +154,7 @@ def test_download_single_file_with_overwrite_speed_up():
     """Checks that downloading with overwrite to False is quicker"""
 
     current_time = time.time()
-    os.system(
-        "openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -e Be --overwrite"
-    )
+    os.system("openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -e Be --overwrite")
     time_after_download = time.time()
     time_to_download = time_after_download - current_time
 
