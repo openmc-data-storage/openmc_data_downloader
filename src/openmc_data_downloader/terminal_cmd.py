@@ -11,6 +11,7 @@ generation of custom cross_section.xml files
 import argparse
 from pathlib import Path
 import openmc_data_downloader
+from openmc_data_downloader.cross_sections_directory import lib_to_xml, NATURAL_ABUNDANCE
 import openmc
 
 
@@ -88,25 +89,34 @@ def main():
     parser.set_defaults(overwrite=False)
     args = parser.parse_args()
 
-    if args.materials_xml:
-        for material_xml in args.materials_xml:
-            mats = openmc.Materials.from_xml(material_xml)
-            mats.download_cross_section_data(
-                libraries=args.libraries,
-                destination=args.destination,
-                particles=args.particles,
-                set_OPENMC_CROSS_SECTIONS=False,
-                overwrite=args.overwrite,
-            )
+    if args.elements == ['all']:
+        args.elements = openmc_data_downloader.ALL_ELEMENT_OPTIONS
+    if args.elements == ['stable']:
+        args.elements = openmc_data_downloader.STABLE_ELEMENT_OPTIONS
+
+    if args.isotopes == ['all']:
+        args.isotopes = openmc_data_downloader.ALL_ISOTOPE_OPTIONS
+    if args.isotopes == ['stable']:
+        args.isotopes = openmc_data_downloader.STABLE_ISOTOPE_OPTIONS
 
     mat = openmc.Material()
     for isotope in args.isotopes:
         mat.add_nuclide(isotope, 1)
     for element in args.elements:
-        mat.add_element(element, 1)
+        # we get the nuclides for the element and add each nuclide
+        # adding elements expands to nuclides using the cross_sections.xml
+        # which can fail if the element is not present in the local cross_sections.xml
+        nuclides = NATURAL_ABUNDANCE[element]
+        for nuclide in nuclides:
+            mat.add_nuclide(nuclide, 1)
 
     mats = openmc.Materials([mat])
-    print(mats)
+
+    if args.materials_xml:
+        for material_xml in args.materials_xml:
+            mats_from_xml = openmc.Materials.from_xml(material_xml)
+            mats = mats + mats_from_xml
+
     mats.download_cross_section_data(
         libraries=args.libraries,
         destination=args.destination,
