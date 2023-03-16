@@ -22,7 +22,7 @@ from openmc_data_downloader import (
     neutron_xs_info,
     photon_xs_info,
     sab_xs_info,
-    SAB_OPTIONS
+    SAB_OPTIONS,
 )
 
 _BLOCK_SIZE = 16384
@@ -57,6 +57,7 @@ def expand_materials_to_isotopes(materials: openmc.Materials):
             isotopes_from_materials.append(nuc.name)
 
     return sorted(list(set(isotopes_from_materials)))
+
 
 def expand_materials_to_sabs(materials: openmc.Materials):
     if not isinstance(materials, openmc.Materials):
@@ -261,6 +262,7 @@ def create_cross_sections_xml(
 
     return absolute_path
 
+
 def identify_sabs_to_download(
     libraries: typing.Tuple[str],
     sabs: typing.Tuple[str],
@@ -270,7 +272,7 @@ def identify_sabs_to_download(
     elif sabs == "all" or sabs == ["all"]:
         sabs = SAB_OPTIONS
     elif sabs == "stable" or sabs == ["stable"]:
-        sabs = SAB_OPTIONS  #todo check they are all stable, perhaps not UO2
+        sabs = SAB_OPTIONS  # todo check they are all stable, perhaps not UO2
 
     print("sabs", sabs)
 
@@ -284,7 +286,6 @@ def identify_sabs_to_download(
             raise ValueError(
                 f"Sab passing in {sab} not found in available names {SAB_OPTIONS}"
             )
-            
 
     priority_dict = {}
     for counter, entry in enumerate(libraries):
@@ -318,9 +319,7 @@ def identify_sabs_to_download(
 
     xs_info_df = xs_info_df.sort_values(by=["priority"])
 
-    xs_info_df = xs_info_df.drop_duplicates(
-        subset=["sab", "particle"], keep="first"
-    )
+    xs_info_df = xs_info_df.drop_duplicates(subset=["sab", "particle"], keep="first")
 
     # end url is unique so this avoids downloading duplicates of the same file
     xs_info_df = xs_info_df.drop_duplicates(subset=["url"], keep="first")
@@ -328,6 +327,7 @@ def identify_sabs_to_download(
     print("Sabs found matching all requirements", len(xs_info_df))
 
     return xs_info_df
+
 
 def identify_isotopes_to_download(
     libraries: typing.Tuple[str],

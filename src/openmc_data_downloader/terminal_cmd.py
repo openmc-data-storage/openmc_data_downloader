@@ -14,7 +14,7 @@ import openmc_data_downloader
 from openmc_data_downloader.cross_sections_directory import (
     lib_to_xml,
     NATURAL_ABUNDANCE,
-    SAB_OPTIONS
+    SAB_OPTIONS,
 )
 import openmc
 

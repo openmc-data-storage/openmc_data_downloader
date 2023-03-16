@@ -140,8 +140,8 @@ def zaid_to_isotope(zaid: str) -> str:
 
 
 def get_isotopes_or_elements_from_xml(filename, particle_type):
-    if particle_type=='sab':
-        particle_type='thermal'
+    if particle_type == "sab":
+        particle_type = "thermal"
     tree = ET.parse(Path(__file__).parent / filename)
     root = tree.getroot()
     neutron_isotopes = []
@@ -211,7 +211,6 @@ def get_isotopes_or_elements_info_from_xml(particle_type, library):
     elif particle_type == "sab":
         info = populate_sab_cross_section_list(isotopes_or_elements, base_url, library)
     else:
-
         raise ValueError(
             f'particle type {particle_type} not supported, acceptable particle types are "neutron" or "photon'
         )
@@ -271,19 +270,25 @@ lib_to_base_url = {
 }
 
 neutron_xs_info = []
-neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron","TENDL-2019")
-neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron","ENDFB-7.1-NNDC")
-neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron","FENDL-3.1d")
+neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron", "TENDL-2019")
+neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron", "ENDFB-7.1-NNDC")
+neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron", "FENDL-3.1d")
 neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron", "ENDFB-8.0-NNDC")
 
 photon_xs_info = []
-photon_xs_info += get_isotopes_or_elements_info_from_xml("photon","ENDFB-7.1-NNDC",)
-photon_xs_info += get_isotopes_or_elements_info_from_xml("photon","FENDL-3.1d")
-photon_xs_info += get_isotopes_or_elements_info_from_xml("photon","ENDFB-8.0-NNDC")
+photon_xs_info += get_isotopes_or_elements_info_from_xml(
+    "photon",
+    "ENDFB-7.1-NNDC",
+)
+photon_xs_info += get_isotopes_or_elements_info_from_xml("photon", "FENDL-3.1d")
+photon_xs_info += get_isotopes_or_elements_info_from_xml("photon", "ENDFB-8.0-NNDC")
 
 sab_xs_info = []
-sab_xs_info += get_isotopes_or_elements_info_from_xml("sab","ENDFB-7.1-NNDC",)
-sab_xs_info += get_isotopes_or_elements_info_from_xml("sab","ENDFB-8.0-NNDC")
+sab_xs_info += get_isotopes_or_elements_info_from_xml(
+    "sab",
+    "ENDFB-7.1-NNDC",
+)
+sab_xs_info += get_isotopes_or_elements_info_from_xml("sab", "ENDFB-8.0-NNDC")
 
 ATOMIC_SYMBOL = {
     0: "n",

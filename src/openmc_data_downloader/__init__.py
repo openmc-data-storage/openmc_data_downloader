@@ -24,7 +24,7 @@ from .cross_sections_directory import (
     SAB_OPTIONS,
     neutron_xs_info,
     photon_xs_info,
-    sab_xs_info
+    sab_xs_info,
 )
 
 from .utils import (
