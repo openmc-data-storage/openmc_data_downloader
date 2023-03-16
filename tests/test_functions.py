@@ -13,6 +13,8 @@ import pandas as pd
 from openmc_data_downloader import (
     expand_materials_to_isotopes,
     identify_isotopes_to_download,
+    identify_sabs_to_download,
+    expand_materials_to_sabs,
     download_single_file,
 )
 
@@ -23,15 +25,15 @@ def test_identify_isotopes_to_download_finds_tendl_neutron():
     )
     answer_df = pd.DataFrame.from_dict(
         {
-            "isotope": ["Be9"],
-            "particle": ["neutron"],
             "library": ["TENDL-2019"],
             "remote_file": ["Be9.h5"],
             "url": [
                 "https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/Be9.h5"
             ],
-            "element": ["Be"],
             "local_file": ["TENDL-2019_Be9.h5"],
+            "particle": ["neutron"],
+            "isotope": ["Be9"],
+            "element": ["Be"],
             "priority": [1],
         }
     )
@@ -50,15 +52,15 @@ def test_identify_isotopes_to_download_finds_fendl_photon():
     )
     answer_df = pd.DataFrame.from_dict(
         {
-            "isotope": ["Be9"],
-            "particle": ["neutron"],
             "library": ["FENDL-3.1d"],
             "remote_file": ["Be9.h5"],
             "url": [
                 "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Be9.h5"
             ],
-            "element": ["Be"],
             "local_file": ["FENDL-3.1d_Be9.h5"],
+            "particle": ["neutron"],
+            "isotope": ["Be9"],
+            "element": ["Be"],
             "priority": [1],
         }
     )
@@ -74,15 +76,15 @@ def test_identify_isotopes_to_download_finds_fendl_photon_neutron():
     )
     answer_df = pd.DataFrame.from_dict(
         {
-            "isotope": ["Be9"],
-            "particle": ["neutron"],
             "library": ["FENDL-3.1d"],
             "remote_file": ["Be9.h5"],
             "url": [
                 "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Be9.h5",
             ],
-            "element": ["Be"],
             "local_file": ["FENDL-3.1d_Be9.h5"],
+            "particle": ["neutron"],
+            "isotope": ["Be9"],
+            "element": ["Be"],
             "priority": [1],
         }
     )
@@ -99,19 +101,19 @@ def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes
     )
     answer_df = pd.DataFrame.from_dict(
         {
-            "isotope": ["Fe56", "Fe57"],
-            "particle": ["neutron", "neutron"],
             "library": ["FENDL-3.1d", "FENDL-3.1d"],
             "remote_file": ["Fe56.h5", "Fe57.h5"],
             "url": [
                 "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Fe56.h5",
                 "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/neutron/Fe57.h5",
             ],
-            "element": ["Fe", "Fe"],
             "local_file": [
                 "FENDL-3.1d_Fe56.h5",
                 "FENDL-3.1d_Fe57.h5",
             ],
+            "particle": ["neutron", "neutron"],
+            "isotope": ["Fe56", "Fe57"],
+            "element": ["Fe"],
             "priority": [1, 1],
         }
     )
@@ -190,66 +192,64 @@ def test_expand_materials_from_object_list_with_openmc_materials():
     assert expand_materials_to_isotopes(mats) == ["Al27", "Li6", "Li7"]
 
 
-# todo bring back if sab returns
-# def test_expand_material_xmls_for_sabs_with_sab():
-#     my_mat = openmc.Material()
-#     my_mat.add_element("Be", 0.5)
-#     my_mat.add_s_alpha_beta("c_Be_in_BeO")
-#     os.system("rm materials.xml")
-#     openmc.Materials([my_mat]).export_to_xml()
+def test_expand_material_xmls_for_sabs_with_sab():
+    my_mat = openmc.Material()
+    my_mat.add_element("Be", 0.5)
+    my_mat.add_s_alpha_beta("c_Be_in_BeO")
+    my_mats = openmc.Materials([my_mat])
 
-#     assert expand_materials_xml_to_sab("materials.xml") == ["c_Be_in_BeO"]
+    assert expand_materials_to_sabs(my_mats) == ["c_Be_in_BeO"]
 
 
-# def test_expand_material_xmls_for_sabs_with_two_sab():
-#     my_mat = openmc.Material()
-#     my_mat.add_element("Be", 0.5)
-#     my_mat.add_s_alpha_beta("c_Be_in_BeO")
-#     my_mat.add_s_alpha_beta("c_H_in_H2O")
-#     os.system("rm materials.xml")
-#     openmc.Materials([my_mat]).export_to_xml()
+def test_expand_material_xmls_for_sabs_with_two_sab():
+    my_mat = openmc.Material()
+    my_mat.add_element("Be", 0.5)
+    my_mat.add_s_alpha_beta("c_Be_in_BeO")
+    my_mat.add_s_alpha_beta("c_H_in_H2O")
+    my_mats = openmc.Materials([my_mat])
 
-#     assert expand_materials_xml_to_sab("materials.xml") == [
-#         "c_Be_in_BeO",
-#         "c_H_in_H2O",
-#     ]
-
-
-# def test_expand_material_for_sabs_with_two_sab():
-#     my_mat = openmc.Material()
-#     my_mat.add_element("Be", 0.5)
-#     my_mat.add_s_alpha_beta("c_Be_in_BeO")
-#     my_mat.add_s_alpha_beta("c_H_in_H2O")
-
-#     assert expand_materials_to_sabs(my_mat) == ["c_Be_in_BeO", "c_H_in_H2O"]
+    assert expand_materials_to_sabs(my_mats) == [
+        "c_Be_in_BeO",
+        "c_H_in_H2O",
+    ]
 
 
-# def test_expand_material_for_sabs_with_sab():
-#     my_mat = openmc.Material()
-#     my_mat.add_element("Be", 0.5)
-#     my_mat.add_s_alpha_beta("c_H_in_H2O")
-
-#     assert expand_materials_to_sabs(my_mat) == ["c_H_in_H2O"]
-
-
-# def test_incorrect_material_enpty():
-#     with pytest.raises(ValueError):
-#         expand_materials_to_sabs("my_mat")
+def test_expand_material_for_sabs_with_two_sab():
+    my_mat = openmc.Material()
+    my_mat.add_element("Be", 0.5)
+    my_mat.add_s_alpha_beta("c_Be_in_BeO")
+    my_mat.add_s_alpha_beta("c_H_in_H2O")
+    my_mats = openmc.Materials([my_mat])
+    assert expand_materials_to_sabs(my_mats) == ["c_Be_in_BeO", "c_H_in_H2O"]
 
 
-# def test_incorrect_sab_name():
-#     with pytest.raises(ValueError):
-#         identify_sab_to_download(libraries=["ENDFB-7.1-NNDC"], sab=["incorrect name"])
+def test_expand_material_for_sabs_with_sab():
+    my_mat = openmc.Material()
+    my_mat.add_element("Be", 0.5)
+    my_mat.add_s_alpha_beta("c_H_in_H2O")
+    my_mats = openmc.Materials([my_mat])
+
+    assert expand_materials_to_sabs(my_mats) == ["c_H_in_H2O"]
 
 
-# def test_incorrect_libraries():
-#     with pytest.raises(ValueError):
-#         identify_sab_to_download(libraries=[], sab=["c_Fe56"])
+def test_incorrect_material_enpty():
+    with pytest.raises(ValueError):
+        expand_materials_to_sabs("my_mat")
 
 
-# def test_incorrect_library_name_for_sab_identifying():
-#     with pytest.raises(ValueError):
-#         identify_sab_to_download(libraries=["incorrect name"], sab=["c_Fe56"])
+def test_incorrect_sab_name():
+    with pytest.raises(ValueError):
+        identify_sabs_to_download(libraries=["ENDFB-7.1-NNDC"], sabs=["incorrect name"])
+
+
+def test_incorrect_libraries():
+    with pytest.raises(ValueError):
+        identify_sabs_to_download(libraries=[], sabs=["c_Fe56"])
+
+
+def test_incorrect_library_name_for_sab_identifying():
+    with pytest.raises(ValueError):
+        identify_sabs_to_download(libraries=["incorrect name"], sabs=["c_Fe56"])
 
 
 def test_library_values_single_entry_list():

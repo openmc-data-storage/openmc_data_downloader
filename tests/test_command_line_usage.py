@@ -131,23 +131,22 @@ def test_neutron_and_photon_download_of_isotope_fendl():
     assert len(list(Path(".").glob("*.h5"))) == 2
 
 
-# todo bring test back is sab returns
-# def test_sab_download_with_endf():
-#     """Tests downloading with FENDL photon data and checks it exists"""
+def test_sab_download_with_endf():
+    """Tests downloading with FENDL photon data and checks it exists"""
 
-#     os.system("rm *.h5")
+    os.system("rm *.h5")
 
-#     os.system(
-#         "openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -e Be O -s c_Be_in_BeO"
-#     )
+    os.system(
+        "openmc_data_downloader -l ENDFB-7.1-NNDC TENDL-2019 -e Be O -s c_Be_in_BeO"
+    )
 
-#     assert Path("ENDFB-7.1-NNDC_Be9.h5").is_file()
-#     assert Path("ENDFB-7.1-NNDC_O16.h5").is_file()
-#     assert Path("ENDFB-7.1-NNDC_O17.h5").is_file()
-#     assert Path("TENDL-2019_O18.h5").is_file()
-#     assert Path("ENDFB-7.1-NNDC_c_Be_in_BeO.h5").is_file()
-#     assert Path("materials.xml").is_file()
-#     assert len(list(Path(".").glob("*.h5"))) == 5
+    assert Path("ENDFB-7.1-NNDC_Be9.h5").is_file()
+    assert Path("ENDFB-7.1-NNDC_O16.h5").is_file()
+    assert Path("ENDFB-7.1-NNDC_O17.h5").is_file()
+    assert Path("TENDL-2019_O18.h5").is_file()
+    assert Path("ENDFB-7.1-NNDC_c_Be_in_BeO.h5").is_file()
+    assert Path("materials.xml").is_file()
+    assert len(list(Path(".").glob("*.h5"))) == 5
 
 
 def test_download_single_file_with_overwrite_speed_up():

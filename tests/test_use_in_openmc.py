@@ -287,54 +287,53 @@ def test_simulation_with_single_mat():
     assert len(list(Path(".").glob("*.h5"))) == 5  # summary and statepoint
 
 
-# TODO bring this test back when we have sab again
-# def test_simulation_with_sab():
-#     os.system("rm *.h5")
+def test_simulation_with_sab():
+    os.system("rm *.h5")
 
-#     # this clears the enviromental varible just to be sure that current
-#     # system settings are not being used
-#     try:
-#         del os.environ["OPENMC_CROSS_SECTIONS"]
-#     except KeyError:
-#         # key not found on system
-#         pass
+    # this clears the enviromental varible just to be sure that current
+    # system settings are not being used
+    try:
+        del os.environ["OPENMC_CROSS_SECTIONS"]
+    except KeyError:
+        # key not found on system
+        pass
 
-#     # Define material
-#     my_mat = openmc.Material()
-#     my_mat.add_element("Be", 0.5)
-#     my_mat.add_s_alpha_beta("c_Be_in_BeO")
-#     my_mats = openmc.openmc.Materials([my_mat])
-#     my_mats.export_to_xml()
-#     my_mats.download_cross_section_data(
-#         libraries=["ENDFB-7.1-NNDC"],
-#         particles=["neutron"],
-#         set_OPENMC_CROSS_SECTIONS=True,
-#     )
+    # Define material
+    my_mat = openmc.Material()
+    my_mat.add_element("Be", 0.5)
+    my_mat.add_s_alpha_beta("c_Be_in_BeO")
+    my_mats = openmc.openmc.Materials([my_mat])
+    my_mats.export_to_xml()
+    my_mats.download_cross_section_data(
+        libraries=["ENDFB-7.1-NNDC"],
+        particles=["neutron"],
+        set_OPENMC_CROSS_SECTIONS=True,
+    )
 
-#     # Create a sphere of my_mat
-#     surf = openmc.Sphere(r=6.3849, boundary_type="vacuum")
-#     main_cell = openmc.Cell(fill=my_mat, region=-surf)
-#     openmc.Geometry([main_cell]).export_to_xml()
+    # Create a sphere of my_mat
+    surf = openmc.Sphere(r=6.3849, boundary_type="vacuum")
+    main_cell = openmc.Cell(fill=my_mat, region=-surf)
+    openmc.Geometry([main_cell]).export_to_xml()
 
-#     # Define settings for the simulation
-#     settings = openmc.Settings()
-#     settings.particles = 10
-#     settings.batches = 2
-#     settings.inactive = 0
-#     center = (0.0, 0.0, 0.0)
-#     settings.source = openmc.Source(space=openmc.stats.Point(center))
-#     settings.run_mode = "fixed source"
-#     settings.export_to_xml()
+    # Define settings for the simulation
+    settings = openmc.Settings()
+    settings.particles = 10
+    settings.batches = 2
+    settings.inactive = 0
+    center = (0.0, 0.0, 0.0)
+    settings.source = openmc.Source(space=openmc.stats.Point(center))
+    settings.run_mode = "fixed source"
+    settings.export_to_xml()
 
-#     os.system("echo $OPENMC_CROSS_SECTIONS")
-#     openmc.run()
+    os.system("echo $OPENMC_CROSS_SECTIONS")
+    openmc.run()
 
-#     assert Path("ENDFB-7.1-NNDC_Be9.h5").is_file()
-#     assert Path("ENDFB-7.1-NNDC_c_Be_in_BeO.h5").is_file()
+    assert Path("ENDFB-7.1-NNDC_Be9.h5").is_file()
+    assert Path("ENDFB-7.1-NNDC_c_Be_in_BeO.h5").is_file()
 
-#     assert Path("summary.h5").is_file()
-#     assert Path("statepoint.2.h5").is_file()
-#     assert len(list(Path(".").glob("*.h5"))) == 4  # summary and statepoint
+    assert Path("summary.h5").is_file()
+    assert Path("statepoint.2.h5").is_file()
+    assert len(list(Path(".").glob("*.h5"))) == 4  # summary and statepoint
 
 
 def test_simulation_with_single_mat_list():

@@ -14,6 +14,7 @@ import openmc_data_downloader
 from openmc_data_downloader.cross_sections_directory import (
     lib_to_xml,
     NATURAL_ABUNDANCE,
+    SAB_OPTIONS
 )
 import openmc
 
@@ -39,14 +40,15 @@ def main():
         default=[],
         help="The isotope or isotopes to download, name of isotope e.g. 'Al27' or keyword 'all' or 'stable'",
     )
-    # parser.add_argument(
-    #     "-s",
-    #     "--sab",
-    #     nargs="*",
-    #     default=[],
-    #     help="The SaB cross sections to download. Options include "
-    #     + " ".join(SAB_OPTIONS),
-    # )
+
+    parser.add_argument(
+        "-s",
+        "--sab",
+        nargs="*",
+        default=[],
+        help="The SaB cross sections to download. Options include "
+        + " ".join(SAB_OPTIONS),
+    )
 
     parser.add_argument(
         "-e",
@@ -60,7 +62,7 @@ def main():
         "--particles",
         nargs="*",
         default=["neutron"],
-        choices=["neutron", "photon"],
+        choices=["neutron", "photon", "sab"],
         help="The particle to download",
     )
     parser.add_argument(
@@ -112,6 +114,8 @@ def main():
         nuclides = NATURAL_ABUNDANCE[element]
         for nuclide in nuclides:
             mat.add_nuclide(nuclide, 1)
+    for sab in args.sab:
+        mat.add_s_alpha_beta(sab)
 
     mats = openmc.Materials([mat])
 

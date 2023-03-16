@@ -21,6 +21,8 @@ from openmc_data_downloader import (
     PARTICLE_OPTIONS,
     neutron_xs_info,
     photon_xs_info,
+    sab_xs_info,
+    SAB_OPTIONS
 )
 
 _BLOCK_SIZE = 16384
@@ -56,6 +58,21 @@ def expand_materials_to_isotopes(materials: openmc.Materials):
 
     return sorted(list(set(isotopes_from_materials)))
 
+def expand_materials_to_sabs(materials: openmc.Materials):
+    if not isinstance(materials, openmc.Materials):
+        raise ValueError("materials argument must be an openmc.Materials() object")
+    if len(materials) == 0:
+        raise ValueError(
+            "There are no openmc.Material() entries within the openmc.Materials() object"
+        )
+
+    sabs_from_materials = []
+    for material in materials:
+        for sab in material._sab:
+            sabs_from_materials.append(sab[0])
+
+    return sorted(list(set(sabs_from_materials)))
+
 
 def expand_materials_to_elements(materials: openmc.Materials):
     if not isinstance(materials, openmc.Materials):
@@ -82,7 +99,7 @@ def download_cross_section_data(
         "FENDL-3.1d",
     ),
     destination: Union[str, Path] = None,
-    particles: Optional[typing.Iterable[str]] = ("neutron", "photon"),
+    particles: Optional[typing.Iterable[str]] = ("neutron", "photon", "sab"),
     set_OPENMC_CROSS_SECTIONS: bool = True,
     overwrite: bool = False,
 ) -> str:
@@ -112,6 +129,17 @@ def download_cross_section_data(
             elements=elements,
         )
         dataframe = pd.concat([dataframe, dataframe_elements_xs])
+
+    if "sab" in particles:
+        sabs = expand_materials_to_sabs(self)
+        dataframe_sabs_xs = identify_sabs_to_download(
+            libraries=libraries,
+            sabs=sabs,
+        )
+        dataframe = pd.concat([dataframe, dataframe_sabs_xs])
+        print(dataframe_sabs_xs)
+
+    print(dataframe)
 
     download_data_frame_of(
         dataframe=dataframe, destination=destination, overwrite=overwrite
@@ -233,6 +261,73 @@ def create_cross_sections_xml(
 
     return absolute_path
 
+def identify_sabs_to_download(
+    libraries: typing.Tuple[str],
+    sabs: typing.Tuple[str],
+):
+    if sabs == []:
+        return pd.DataFrame()
+    elif sabs == "all" or sabs == ["all"]:
+        sabs = SAB_OPTIONS
+    elif sabs == "stable" or sabs == ["stable"]:
+        sabs = SAB_OPTIONS  #todo check they are all stable, perhaps not UO2
+
+    print("sabs", sabs)
+
+    if len(libraries) == 0:
+        raise ValueError(
+            "At least one library must be selected, options are", LIB_OPTIONS
+        )
+
+    for sab in sabs:
+        if sab not in SAB_OPTIONS:
+            raise ValueError(
+                f"Sab passing in {sab} not found in available names {SAB_OPTIONS}"
+            )
+            
+
+    priority_dict = {}
+    for counter, entry in enumerate(libraries):
+        if entry not in LIB_OPTIONS:
+            raise ValueError(
+                f"The library must be one of the following {LIB_OPTIONS}. Not {entry}."
+            )
+
+        priority_dict[entry] = counter + 1
+
+    print("Searching libraries with the following priority", priority_dict)
+
+    # Tried to removed this dict to dataframe conversion out of the function
+    # and into the initialization of the package but this resulted in
+    # a SettingwithCopyWarning which can be fixed and understood here
+    # https://www.dataquest.io/blog/settingwithcopywarning/
+    xs_info_df = pd.DataFrame.from_dict(sab_xs_info)
+
+    is_library = xs_info_df["library"].isin(libraries)
+    print("Isotopes found matching library requirements", is_library.values.sum())
+
+    is_particle = xs_info_df["particle"].isin(["sab"])
+    print("Isotopes found matching particle requirements", is_particle.values.sum())
+
+    is_sab = xs_info_df["sab"].isin(sabs)
+    print("Isotopes found matching isotope requirements", is_sab.values.sum())
+
+    xs_info_df = xs_info_df[(is_sab) & (is_library) & (is_particle)]
+
+    xs_info_df["priority"] = xs_info_df["library"].map(priority_dict)
+
+    xs_info_df = xs_info_df.sort_values(by=["priority"])
+
+    xs_info_df = xs_info_df.drop_duplicates(
+        subset=["sab", "particle"], keep="first"
+    )
+
+    # end url is unique so this avoids downloading duplicates of the same file
+    xs_info_df = xs_info_df.drop_duplicates(subset=["url"], keep="first")
+
+    print("Sabs found matching all requirements", len(xs_info_df))
+
+    return xs_info_df
 
 def identify_isotopes_to_download(
     libraries: typing.Tuple[str],

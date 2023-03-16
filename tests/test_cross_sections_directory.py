@@ -60,5 +60,19 @@ def test_photon_elements():
     )
     assert len(nndc_80_photon_xs_info) == 100
 
+def test_sab():
+    nndc_71_sab_xs_info = (
+        cross_sections_directory.get_isotopes_or_elements_info_from_xml(
+            "sab",
+            "ENDFB-7.1-NNDC",
+        )
+    )
+    assert len(nndc_71_sab_xs_info) == 20
 
-# TODO endfb_71_nndc_thermal==20
+    nndc_80_sab_xs_info = (
+        cross_sections_directory.get_isotopes_or_elements_info_from_xml(
+            "sab",
+            "ENDFB-8.0-NNDC",
+        )
+    )
+    assert len(nndc_80_sab_xs_info) == 34

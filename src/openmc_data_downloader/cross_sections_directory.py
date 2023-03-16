@@ -140,6 +140,8 @@ def zaid_to_isotope(zaid: str) -> str:
 
 
 def get_isotopes_or_elements_from_xml(filename, particle_type):
+    if particle_type=='sab':
+        particle_type='thermal'
     tree = ET.parse(Path(__file__).parent / filename)
     root = tree.getroot()
     neutron_isotopes = []
@@ -151,17 +153,32 @@ def get_isotopes_or_elements_from_xml(filename, particle_type):
     return neutron_isotopes
 
 
+def core_dict_entry(library, name, base_url):
+    entry = {}
+    entry["library"] = library
+    entry["remote_file"] = name + ".h5"
+    entry["url"] = base_url + entry["remote_file"]
+    entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
+    return entry
+
+
 def populate_neutron_cross_section_list(isotopes, base_url, library):
     xs_info = []
     for isotope in isotopes:
-        entry = {}
-        entry["isotope"] = isotope
+        entry = core_dict_entry(library, isotope, base_url)
         entry["particle"] = "neutron"
-        entry["library"] = library
-        entry["remote_file"] = isotope + ".h5"
-        entry["url"] = base_url + entry["remote_file"]
+        entry["isotope"] = isotope
         entry["element"] = re.split(r"(\d+)", entry["isotope"])[0]
-        entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
+        xs_info.append(entry)
+    return xs_info
+
+
+def populate_sab_cross_section_list(sabs, base_url, library):
+    xs_info = []
+    for sab in sabs:
+        entry = core_dict_entry(library, sab, base_url)
+        entry["particle"] = "sab"
+        entry["sab"] = sab
         xs_info.append(entry)
     return xs_info
 
@@ -169,13 +186,9 @@ def populate_neutron_cross_section_list(isotopes, base_url, library):
 def populate_photon_cross_section_list(elements, base_url, library):
     xs_info = []
     for element in elements:
-        entry = {}
+        entry = core_dict_entry(library, element, base_url)
         entry["particle"] = "photon"
-        entry["library"] = library
-        entry["remote_file"] = element + ".h5"
-        entry["url"] = base_url + entry["remote_file"]
         entry["element"] = element
-        entry["local_file"] = entry["library"] + "_" + entry["remote_file"]
         xs_info.append(entry)
     return xs_info
 
@@ -195,7 +208,10 @@ def get_isotopes_or_elements_info_from_xml(particle_type, library):
         info = populate_neutron_cross_section_list(
             isotopes_or_elements, base_url, library
         )
+    elif particle_type == "sab":
+        info = populate_sab_cross_section_list(isotopes_or_elements, base_url, library)
     else:
+
         raise ValueError(
             f'particle type {particle_type} not supported, acceptable particle types are "neutron" or "photon'
         )
@@ -230,11 +246,19 @@ lib_to_base_url = {
     ): "https://github.com/openmc-data-storage/ENDF-B-VIII.0-NNDC/raw/main/h5_files/neutron/",
     (
         "ENDFB-8.0-NNDC",
+        "sab",
+    ): "https://github.com/openmc-data-storage/ENDF-B-VIII.0-NNDC/raw/main/h5_files/neutron/",
+    (
+        "ENDFB-8.0-NNDC",
         "photon",
     ): "https://github.com/openmc-data-storage/ENDF-B-VIII.0-NNDC/raw/main/h5_files/photon/",
     (
         "ENDFB-7.1-NNDC",
         "neutron",
+    ): "https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/",
+    (
+        "ENDFB-7.1-NNDC",
+        "sab",
     ): "https://github.com/openmc-data-storage/ENDF-B-VII.1-NNDC/raw/main/h5_files/neutron/",
     (
         "ENDFB-7.1-NNDC",
@@ -246,39 +270,20 @@ lib_to_base_url = {
     ): "https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/",
 }
 
-tendl_2019_xs_neutron_info = get_isotopes_or_elements_info_from_xml(
-    "neutron",
-    "TENDL-2019",
-)
+neutron_xs_info = []
+neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron","TENDL-2019")
+neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron","ENDFB-7.1-NNDC")
+neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron","FENDL-3.1d")
+neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron", "ENDFB-8.0-NNDC")
 
-nndc_71_neutron_xs_info = get_isotopes_or_elements_info_from_xml(
-    "neutron",
-    "ENDFB-7.1-NNDC",
-)
-nndc_71_photon_xs_info = get_isotopes_or_elements_info_from_xml(
-    "photon",
-    "ENDFB-7.1-NNDC",
-)
+photon_xs_info = []
+photon_xs_info += get_isotopes_or_elements_info_from_xml("photon","ENDFB-7.1-NNDC",)
+photon_xs_info += get_isotopes_or_elements_info_from_xml("photon","FENDL-3.1d")
+photon_xs_info += get_isotopes_or_elements_info_from_xml("photon","ENDFB-8.0-NNDC")
 
-fendl_31d_neutron_xs_info = get_isotopes_or_elements_info_from_xml(
-    "neutron",
-    "FENDL-3.1d",
-)
-
-fendl_31d_photon_xs_info = get_isotopes_or_elements_info_from_xml(
-    "photon",
-    "FENDL-3.1d",
-)
-
-nndc_80_neutron_xs_info = get_isotopes_or_elements_info_from_xml(
-    "neutron",
-    "ENDFB-8.0-NNDC",
-)
-
-nndc_80_photon_xs_info = get_isotopes_or_elements_info_from_xml(
-    "photon",
-    "ENDFB-8.0-NNDC",
-)
+sab_xs_info = []
+sab_xs_info += get_isotopes_or_elements_info_from_xml("sab","ENDFB-7.1-NNDC",)
+sab_xs_info += get_isotopes_or_elements_info_from_xml("sab","ENDFB-8.0-NNDC")
 
 ATOMIC_SYMBOL = {
     0: "n",
@@ -403,23 +408,12 @@ ATOMIC_SYMBOL = {
 }
 
 
-neutron_xs_info = (
-    tendl_2019_xs_neutron_info
-    + nndc_71_neutron_xs_info
-    + fendl_31d_neutron_xs_info
-    + nndc_80_neutron_xs_info
-)
-photon_xs_info = (
-    nndc_71_photon_xs_info + fendl_31d_photon_xs_info + nndc_80_photon_xs_info
-)
-
-
 all_libs = []
 for entry in neutron_xs_info:
     all_libs.append(entry["library"])
 
 LIB_OPTIONS = list(set(all_libs))
-PARTICLE_OPTIONS = ["neutron", "photon"]  # TODO add thermal
+PARTICLE_OPTIONS = ["neutron", "photon", "sab"]
 
 nested_list = list(NATURAL_ABUNDANCE.values())
 
@@ -435,6 +429,14 @@ for xml in [
 ]:
     isotopes = get_isotopes_or_elements_from_xml(xml, "neutron")
     ALL_ISOTOPE_OPTIONS = ALL_ISOTOPE_OPTIONS + isotopes
+
+SAB_OPTIONS = []
+for xml in [
+    "nndc_7.1_cross_sections.xml",
+    "nndc_8.0_cross_sections.xml",
+]:
+    sabs = get_isotopes_or_elements_from_xml(xml, "sab")
+    SAB_OPTIONS = SAB_OPTIONS + sabs
 
 ALL_ISOTOPE_OPTIONS = sorted(list(set(ALL_ISOTOPE_OPTIONS)))
 
