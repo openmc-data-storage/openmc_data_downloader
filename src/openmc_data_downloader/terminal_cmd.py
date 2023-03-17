@@ -10,12 +10,13 @@ generation of custom cross_section.xml files
 
 import argparse
 from pathlib import Path
-
-from openmc_data_downloader import (
-    just_in_time_library_generator,
-    LIB_OPTIONS,
+import openmc_data_downloader
+from openmc_data_downloader.cross_sections_directory import (
+    lib_to_xml,
+    NATURAL_ABUNDANCE,
     SAB_OPTIONS,
 )
+import openmc
 
 
 def main():
@@ -24,7 +25,7 @@ def main():
     parser.add_argument(
         "-l",
         "--libraries",
-        choices=LIB_OPTIONS,
+        choices=openmc_data_downloader.LIB_OPTIONS,
         nargs="*",
         help="The nuclear data libraries to search through when searching for \
         cross sections. Multiple libaries are acceptable and will be \
@@ -39,6 +40,7 @@ def main():
         default=[],
         help="The isotope or isotopes to download, name of isotope e.g. 'Al27' or keyword 'all' or 'stable'",
     )
+
     parser.add_argument(
         "-s",
         "--sab",
@@ -60,7 +62,7 @@ def main():
         "--particles",
         nargs="*",
         default=["neutron"],
-        choices=["neutron", "photon"],
+        choices=["neutron", "photon", "sab"],
         help="The particle to download",
     )
     parser.add_argument(
@@ -92,13 +94,39 @@ def main():
     parser.set_defaults(overwrite=False)
     args = parser.parse_args()
 
-    just_in_time_library_generator(
+    if args.elements == ["all"]:
+        args.elements = openmc_data_downloader.ALL_ELEMENT_OPTIONS
+    if args.elements == ["stable"]:
+        args.elements = openmc_data_downloader.STABLE_ELEMENT_OPTIONS
+
+    if args.isotopes == ["all"]:
+        args.isotopes = openmc_data_downloader.ALL_ISOTOPE_OPTIONS
+    if args.isotopes == ["stable"]:
+        args.isotopes = openmc_data_downloader.STABLE_ISOTOPE_OPTIONS
+
+    mat = openmc.Material()
+    for isotope in args.isotopes:
+        mat.add_nuclide(isotope, 1)
+    for element in args.elements:
+        # we get the nuclides for the element and add each nuclide
+        # adding elements expands to nuclides using the cross_sections.xml
+        # which can fail if the element is not present in the local cross_sections.xml
+        nuclides = NATURAL_ABUNDANCE[element]
+        for nuclide in nuclides:
+            mat.add_nuclide(nuclide, 1)
+    for sab in args.sab:
+        mat.add_s_alpha_beta(sab)
+
+    mats = openmc.Materials([mat])
+
+    if args.materials_xml:
+        for material_xml in args.materials_xml:
+            mats_from_xml = openmc.Materials.from_xml(material_xml)
+            mats = mats + mats_from_xml
+
+    mats.download_cross_section_data(
         libraries=args.libraries,
-        isotopes=args.isotopes,
-        sab=args.sab,
-        elements=args.elements,
         destination=args.destination,
-        materials_xml=args.materials_xml,
         particles=args.particles,
         set_OPENMC_CROSS_SECTIONS=False,
         overwrite=args.overwrite,
