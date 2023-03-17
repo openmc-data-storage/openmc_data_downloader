@@ -1,5 +1,4 @@
 import os
-import warnings
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import typing
@@ -100,7 +99,7 @@ def download_cross_section_data(
         "FENDL-3.1d",
     ),
     destination: Union[str, Path] = None,
-    particles: Optional[typing.Iterable[str]] = ("neutron", "photon", "sab"),
+    particles: Optional[typing.Iterable[str]] = ("neutron", "photon"),
     set_OPENMC_CROSS_SECTIONS: bool = True,
     overwrite: bool = False,
 ) -> str:
@@ -131,14 +130,14 @@ def download_cross_section_data(
         )
         dataframe = pd.concat([dataframe, dataframe_elements_xs])
 
-    if "sab" in particles:
-        sabs = expand_materials_to_sabs(self)
+    sabs = expand_materials_to_sabs(self)
+    if len(sabs)>0:
         dataframe_sabs_xs = identify_sabs_to_download(
             libraries=libraries,
             sabs=sabs,
         )
         dataframe = pd.concat([dataframe, dataframe_sabs_xs])
-        print(dataframe_sabs_xs)
+        print('dataframe_sabs_xs',dataframe_sabs_xs)
 
     print(dataframe)
 
@@ -274,8 +273,6 @@ def identify_sabs_to_download(
     elif sabs == "stable" or sabs == ["stable"]:
         sabs = SAB_OPTIONS  # todo check they are all stable, perhaps not UO2
 
-    print("sabs", sabs)
-
     if len(libraries) == 0:
         raise ValueError(
             "At least one library must be selected, options are", LIB_OPTIONS
@@ -305,13 +302,13 @@ def identify_sabs_to_download(
     xs_info_df = pd.DataFrame.from_dict(sab_xs_info)
 
     is_library = xs_info_df["library"].isin(libraries)
-    print("Isotopes found matching library requirements", is_library.values.sum())
+    print("Sab found matching library requirements", is_library.values.sum())
 
     is_particle = xs_info_df["particle"].isin(["sab"])
-    print("Isotopes found matching particle requirements", is_particle.values.sum())
+    print("Sab found matching particle requirements", is_particle.values.sum())
 
     is_sab = xs_info_df["sab"].isin(sabs)
-    print("Isotopes found matching isotope requirements", is_sab.values.sum())
+    print("Sab found matching isotope requirements", is_sab.values.sum())
 
     xs_info_df = xs_info_df[(is_sab) & (is_library) & (is_particle)]
 
