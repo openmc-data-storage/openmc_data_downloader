@@ -113,7 +113,7 @@ def test_identify_isotopes_to_download_finds_fendl_photon_neutron_multi_isotopes
             ],
             "particle": ["neutron", "neutron"],
             "isotope": ["Fe56", "Fe57"],
-            "element": ["Fe"],
+            "element": ["Fe", "Fe"],
             "priority": [1, 1],
         }
     )
