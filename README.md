@@ -160,10 +160,13 @@ mat1 = openmc.Material()
 mat1.add_element('Fe', 0.95)
 mat1.add_element('C', 0.05)
 
-odd.just_in_time_library_generator(
-    libraries='FENDL-3.1d',
-    materials=mat1
-)
+mats = openmc.Materials([mat1])
+
+mats.download_cross_section_data(
+        libraries=["FENDL-3.1d"],
+        set_OPENMC_CROSS_SECTIONS=True,
+        particles=["neutron"],
+    )
 ```
 
 ### Downloading the isotopes present in an OpenMC material from two libraries but with a preference for ENDF/B 7.1 NNDC library over TENDL 2019
@@ -176,39 +179,15 @@ mat1 = openmc.Material()
 mat1.add_element('Fe', 0.95)
 mat1.add_element('C', 0.05)
 
-odd.just_in_time_library_generator(
-    libraries=['ENDFB-7.1-NNDC', 'TENDL-2019'],
-    materials=mat1
-)
+mats = openmc.Materials([mat1])
+
+mats.download_cross_section_data(
+        libraries=[ENDFB-7.1-NNDC', 'TENDL-2019'],
+        set_OPENMC_CROSS_SECTIONS=True,
+        particles=["neutron"],
+    )
 ```
 
-### Downloading the isotopes in several OpenMC materials
-
-```python
-import openmc
-import openmc_data_downloader as odd
-
-mat1 = openmc.Material()
-mat1.add_element('Fe', 0.95)
-mat1.add_element('C', 0.05)
-
-mat2 = openmc.Material()
-mat2.add_element('H', 0.66)
-mat2.add_element('0', 0.33)
-
-# a list of openmc.Material objects can be used
-odd.just_in_time_library_generator(
-    libraries='ENDFB-7.1-NNDC',
-    materials=[mat1, mat2]
-)
-
-# alternatively an openmc.Materials() object can be used
-mats = openmc.Materials([mat1, mat2]) 
-odd.just_in_time_library_generator(
-    libraries='ENDFB-7.1-NNDC',
-    materials=mats
-)
-```
 
 ### Downloading neutron cross sections for a material with an SaB
 
@@ -221,10 +200,12 @@ my_mat.add_element('Be', 0.5)
 my_mat.add_element('O', 0.5)
 my_mat.add_s_alpha_beta('Be_in_BeO')
 
-odd.just_in_time_library_generator(
-    libraries='ENDFB-7.1-NNDC',
-    materials= my_mat
-    particles = ['neutron'],
+mats = openmc.Materials([my_mat])
+
+odd.download_cross_section_data(
+        libraries=[ENDFB-7.1-NNDC', 'TENDL-2019'],
+        set_OPENMC_CROSS_SECTIONS=True,
+        particles=["neutron"],
 )
 ```
 
@@ -234,10 +215,15 @@ odd.just_in_time_library_generator(
 import openmc
 import openmc_data_downloader as odd
 
-odd.just_in_time_library_generator(
-    libraries='TENDL-2019',
-    elements=['Li', 'Be'],
-    particles = ['photon', 'neutron'],
-    isotopes=['Fe56', 'U235'],
-)
+mat1 = openmc.Material()
+mat1.add_element('Fe', 0.95)
+mat1.add_element('C', 0.05)
+
+mats = openmc.Materials([mat1])
+
+mats.download_cross_section_data(
+        libraries=[ENDFB-7.1-NNDC', 'TENDL-2019'],
+        set_OPENMC_CROSS_SECTIONS=True,
+        particles=["neutron", "photon"],
+    )
 ```
