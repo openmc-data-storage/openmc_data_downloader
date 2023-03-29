@@ -1,5 +1,4 @@
 import os
-import warnings
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import typing
@@ -9,17 +8,20 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 import pandas as pd
 from retry import retry
+import openmc
 
 
 from openmc_data_downloader import (
     ALL_ISOTOPE_OPTIONS,
     STABLE_ISOTOPE_OPTIONS,
+    ALL_ELEMENT_OPTIONS,
+    STABLE_ELEMENT_OPTIONS,
     LIB_OPTIONS,
-    NATURAL_ABUNDANCE,
     PARTICLE_OPTIONS,
+    neutron_xs_info,
+    photon_xs_info,
+    sab_xs_info,
     SAB_OPTIONS,
-    sab_info,
-    xs_info,
 )
 
 _BLOCK_SIZE = 16384
@@ -31,158 +33,122 @@ def set_environmental_variable(cross_section_xml_path: Union[Path, str]) -> None
 
     if cross_section_xml_path.is_file() is False:
         raise FileNotFoundError(
-            "{} was not found, therefore not setting OPENMC_CROSS_SECTIONS "
-            "environmental variable".format(cross_section_xml_path)
+            f"{cross_section_xml_path} was not found, therefore not setting "
+            "OPENMC_CROSS_SECTIONS environmental variable"
         )
 
-    print("setting OPENMC_CROSS_SECTIONS", str(cross_section_xml_path))
+    print(f"setting OPENMC_CROSS_SECTIONS to {str(cross_section_xml_path)}")
     os.environ["OPENMC_CROSS_SECTIONS"] = str(cross_section_xml_path)
+    # openmc.config['cross_sections'] = cross_section_xml_path
 
 
-def expand_materials_to_isotopes(materials: list):
-    if isinstance(materials, list):
-        if len(materials) == 0:
-            return []
-
-    try:
-        import openmc
-    except ImportError:
-        msg = (
-            "import openmc failed. openmc python package could not be found "
-            "and was not imported, the expand_materials_to_isotopes "
-            "opperation can not be performed without openmc"
-        )
-        raise ImportError(msg)
-
-    if isinstance(materials, openmc.Materials):
-        iterable_of_materials = materials
-    elif isinstance(materials, list):
-        for material in materials:
-            if not isinstance(material, openmc.Material):
-                raise ValueError(
-                    "When passing a list then each entry in the list must be "
-                    "an openmc.Material. Not a",
-                    type(material),
-                )
-        iterable_of_materials = materials
-    elif isinstance(materials, openmc.Material):
-        iterable_of_materials = [materials]
-    else:
+def expand_materials_to_isotopes(materials: openmc.Materials):
+    if not isinstance(materials, openmc.Materials):
+        raise ValueError("materials argument must be an openmc.Materials() object")
+    if len(materials) == 0:
         raise ValueError(
-            "materials must be of type openmc.Materials, openmc,Material or a "
-            "list or openmc.Material. Not ",
-            type(materials),
+            "There are no openmc.Material() entries within the openmc.Materials() object"
         )
 
-    if len(iterable_of_materials) > 0:
-        isotopes_from_materials = []
-        for material in iterable_of_materials:
-            for nuc in material.nuclides:
-                isotopes_from_materials.append(nuc.name)
+    isotopes_from_materials = []
+    for material in materials:
+        for nuc in material.nuclides:
+            isotopes_from_materials.append(nuc.name)
 
-        return isotopes_from_materials
-
-    return []
+    return sorted(list(set(isotopes_from_materials)))
 
 
-def expand_materials_to_sabs(materials: list):
-    if isinstance(materials, list):
-        if len(materials) == 0:
-            return []
-
-    try:
-        import openmc
-    except ImportError:
-        msg = (
-            "import openmc failed. openmc python package could not be found "
-            "and was not imported, the expand_materials_to_sabs "
-            "opperation can not be performed without openmc"
-        )
-        raise ImportError(msg)
-
-    if isinstance(materials, openmc.Materials):
-        iterable_of_materials = materials
-    elif isinstance(materials, list):
-        for material in materials:
-            if not isinstance(material, openmc.Material):
-                raise ValueError(
-                    "When passing a list then each entry in the list must be "
-                    "an openmc.Material. Not a",
-                    type(material),
-                )
-        iterable_of_materials = materials
-    elif isinstance(materials, openmc.Material):
-        iterable_of_materials = [materials]
-    else:
+def expand_materials_to_sabs(materials: openmc.Materials):
+    if not isinstance(materials, openmc.Materials):
+        raise ValueError("materials argument must be an openmc.Materials() object")
+    if len(materials) == 0:
         raise ValueError(
-            "materials must be of type openmc.Materials, openmc,Material or a "
-            "list or openmc.Material. Not ",
-            type(materials),
+            "There are no openmc.Material() entries within the openmc.Materials() object"
         )
 
-    if len(iterable_of_materials) > 0:
-        sabs_from_materials = []
-        for material in iterable_of_materials:
-            for sab_tuple in material._sab:
-                sabs_from_materials.append(sab_tuple[0])
+    sabs_from_materials = []
+    for material in materials:
+        for sab in material._sab:
+            sabs_from_materials.append(sab[0])
 
-        return sabs_from_materials
-
-    return []
+    return sorted(list(set(sabs_from_materials)))
 
 
-def just_in_time_library_generator(
-    libraries: typing.Iterable[str] = [],
-    isotopes: typing.Iterable[str] = [],
-    elements: typing.Iterable[str] = [],
-    sab: typing.Iterable[str] = [],
+def expand_materials_to_elements(materials: openmc.Materials):
+    if not isinstance(materials, openmc.Materials):
+        raise ValueError("materials argument must be an openmc.Materials() object")
+    if len(materials) == 0:
+        raise ValueError(
+            "There are no openmc.Material() entries within the openmc.Materials() object"
+        )
+
+    elements_from_materials = []
+    for material in materials:
+        elements = material.get_elements()
+        elements_from_materials = elements_from_materials + elements
+
+    return list(set(elements_from_materials))
+
+
+def download_cross_section_data(
+    self,
+    libraries: typing.Iterable[str] = (
+        "TENDL-2019",
+        "ENDFB-7.1-NNDC",
+        "ENDFB-8.0-NNDC",
+        "FENDL-3.1d",
+    ),
     destination: Union[str, Path] = None,
-    materials_xml: typing.Iterable[Union[str, Path]] = [],
-    materials: typing.Iterable[
-        "openmc.Material"
-    ] = [],  # also accepts a single openmc.Material
     particles: Optional[typing.Iterable[str]] = ("neutron", "photon"),
     set_OPENMC_CROSS_SECTIONS: bool = True,
     overwrite: bool = False,
 ) -> str:
-    # expands elements, materials xml into list of isotopes
+    """ """
 
-    isotopes_from_elements = expand_elements_to_isotopes(elements)
-    isotopes = list(set(isotopes + isotopes_from_elements))
+    for entry in particles:
+        if entry not in PARTICLE_OPTIONS:
+            raise ValueError(
+                f"The particle must be one of the following {PARTICLE_OPTIONS}. Not {entry}"
+            )
 
-    isotopes_from_material_xml = expand_materials_xml_to_isotopes(materials_xml)
-    isotopes = list(set(isotopes + isotopes_from_material_xml))
+    dataframe = pd.DataFrame()
 
-    isotopes_from_materials = expand_materials_to_isotopes(materials)
-    isotopes = list(set(isotopes + isotopes_from_materials))
+    if "neutron" in particles:
+        isotopes = expand_materials_to_isotopes(self)
+        # filters the large dataframe of all isotopes into just the ones you want
+        dataframe_isotopes_xs = identify_isotopes_to_download(
+            libraries=libraries,
+            isotopes=isotopes,
+        )
+        dataframe = pd.concat([dataframe, dataframe_isotopes_xs])
 
-    # filters the large dataframe of all isotopes into just the ones you want
-    dataframe_xs = identify_isotopes_to_download(
-        libraries=libraries,
-        particles=particles,
-        isotopes=isotopes,
-    )
+    if "photon" in particles:
+        elements = expand_materials_to_elements(self)
+        dataframe_elements_xs = identify_elements_to_download(
+            libraries=libraries,
+            elements=elements,
+        )
+        dataframe = pd.concat([dataframe, dataframe_elements_xs])
 
-    sab_from_material_xml = expand_materials_xml_to_sab(materials_xml)
-    sab = list(set(sab + sab_from_material_xml))
+    sabs = expand_materials_to_sabs(self)
+    if len(sabs) > 0:
+        dataframe_sabs_xs = identify_sabs_to_download(
+            libraries=libraries,
+            sabs=sabs,
+        )
+        dataframe = pd.concat([dataframe, dataframe_sabs_xs])
+        print("dataframe_sabs_xs", dataframe_sabs_xs)
 
-    sabs_from_materials = expand_materials_to_sabs(materials)
-    sab = list(set(sab + sabs_from_materials))
+    print(dataframe)
 
-    dataframe_sab = identify_sab_to_download(
-        libraries=libraries,
-        sab=sab,
-    )
-
-    dataframe = pd.concat([dataframe_sab, dataframe_xs])
-
-    download_data_frame_of_isotopes(
+    download_data_frame_of(
         dataframe=dataframe, destination=destination, overwrite=overwrite
     )
 
     cross_section_xml_path = create_cross_sections_xml(dataframe, destination)
 
     if set_OPENMC_CROSS_SECTIONS is True:
+        self.cross_sections = cross_section_xml_path
         # making the cross section xml requires openmc and returns None if
         # openmc is not found.
         if cross_section_xml_path is not None:
@@ -230,7 +196,7 @@ def download_single_file(
         local_path = destination / local_path
 
     if overwrite is False and local_path.is_file():
-        print("Skipping {}, already downloaded".format(local_path))
+        print(f"Skipping {local_path}, already downloaded")
         return local_path
 
     local_path = download_url_in_chuncks(url, local_path)
@@ -255,8 +221,8 @@ def download_url_in_chuncks(url, local_path):
     return local_path
 
 
-def download_data_frame_of_isotopes(
-    dataframe, destination: Union[str, Path], overwrite: bool = True
+def download_data_frame_of(
+    dataframe: pd.DataFrame, destination: Union[str, Path], overwrite: bool = True
 ):
     local_files = []
     for index, row in dataframe.iterrows():
@@ -271,18 +237,9 @@ def download_data_frame_of_isotopes(
     return local_files
 
 
-def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
-    try:
-        import openmc
-    except ImportError:
-        msg = (
-            "import openmc failed. openmc python package could not be found "
-            "and was not imported, cross sections.xml can not be made"
-            "without openmc"
-        )
-        warnings.warn(msg)
-        return None
-
+def create_cross_sections_xml(
+    dataframe: pd.DataFrame, destination: Union[str, Path]
+) -> str:
     library = openmc.data.DataLibrary()
     for index, row in dataframe.iterrows():
         if destination is None:
@@ -300,43 +257,38 @@ def create_cross_sections_xml(dataframe, destination: Union[str, Path]) -> str:
         cross_sections_xml_path = str(destination / "cross_sections.xml")
 
     absolute_path = str(Path(cross_sections_xml_path).absolute())
-    print(absolute_path, "written")
+    print(f"written cross sections xml file to {absolute_path}")
 
     return absolute_path
 
 
-def identify_sab_to_download(
-    libraries: List[str],
-    sab: Optional[List[str]] = [],
+def identify_sabs_to_download(
+    libraries: typing.Tuple[str],
+    sabs: typing.Tuple[str],
 ):
-    if sab == []:
+    if sabs == []:
         return pd.DataFrame()
-    elif sab == "all" or sab == ["all"]:
-        sab = SAB_OPTIONS
+    elif sabs == "all" or sabs == ["all"]:
+        sabs = SAB_OPTIONS
+    elif sabs == "stable" or sabs == ["stable"]:
+        sabs = SAB_OPTIONS  # todo check they are all stable, perhaps not UO2
 
-    priority_dict = {}
-
-    if isinstance(libraries, str):
-        libraries = [libraries]
-
-    if isinstance(sab, str):
-        sab = [sab]
-
-    if libraries == []:
+    if len(libraries) == 0:
         raise ValueError(
             "At least one library must be selected, options are", LIB_OPTIONS
         )
 
+    for sab in sabs:
+        if sab not in SAB_OPTIONS:
+            raise ValueError(
+                f"Sab passing in {sab} not found in available names {SAB_OPTIONS}"
+            )
+
+    priority_dict = {}
     for counter, entry in enumerate(libraries):
         if entry not in LIB_OPTIONS:
-            raise ValueError("The library must be one of the following", LIB_OPTIONS)
-
-    for counter, entry in enumerate(sab):
-        if entry not in SAB_OPTIONS:
             raise ValueError(
-                "The sab argument must be one of the following",
-                SAB_OPTIONS,
-                " Not {entry}",
+                f"The library must be one of the following {LIB_OPTIONS}. Not {entry}."
             )
 
         priority_dict[entry] = counter + 1
@@ -344,38 +296,39 @@ def identify_sab_to_download(
     print("Searching libraries with the following priority", priority_dict)
 
     # Tried to removed this dict to dataframe conversion out of the function
-    # and into the initialization of the package but this resultied in
+    # and into the initialization of the package but this resulted in
     # a SettingwithCopyWarning which can be fixed and understood here
     # https://www.dataquest.io/blog/settingwithcopywarning/
-    sab_info_df = pd.DataFrame.from_dict(sab_info)
+    xs_info_df = pd.DataFrame.from_dict(sab_xs_info)
 
-    is_library = sab_info_df["library"].isin(libraries)
-    print("SaB found matching library requirements", is_library.values.sum())
+    is_library = xs_info_df["library"].isin(libraries)
+    print("Sab found matching library requirements", is_library.values.sum())
 
-    print("sab names", sab)
-    is_sab = sab_info_df["name"].isin(sab)
-    print("SaB found matching name requirements", is_sab.values.sum())
+    is_particle = xs_info_df["particle"].isin(["sab"])
+    print("Sab found matching particle requirements", is_particle.values.sum())
 
-    sab_info_df = sab_info_df[(is_sab) & (is_library)]
+    is_sab = xs_info_df["sab"].isin(sabs)
+    print("Sab found matching isotope requirements", is_sab.values.sum())
 
-    sab_info_df["priority"] = sab_info_df["library"].map(priority_dict)
+    xs_info_df = xs_info_df[(is_sab) & (is_library) & (is_particle)]
 
-    sab_info_df = sab_info_df.sort_values(by=["priority"])
+    xs_info_df["priority"] = xs_info_df["library"].map(priority_dict)
 
-    sab_info_df = sab_info_df.drop_duplicates(subset=["name"], keep="first")
+    xs_info_df = xs_info_df.sort_values(by=["priority"])
+
+    xs_info_df = xs_info_df.drop_duplicates(subset=["sab", "particle"], keep="first")
 
     # end url is unique so this avoids downloading duplicates of the same file
-    sab_info_df = sab_info_df.drop_duplicates(subset=["url"], keep="first")
+    xs_info_df = xs_info_df.drop_duplicates(subset=["url"], keep="first")
 
-    print("SaB found matching all requirements", len(sab_info_df))
+    print("Sabs found matching all requirements", len(xs_info_df))
 
-    return sab_info_df
+    return xs_info_df
 
 
 def identify_isotopes_to_download(
-    libraries: List[str],
-    particles: List[str] = [],
-    isotopes: Optional[List[str]] = [],
+    libraries: typing.Tuple[str],
+    isotopes: typing.Tuple[str],
 ):
     if isotopes == []:
         return pd.DataFrame()
@@ -386,48 +339,32 @@ def identify_isotopes_to_download(
 
     print("isotopes", isotopes)
 
-    priority_dict = {}
-
-    if isinstance(libraries, str):
-        libraries = [libraries]
-
-    if isinstance(particles, str):
-        particles = [particles]
-
-    if libraries == []:
+    if len(libraries) == 0:
         raise ValueError(
             "At least one library must be selected, options are", LIB_OPTIONS
         )
 
-    if particles == []:
-        raise ValueError(
-            "At least one particle type must be selected, options are", PARTICLE_OPTIONS
-        )
-
+    priority_dict = {}
     for counter, entry in enumerate(libraries):
         if entry not in LIB_OPTIONS:
-            raise ValueError("The library must be one of the following", LIB_OPTIONS)
+            raise ValueError(
+                f"The library must be one of the following {LIB_OPTIONS}. Not {entry}."
+            )
 
         priority_dict[entry] = counter + 1
-
-    for counter, entry in enumerate(particles):
-        if entry not in PARTICLE_OPTIONS:
-            raise ValueError(
-                "The library must be one of the following", PARTICLE_OPTIONS
-            )
 
     print("Searching libraries with the following priority", priority_dict)
 
     # Tried to removed this dict to dataframe conversion out of the function
-    # and into the initialization of the package but this resultied in
+    # and into the initialization of the package but this resulted in
     # a SettingwithCopyWarning which can be fixed and understood here
     # https://www.dataquest.io/blog/settingwithcopywarning/
-    xs_info_df = pd.DataFrame.from_dict(xs_info)
+    xs_info_df = pd.DataFrame.from_dict(neutron_xs_info)
 
     is_library = xs_info_df["library"].isin(libraries)
     print("Isotopes found matching library requirements", is_library.values.sum())
 
-    is_particle = xs_info_df["particle"].isin(particles)
+    is_particle = xs_info_df["particle"].isin(["neutron"])
     print("Isotopes found matching particle requirements", is_particle.values.sum())
 
     is_isotope = xs_info_df["isotope"].isin(isotopes)
@@ -451,61 +388,64 @@ def identify_isotopes_to_download(
     return xs_info_df
 
 
-def expand_elements_to_isotopes(elements: Union[str, typing.Iterable[str]]):
-    if elements == "stable" or elements == ["stable"]:
-        return STABLE_ISOTOPE_OPTIONS
-
-    elif elements == "all" or elements == ["all"]:
-        return ALL_ISOTOPE_OPTIONS
-
-    elif isinstance(elements, str):
-        return NATURAL_ABUNDANCE[elements]
-
-    isotopes = []
-    for element in elements:
-        isotopes = isotopes + NATURAL_ABUNDANCE[element]
-    return isotopes
-
-
-def expand_materials_xml_to_isotopes(
-    materials_xml: Union[List[str], str] = "materials.xml"
+def identify_elements_to_download(
+    libraries: typing.Tuple[str],
+    elements: typing.Tuple[str],
 ):
-    isotopes = []
+    if elements == []:
+        return pd.DataFrame()
+    elif elements == "all" or elements == ["all"]:
+        elements = ALL_ELEMENT_OPTIONS
+    elif elements == "stable" or elements == ["stable"]:
+        elements = STABLE_ELEMENT_OPTIONS
 
-    if isinstance(materials_xml, str):
-        materials_xml = [materials_xml]
+    print("elements", elements)
 
-    if materials_xml == []:
-        return []
+    if len(libraries) == 0:
+        raise ValueError(
+            "At least one library must be selected, options are", LIB_OPTIONS
+        )
 
-    for material_xml in materials_xml:
-        tree = ET.parse(material_xml)
-        root = tree.getroot()
+    priority_dict = {}
+    for counter, entry in enumerate(libraries):
+        if entry not in LIB_OPTIONS:
+            raise ValueError("The library must be one of the following", LIB_OPTIONS)
 
-        for elem in root:
-            for subelem in elem:
-                if subelem.tag == "nuclide":
-                    if "name" in subelem.attrib.keys():
-                        isotopes.append(subelem.attrib["name"])
-    return isotopes
+        priority_dict[entry] = counter + 1
+
+    print("Searching libraries with the following priority", priority_dict)
+
+    # Tried to removed this dict to dataframe conversion out of the function
+    # and into the initialization of the package but this resulted in
+    # a SettingwithCopyWarning which can be fixed and understood here
+    # https://www.dataquest.io/blog/settingwithcopywarning/
+    xs_info_df = pd.DataFrame.from_dict(photon_xs_info)
+
+    is_library = xs_info_df["library"].isin(libraries)
+    print("Elements found matching library requirements", is_library.values.sum())
+
+    is_particle = xs_info_df["particle"].isin(["photon"])
+    print("Elements found matching particle requirements", is_particle.values.sum())
+
+    is_element = xs_info_df["element"].isin(elements)
+    print("Elements found matching element requirements", is_element.values.sum())
+
+    xs_info_df = xs_info_df[(is_element) & (is_library) & (is_particle)]
+
+    xs_info_df["priority"] = xs_info_df["library"].map(priority_dict)
+
+    xs_info_df = xs_info_df.sort_values(by=["priority"])
+
+    xs_info_df = xs_info_df.drop_duplicates(
+        subset=["element", "particle"], keep="first"
+    )
+
+    # end url is unique so this avoids downloading duplicates of the same file
+    xs_info_df = xs_info_df.drop_duplicates(subset=["url"], keep="first")
+
+    print("Elements found matching all requirements", len(xs_info_df))
+
+    return xs_info_df
 
 
-def expand_materials_xml_to_sab(materials_xml: Union[List[str], str] = "materials.xml"):
-    sabs = []
-
-    if isinstance(materials_xml, str):
-        materials_xml = [materials_xml]
-
-    if materials_xml == []:
-        return []
-
-    for material_xml in materials_xml:
-        tree = ET.parse(material_xml)
-        root = tree.getroot()
-
-        for elem in root:
-            for subelem in elem:
-                if subelem.tag == "sab":
-                    if "name" in subelem.attrib.keys():
-                        sabs.append(subelem.attrib["name"])
-    return sabs
+openmc.Materials.download_cross_section_data = download_cross_section_data

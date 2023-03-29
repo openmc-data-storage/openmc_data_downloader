@@ -45,3 +45,6 @@ package-dir = {"" = "src"}
 
 [project.scripts]
 openmc_data_downloader = "openmc_data_downloader.terminal_cmd:main"
+
+[tool.setuptools.package-data]
+openmc_data_downloader = ["*.xml"]
