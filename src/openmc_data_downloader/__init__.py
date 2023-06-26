@@ -13,5 +13,5 @@ except PackageNotFoundError:
 
 __all__ = ["__version__"]
 
-from .cross_sections_directory *
+from .cross_sections_directory import *
 from .utils import *
