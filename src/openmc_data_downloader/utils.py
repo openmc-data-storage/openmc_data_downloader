@@ -91,7 +91,7 @@ def expand_materials_to_elements(materials: openmc.Materials):
 
 
 def download_cross_section_data(
-    self,
+    materials: openmc.Materials,
     libraries: typing.Iterable[str] = (
         "TENDL-2019",
         "ENDFB-7.1-NNDC",
@@ -103,7 +103,23 @@ def download_cross_section_data(
     set_OPENMC_CROSS_SECTIONS: bool = True,
     overwrite: bool = False,
 ) -> str:
-    """ """
+    """Download cross section data for materials
+
+    Args:
+        materials: Materials for which to download cross section data
+        libraries: list of libraries from which to download cross section data.
+        destination: Specifies a folder location to save the downloaded files. By
+            default, the files are saved in the current working directory.
+        particles: list of particles for which to download cross section data ("neutron", "photon")
+        set_OPENMC_CROSS_SECTIONS: Set the OPENMC_CROSS_SECTIONS environment variable
+        overwrite: if set to True will overwrite any existing files
+
+    Raises:
+        ValueError: If the particle is not one of the following: "neutron", "photon"
+
+    Returns:
+        Path to the cross sections xml file
+    """
 
     for entry in particles:
         if entry not in PARTICLE_OPTIONS:
@@ -114,7 +130,7 @@ def download_cross_section_data(
     dataframe = pd.DataFrame()
 
     if "neutron" in particles:
-        isotopes = expand_materials_to_isotopes(self)
+        isotopes = expand_materials_to_isotopes(materials)
         # filters the large dataframe of all isotopes into just the ones you want
         dataframe_isotopes_xs = identify_isotopes_to_download(
             libraries=libraries,
@@ -123,14 +139,14 @@ def download_cross_section_data(
         dataframe = pd.concat([dataframe, dataframe_isotopes_xs])
 
     if "photon" in particles:
-        elements = expand_materials_to_elements(self)
+        elements = expand_materials_to_elements(materials)
         dataframe_elements_xs = identify_elements_to_download(
             libraries=libraries,
             elements=elements,
         )
         dataframe = pd.concat([dataframe, dataframe_elements_xs])
 
-    sabs = expand_materials_to_sabs(self)
+    sabs = expand_materials_to_sabs(materials)
     if len(sabs) > 0:
         dataframe_sabs_xs = identify_sabs_to_download(
             libraries=libraries,
@@ -148,7 +164,7 @@ def download_cross_section_data(
     cross_section_xml_path = create_cross_sections_xml(dataframe, destination)
 
     if set_OPENMC_CROSS_SECTIONS is True:
-        self.cross_sections = cross_section_xml_path
+        materials.cross_sections = cross_section_xml_path
         # making the cross section xml requires openmc and returns None if
         # openmc is not found.
         if cross_section_xml_path is not None:

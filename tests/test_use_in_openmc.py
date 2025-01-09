@@ -7,8 +7,11 @@ from pathlib import Path
 import openmc
 import openmc_data_downloader
 
+import pytest
 
-def test_materials_download():
+
+@pytest.mark.parametrize("monkeypatch", [True, False])
+def test_materials_download(monkeypatch: bool):
     """openmc.Materials are a container for openmc.Material objects. This
     test checks that they are handeled correctly"""
 
@@ -24,12 +27,21 @@ def test_materials_download():
     my_mat_2.add_nuclide("As75", 1.3752e-3)
     mats = openmc.Materials([my_mat_1, my_mat_2])
 
-    mats.download_cross_section_data(
-        destination="my_custom_nuclear_data_with_materials",
-        libraries=["ENDFB-8.0-NNDC"],
-        set_OPENMC_CROSS_SECTIONS=True,
-        particles=["neutron"],
-    )
+    if monkeypatch:
+        mats.download_cross_section_data(
+            destination="my_custom_nuclear_data_with_materials",
+            libraries=["ENDFB-8.0-NNDC"],
+            set_OPENMC_CROSS_SECTIONS=True,
+            particles=["neutron"],
+        )
+    else:
+        openmc_data_downloader.download_cross_section_data(
+            materials=mats,
+            destination="my_custom_nuclear_data_with_materials",
+            libraries=["ENDFB-8.0-NNDC"],
+            set_OPENMC_CROSS_SECTIONS=True,
+            particles=["neutron"],
+        )
     mats.export_to_xml()
 
     # Create a sphere of my_mat

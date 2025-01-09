@@ -162,7 +162,8 @@ mat1.add_element('C', 0.05)
 
 mats = openmc.Materials([mat1])
 
-mats.download_cross_section_data(
+odd.download_cross_section_data(
+        mats,
         libraries=["FENDL-3.1d"],
         set_OPENMC_CROSS_SECTIONS=True,
         particles=["neutron"],
@@ -181,7 +182,8 @@ mat1.add_element('C', 0.05)
 
 mats = openmc.Materials([mat1])
 
-mats.download_cross_section_data(
+odd.download_cross_section_data(
+        mats,
         libraries=['ENDFB-7.1-NNDC', 'TENDL-2019'],
         set_OPENMC_CROSS_SECTIONS=True,
         particles=["neutron"],
@@ -202,7 +204,8 @@ my_mat.add_s_alpha_beta('Be_in_BeO')
 
 mats = openmc.Materials([my_mat])
 
-mats.download_cross_section_data(
+odd.download_cross_section_data(
+        mats,
         libraries=['ENDFB-7.1-NNDC', 'TENDL-2019'],
         set_OPENMC_CROSS_SECTIONS=True,
         particles=["neutron"],
@@ -221,7 +224,8 @@ mat1.add_element('C', 0.05)
 
 mats = openmc.Materials([mat1])
 
-mats.download_cross_section_data(
+odd.download_cross_section_data(
+        mats,
         libraries=['ENDFB-7.1-NNDC', 'TENDL-2019'],
         set_OPENMC_CROSS_SECTIONS=True,
         particles=["neutron", "photon"],
