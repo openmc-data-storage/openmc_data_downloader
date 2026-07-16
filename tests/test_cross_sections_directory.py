@@ -26,6 +26,14 @@ def test_neutron_isotopes():
     )
     assert len(nndc_80_neutron_xs_info) == 556
 
+    nndc_81_neutron_xs_info = (
+        cross_sections_directory.get_isotopes_or_elements_info_from_xml(
+            "neutron",
+            "ENDFB-8.1-NNDC",
+        )
+    )
+    assert len(nndc_81_neutron_xs_info) == 557
+
     fendl_31d_neutron_xs_info = (
         cross_sections_directory.get_isotopes_or_elements_info_from_xml(
             "neutron",
@@ -60,6 +68,14 @@ def test_photon_elements():
     )
     assert len(nndc_80_photon_xs_info) == 100
 
+    nndc_81_photon_xs_info = (
+        cross_sections_directory.get_isotopes_or_elements_info_from_xml(
+            "photon",
+            "ENDFB-8.1-NNDC",
+        )
+    )
+    assert len(nndc_81_photon_xs_info) == 100
+
 
 def test_sab():
     nndc_71_sab_xs_info = (
@@ -77,3 +93,12 @@ def test_sab():
         )
     )
     assert len(nndc_80_sab_xs_info) == 34
+
+    nndc_81_sab_xs_info = (
+        cross_sections_directory.get_isotopes_or_elements_info_from_xml(
+            "sab",
+            "ENDFB-8.1-NNDC",
+        )
+    )
+    assert len(nndc_81_sab_xs_info) == 111
+
