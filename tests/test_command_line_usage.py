@@ -137,8 +137,7 @@ def test_neutron_and_photon_download_of_isotope_fendl():
     assert len(list(Path(".").glob("*.h5"))) == 2
 
 
-#TODO: sabs in ENDFB-8.0 are not stored in the repo
-@pytest.mark.parametrize("lib", ("ENDFB-7.1", "ENDFB-8.0", "ENDFB-8.1"))
+@pytest.mark.parametrize("lib", ("ENDFB-7.1", pytest.param("ENDFB-8.0", marks=pytest.mark.xfail(reason="SABs not stored in repo")), "ENDFB-8.1"))
 def test_sab_download_with_endf(lib):
     """Tests downloading with FENDL photon data and checks it exists"""
 
