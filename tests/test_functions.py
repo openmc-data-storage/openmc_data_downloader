@@ -18,11 +18,10 @@ from openmc_data_downloader import (
     download_single_file,
 )
 
+
 @pytest.mark.parametrize("lib", ["TENDL-2019", "ENDFB-8.1-NNDC"])
 def test_identify_isotopes_to_download_finds_neutron(lib):
-    filtered_df = identify_isotopes_to_download(
-        libraries=[lib], isotopes=["Be9"]
-    )
+    filtered_df = identify_isotopes_to_download(libraries=[lib], isotopes=["Be9"])
 
     if lib == "ENDFB-8.1-NNDC":
         url = "https://github.com/openmc-data-storage/ENDF-B-VIII.1-NNDC/releases/download/1.0/Be9.h5"
@@ -33,9 +32,7 @@ def test_identify_isotopes_to_download_finds_neutron(lib):
         {
             "library": [f"{lib}"],
             "remote_file": ["Be9.h5"],
-            "url": [
-                url
-            ],
+            "url": [url],
             "local_file": [f"{lib}_Be9.h5"],
             "particle": ["neutron"],
             "isotope": ["Be9"],
@@ -143,10 +140,15 @@ def test_identify_isotopes_to_download_all():
 
     assert len(filtered_df.values) == 180
 
-@pytest.mark.parametrize("lib_number, lib_roman", [("7.1", "VII.1"), ("8.0","VIII.0"), ("8.1","VIII.1")])
+
+@pytest.mark.parametrize(
+    "lib_number, lib_roman", [("7.1", "VII.1"), ("8.0", "VIII.0"), ("8.1", "VIII.1")]
+)
 def test_identify_sabs(lib_number, lib_roman):
     sab = "c_Be_in_BeO"
-    filtered_df = identify_sabs_to_download(libraries=[f"ENDFB-{lib_number}-NNDC"], sabs=["c_Be_in_BeO"])
+    filtered_df = identify_sabs_to_download(
+        libraries=[f"ENDFB-{lib_number}-NNDC"], sabs=["c_Be_in_BeO"]
+    )
 
     if lib_number == "8.1":
         url = f"https://github.com/openmc-data-storage/ENDF-B-VIII.1-NNDC/releases/download/1.0/{sab}.h5"
@@ -166,7 +168,8 @@ def test_identify_sabs(lib_number, lib_roman):
     )
     assert len(filtered_df.values) == 1
     assert list(filtered_df.keys()) == list(answer_df.keys())
-    assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()    
+    assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()
+
 
 def test_expand_materials_from_object_list_with_single_mat():
     my_mat = openmc.Material()

@@ -44,6 +44,7 @@ def test_correct_files_from_command_line_usage_2():
     assert Path("TENDL-2019_F19.h5").is_file()
     assert len(list(Path(".").glob("*.h5"))) == 1
 
+
 @pytest.mark.parametrize("lib", ("ENDFB-7.1", "ENDFB-8.0", "ENDFB-8.1"))
 def test_correct_files_from_command_line_usage_3(lib):
     os.system("rm *.h5")
@@ -114,6 +115,7 @@ def test_photon_download_of_isotope_nndc(lib):
 
     Path(f"{lib}-NNDC_He.h5").unlink()
 
+
 def test_photon_download_of_isotope_fendl():
     """Tests downloading with FENDL photon data and checks it exists"""
 
@@ -137,15 +139,22 @@ def test_neutron_and_photon_download_of_isotope_fendl():
     assert len(list(Path(".").glob("*.h5"))) == 2
 
 
-@pytest.mark.parametrize("lib", ("ENDFB-7.1", pytest.param("ENDFB-8.0", marks=pytest.mark.xfail(reason="SABs not stored in repo")), "ENDFB-8.1"))
+@pytest.mark.parametrize(
+    "lib",
+    (
+        "ENDFB-7.1",
+        pytest.param(
+            "ENDFB-8.0", marks=pytest.mark.xfail(reason="SABs not stored in repo")
+        ),
+        "ENDFB-8.1",
+    ),
+)
 def test_sab_download_with_endf(lib):
     """Tests downloading with FENDL photon data and checks it exists"""
 
     os.system("rm *.h5")
 
-    os.system(
-        f"openmc_data_downloader -l {lib}-NNDC TENDL-2019 -e Be O -s c_Be_in_BeO"
-    )
+    os.system(f"openmc_data_downloader -l {lib}-NNDC TENDL-2019 -e Be O -s c_Be_in_BeO")
 
     assert Path(f"{lib}-NNDC_Be9.h5").is_file()
     assert Path(f"{lib}-NNDC_O16.h5").is_file()

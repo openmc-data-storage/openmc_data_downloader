@@ -251,7 +251,7 @@ lib_to_base_url = {
     (
         "ENDFB-8.1-NNDC",
         "photon",
-    ): "https://github.com/openmc-data-storage/ENDF-B-VIII.1-NNDC/releases/download/1.0/",    
+    ): "https://github.com/openmc-data-storage/ENDF-B-VIII.1-NNDC/releases/download/1.0/",
     (
         "ENDFB-8.0-NNDC",
         "neutron",
