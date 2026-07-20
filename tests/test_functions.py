@@ -18,19 +18,25 @@ from openmc_data_downloader import (
     download_single_file,
 )
 
-
-def test_identify_isotopes_to_download_finds_tendl_neutron():
+@pytest.mark.parametrize("lib", ["TENDL-2019", "ENDFB-8.1-NNDC"])
+def test_identify_isotopes_to_download_finds_neutron(lib):
     filtered_df = identify_isotopes_to_download(
-        libraries=["TENDL-2019"], isotopes=["Be9"]
+        libraries=[lib], isotopes=["Be9"]
     )
+
+    if lib == "ENDFB-8.1-NNDC":
+        url = "https://github.com/openmc-data-storage/ENDF-B-VIII.1-NNDC/releases/download/1.0/Be9.h5"
+    else:
+        url = f"https://github.com/openmc-data-storage/{lib}/raw/main/h5_files/Be9.h5"
+
     answer_df = pd.DataFrame.from_dict(
         {
-            "library": ["TENDL-2019"],
+            "library": [f"{lib}"],
             "remote_file": ["Be9.h5"],
             "url": [
-                "https://github.com/openmc-data-storage/TENDL-2019/raw/main/h5_files/Be9.h5"
+                url
             ],
-            "local_file": ["TENDL-2019_Be9.h5"],
+            "local_file": [f"{lib}_Be9.h5"],
             "particle": ["neutron"],
             "isotope": ["Be9"],
             "element": ["Be"],
@@ -137,6 +143,30 @@ def test_identify_isotopes_to_download_all():
 
     assert len(filtered_df.values) == 180
 
+@pytest.mark.parametrize("lib_number, lib_roman", [("7.1", "VII.1"), ("8.0","VIII.0"), ("8.1","VIII.1")])
+def test_identify_sabs(lib_number, lib_roman):
+    sab = "c_Be_in_BeO"
+    filtered_df = identify_sabs_to_download(libraries=[f"ENDFB-{lib_number}-NNDC"], sabs=["c_Be_in_BeO"])
+
+    if lib_number == "8.1":
+        url = f"https://github.com/openmc-data-storage/ENDF-B-VIII.1-NNDC/releases/download/1.0/{sab}.h5"
+    else:
+        url = f"https://github.com/openmc-data-storage/ENDF-B-{lib_roman}-NNDC/raw/main/h5_files/neutron/{sab}.h5"
+
+    answer_df = pd.DataFrame.from_dict(
+        {
+            "library": [f"ENDFB-{lib_number}-NNDC"],
+            "remote_file": ["c_Be_in_BeO.h5"],
+            "url": [url],
+            "local_file": [f"ENDFB-{lib_number}-NNDC_{sab}.h5"],
+            "particle": ["sab"],
+            "sab": [f"{sab}"],
+            "priority": [1],
+        }
+    )
+    assert len(filtered_df.values) == 1
+    assert list(filtered_df.keys()) == list(answer_df.keys())
+    assert filtered_df.values[0].tolist() == answer_df.values[0].tolist()    
 
 def test_expand_materials_from_object_list_with_single_mat():
     my_mat = openmc.Material()

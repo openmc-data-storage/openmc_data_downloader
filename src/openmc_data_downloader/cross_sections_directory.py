@@ -226,6 +226,7 @@ def get_isotopes_or_elements_info_from_xml(particle_type, library):
 
 lib_to_xml = {
     "FENDL-3.1d": "fendl_3.1d_cross_sections.xml",
+    "ENDFB-8.1-NNDC": "nndc_8.1_cross_sections.xml",
     "ENDFB-8.0-NNDC": "nndc_8.0_cross_sections.xml",
     "ENDFB-7.1-NNDC": "nndc_7.1_cross_sections.xml",
     "TENDL-2019": "tendl_2019_cross_sections.xml",
@@ -239,6 +240,18 @@ lib_to_base_url = {
         "FENDL-3.1d",
         "photon",
     ): "https://github.com/openmc-data-storage/FENDL-3.1d/raw/main/h5_files/photon/",
+    (
+        "ENDFB-8.1-NNDC",
+        "neutron",
+    ): "https://github.com/openmc-data-storage/ENDF-B-VIII.1-NNDC/releases/download/1.0/",
+    (
+        "ENDFB-8.1-NNDC",
+        "sab",
+    ): "https://github.com/openmc-data-storage/ENDF-B-VIII.1-NNDC/releases/download/1.0/",
+    (
+        "ENDFB-8.1-NNDC",
+        "photon",
+    ): "https://github.com/openmc-data-storage/ENDF-B-VIII.1-NNDC/releases/download/1.0/",    
     (
         "ENDFB-8.0-NNDC",
         "neutron",
@@ -274,6 +287,7 @@ neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron", "TENDL-2019
 neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron", "ENDFB-7.1-NNDC")
 neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron", "FENDL-3.1d")
 neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron", "ENDFB-8.0-NNDC")
+neutron_xs_info += get_isotopes_or_elements_info_from_xml("neutron", "ENDFB-8.1-NNDC")
 
 photon_xs_info = []
 photon_xs_info += get_isotopes_or_elements_info_from_xml(
@@ -282,6 +296,7 @@ photon_xs_info += get_isotopes_or_elements_info_from_xml(
 )
 photon_xs_info += get_isotopes_or_elements_info_from_xml("photon", "FENDL-3.1d")
 photon_xs_info += get_isotopes_or_elements_info_from_xml("photon", "ENDFB-8.0-NNDC")
+photon_xs_info += get_isotopes_or_elements_info_from_xml("photon", "ENDFB-8.1-NNDC")
 
 sab_xs_info = []
 sab_xs_info += get_isotopes_or_elements_info_from_xml(
@@ -289,6 +304,7 @@ sab_xs_info += get_isotopes_or_elements_info_from_xml(
     "ENDFB-7.1-NNDC",
 )
 sab_xs_info += get_isotopes_or_elements_info_from_xml("sab", "ENDFB-8.0-NNDC")
+sab_xs_info += get_isotopes_or_elements_info_from_xml("sab", "ENDFB-8.1-NNDC")
 
 ATOMIC_SYMBOL = {
     0: "n",
@@ -430,6 +446,7 @@ for xml in [
     "tendl_2019_cross_sections.xml",
     "nndc_7.1_cross_sections.xml",
     "nndc_8.0_cross_sections.xml",
+    "nndc_8.1_cross_sections.xml",
     "fendl_3.1d_cross_sections.xml",
 ]:
     isotopes = get_isotopes_or_elements_from_xml(xml, "neutron")
@@ -439,6 +456,7 @@ SAB_OPTIONS = []
 for xml in [
     "nndc_7.1_cross_sections.xml",
     "nndc_8.0_cross_sections.xml",
+    "nndc_8.1_cross_sections.xml",
 ]:
     sabs = get_isotopes_or_elements_from_xml(xml, "sab")
     SAB_OPTIONS = SAB_OPTIONS + sabs

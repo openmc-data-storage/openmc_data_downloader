@@ -11,7 +11,8 @@ import pytest
 
 
 @pytest.mark.parametrize("monkeypatch", [True, False])
-def test_materials_download(monkeypatch: bool):
+@pytest.mark.parametrize("lib", ["ENDFB-8.0", "ENDFB-8.1"])
+def test_materials_download(monkeypatch: bool, lib:str):
     """openmc.Materials are a container for openmc.Material objects. This
     test checks that they are handeled correctly"""
 
@@ -30,7 +31,7 @@ def test_materials_download(monkeypatch: bool):
     if monkeypatch:
         mats.download_cross_section_data(
             destination="my_custom_nuclear_data_with_materials",
-            libraries=["ENDFB-8.0-NNDC"],
+            libraries=[f"{lib}-NNDC"],
             set_OPENMC_CROSS_SECTIONS=True,
             particles=["neutron"],
         )
@@ -38,7 +39,7 @@ def test_materials_download(monkeypatch: bool):
         openmc_data_downloader.download_cross_section_data(
             materials=mats,
             destination="my_custom_nuclear_data_with_materials",
-            libraries=["ENDFB-8.0-NNDC"],
+            libraries=[f"{lib}-NNDC"],
             set_OPENMC_CROSS_SECTIONS=True,
             particles=["neutron"],
         )
@@ -72,19 +73,24 @@ def test_materials_download(monkeypatch: bool):
     openmc.run()
 
     assert Path(
-        "my_custom_nuclear_data_with_materials/ENDFB-8.0-NNDC_Pu239.h5"
+        f"my_custom_nuclear_data_with_materials/{lib}-NNDC_Pu239.h5"
     ).is_file()
     assert Path(
-        "my_custom_nuclear_data_with_materials/ENDFB-8.0-NNDC_Pu240.h5"
+        f"my_custom_nuclear_data_with_materials/{lib}-NNDC_Pu240.h5"
     ).is_file()
     assert Path(
-        "my_custom_nuclear_data_with_materials/ENDFB-8.0-NNDC_As75.h5"
+        f"my_custom_nuclear_data_with_materials/{lib}-NNDC_As75.h5"
     ).is_file()
 
     assert Path("summary.h5").is_file()
     assert Path("statepoint.3.h5").is_file()
 
     assert len(list(Path("my_custom_nuclear_data_with_materials").glob("*.h5"))) == 3
+
+
+    for file in Path("my_custom_nuclear_data_with_materials").glob('**/*'):
+        file.unlink()
+    Path("my_custom_nuclear_data_with_materials").rmdir()
 
 
 def test_simulation_with_destination():
@@ -138,6 +144,9 @@ def test_simulation_with_destination():
 
     assert len(list(Path("my_custom_nuclear_data_dir").glob("*.h5"))) == 3
 
+    for file in Path("my_custom_nuclear_data_dir").glob('**/*'):
+        file.unlink()
+    Path("my_custom_nuclear_data_dir").rmdir()
 
 def test_photon_simulation_with_single_mat():
     os.system("rm *.h5")
